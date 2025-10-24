@@ -1,6 +1,5 @@
+import type { Position } from "geojson";
 import { useCallback, useState, useEffect, useRef } from "react";
-
-type GPSPoint = [number, number];
 
 export const useNavigatorGeolocation = (
   options: PositionOptions = {
@@ -10,11 +9,11 @@ export const useNavigatorGeolocation = (
   }
 ) => {
   const [locationError, setLocationError] = useState<string>("");
-  const [currentLocation, setCurrentLocation] = useState<GPSPoint | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<Position | null>(null);
   const [hasRequestedInitialLocation, setHasRequestedInitialLocation] =
-    useState(false);
+    useState<boolean>(false);
 
-  const optionsRef = useRef(options);
+  const optionsRef = useRef<PositionOptions>(options);
 
   useEffect(() => {
     optionsRef.current = options;
@@ -31,10 +30,9 @@ export const useNavigatorGeolocation = (
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        const newPoint: GPSPoint = [longitude, latitude];
+        const newPoint: Position = [longitude, latitude];
         setCurrentLocation(newPoint);
         setLocationError("");
-        console.log("Position actuelle:", { latitude, longitude });
       },
       (error) => {
         let errorMessage = "";
