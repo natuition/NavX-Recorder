@@ -10,8 +10,18 @@ import type {
 } from "mapbox-gl";
 import { useState, useCallback, useEffect } from "react";
 import { useNavigatorGeolocation } from "./hooks/useNavigatorGeolocation.ts";
+import { BluetoothService } from "./services/bluetooth.ts";
+import { NmeaParser } from "./services/nmea-parser.ts";
 
 type GPSPoint = [number, number]; // [longitude, latitude]
+
+type GpsPosition = {
+  latitude: number;
+  longitude: number;
+  altitude?: number;
+  accuracy?: number;
+  timestamp: Date;
+};
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -22,6 +32,91 @@ if (!MAPBOX_ACCESS_TOKEN) {
 }
 
 function App() {
+  const [bluetoothService] = useState(() => new BluetoothService());
+  const [nmeaParser] = useState(() => new NmeaParser());
+
+  const [nmeaBuffer, setNmeaBuffer] = useState<string>("");
+  const [bleConnected, setBleConnected] = useState<boolean>(false);
+  const [position, setPosition] = useState<GpsPosition | null>(null);
+
+  // Process incoming NMEA data
+  const processNmeaData = useCallback((data: string) => {
+    const newBuffer = nmeaBuffer + data;
+    const lines = newBuffer.split("\n");
+
+    // Keep the last incomplete line in the buffer
+    setNmeaBuffer(lines[lines.length - 1]);
+
+    // Process complete lines
+    for (let i = 0; i < lines.length - 1; i++) {
+      const line = lines[i].trim();
+      if (line.startsWith("$")) {
+        const parsed = nmeaParser.parse(line);
+
+        if (parsed) {
+          // Update position
+          if (parsed.latitude !== undefined && parsed.longitude !== undefined) {
+            const newPosition = {
+              latitude: parsed.latitude,
+              longitude: parsed.longitude,
+              altitude: parsed.altitude,
+              timestamp: new Date(),
+            };
+            setPosition(newPosition);
+
+            // Envoyer la position au client NTRIP si connecté
+            // if (ntripClient.isConnected()) {
+            //   ntripClient.updateGpsPosition(newPosition);
+            // }
+          }
+
+          // Update fix quality
+          // if (parsed.fixQuality !== undefined) {
+          //   setFixType(parsed.fixQuality as FixType);
+          // }
+
+          // Update satellite count and HDOP
+          // if (parsed.numSatellites !== undefined) {
+          //   setNumSatellites(parsed.numSatellites);
+          // }
+
+          // if (parsed.hdop !== undefined) {
+          //   setHdop(parsed.hdop);
+          // }
+        }
+      }
+    }
+  }, []);
+
+  // Handle Bluetooth connection
+  const handleBleConnect = async () => {
+    try {
+      await bluetoothService.connect();
+      setBleConnected(true);
+
+      bluetoothService.onData((data) => {
+        processNmeaData(data);
+      });
+    } catch (error) {
+      console.error("Bluetooth connection failed:", error);
+      const msg =
+        error instanceof Error
+          ? error.message
+          : "Failed to connect to Bluetooth device. Make sure the device is paired and in range.";
+      alert(msg);
+    }
+  };
+
+  // Handle Bluetooth disconnection
+  const handleBleDisconnect = async () => {
+    try {
+      await bluetoothService.disconnect();
+      setBleConnected(false);
+    } catch (error) {
+      console.error("Bluetooth disconnection failed:", error);
+    }
+  };
+
   const [mapLoaded, setMapLoaded] = useState(false);
   const [gpsPoints, setGpsPoints] = useState<GPSPoint[]>([]);
   const [isRecording, setIsRecording] = useState(false);
@@ -213,6 +308,21 @@ function App() {
       >
         {mapLoaded && (
           <>
+            <header className="header">
+              <h1>NavX</h1>
+              <div className="header-buttons">
+                <button
+                  onClick={
+                    bleConnected ? handleBleDisconnect : handleBleConnect
+                  }
+                  style={{
+                    backgroundColor: bleConnected ? "#dc3545" : "#007bff",
+                  }}
+                >
+                  {bleConnected ? "Disconnect BLE" : "Connect BLE"}
+                </button>
+              </div>
+            </header>
             <Source
               id="current-location"
               type="geojson"
