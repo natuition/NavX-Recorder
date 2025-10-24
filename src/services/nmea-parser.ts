@@ -14,12 +14,27 @@ export type NmeaData = {
  * Parse NMEA sentences from GPS data
  */
 export class NmeaParser {
-  private gsvSentences: string[][] = [];
+  private static gsvSentences: string[][] = [];
+
+
+  static parse(data: string): NmeaData | null {
+    const lines = data.split("\n");
+    for (const line of lines) {
+      const sentence = line.trim();
+      if (sentence.startsWith("$")) {
+        const parsed = NmeaParser.parseSentence(sentence);
+        if (parsed) {
+          return parsed;
+        }
+      }
+    }
+    return null;
+  }
 
   /**
    * Parse a single NMEA sentence
    */
-  parse(sentence: string): NmeaData | null {
+  static parseSentence(sentence: string): NmeaData | null {
     if (!sentence.startsWith("$")) {
       return null;
     }
@@ -33,15 +48,15 @@ export class NmeaParser {
     switch (type) {
       case "GPGGA":
       case "GNGGA":
-        return this.parseGGA(fields);
+        return NmeaParser.parseGGA(fields);
       case "GPRMC":
       case "GNRMC":
-        return this.parseRMC(fields);
+        return NmeaParser.parseRMC(fields);
       case "GPGSV":
       case "GNGSV":
       case "GLGSV":
       case "GAGSV":
-        this.parseGSV(fields);
+        NmeaParser.parseGSV(fields);
         return null;
       default:
         return null;
@@ -51,9 +66,9 @@ export class NmeaParser {
   /**
    * Parse GGA sentence (Fix data)
    */
-  private parseGGA(fields: string[]): NmeaData {
-    const lat = this.parseCoordinate(fields[2], fields[3]);
-    const lon = this.parseCoordinate(fields[4], fields[5]);
+  private static parseGGA(fields: string[]): NmeaData {
+    const lat = NmeaParser.parseCoordinate(fields[2], fields[3]);
+    const lon = NmeaParser.parseCoordinate(fields[4], fields[5]);
     const fixQuality = parseInt(fields[6]) || 0;
     const numSats = parseInt(fields[7]) || 0;
     const hdop = parseFloat(fields[8]) || 0;
@@ -74,9 +89,9 @@ export class NmeaParser {
   /**
    * Parse RMC sentence (Recommended minimum)
    */
-  private parseRMC(fields: string[]): NmeaData {
-    const lat = this.parseCoordinate(fields[3], fields[4]);
-    const lon = this.parseCoordinate(fields[5], fields[6]);
+  private static parseRMC(fields: string[]): NmeaData {
+    const lat = NmeaParser.parseCoordinate(fields[3], fields[4]);
+    const lon = NmeaParser.parseCoordinate(fields[5], fields[6]);
 
     return {
       type: "RMC",
@@ -90,20 +105,20 @@ export class NmeaParser {
   /**
    * Parse GSV sentence (Satellites in view)
    */
-  private parseGSV(fields: string[]): void {
+  private static parseGSV(fields: string[]): void {
     const messageNumber = parseInt(fields[2]) || 0;
 
     if (messageNumber === 1) {
-      this.gsvSentences = [];
+      NmeaParser.gsvSentences = [];
     }
 
-    this.gsvSentences.push(fields);
+    NmeaParser.gsvSentences.push(fields);
   }
 
   /**
    * Parse coordinate from NMEA format (DDMM.MMMM) to decimal degrees
    */
-  private parseCoordinate(
+  private static parseCoordinate(
     value: string,
     direction: string
   ): number | undefined {
