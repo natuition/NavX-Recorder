@@ -2,6 +2,7 @@ import { IoMap, IoFolderOpen, IoSearchSharp } from "react-icons/io5";
 import { IoMdMore } from "react-icons/io";
 import { useState } from "react";
 import TabsButton from "./TabsButton";
+import { useApp } from "../contexts/AppContext";
 
 const TABS = {
   MAP: "map",
@@ -12,6 +13,8 @@ const TABS = {
 
 const Tabs = () => {
   const [activeTab, setActiveTab] = useState<string>("map");
+
+  const { toggleActionMenu } = useApp();
 
   return (
     <nav className="tabs-container">
@@ -30,7 +33,7 @@ const Tabs = () => {
           <IoFolderOpen size={24} />
           <span className="tab__label">Projets</span>
         </li>
-        <TabsButton onPress={() => console.log("Press TabsButton")} />
+        <TabsButton onPress={() => toggleActionMenu()} />
         <li
           className={`tab ${activeTab === TABS.SEARCH ? "tab--active" : ""}`}
           onClick={() => setActiveTab(TABS.SEARCH)}
