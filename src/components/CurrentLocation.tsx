@@ -5,20 +5,20 @@ import { useNavigatorGeolocation } from "../hooks/useNavigatorGeolocation";
 import { useEffect } from "react";
 
 const CurrentLocation = () => {
-  const { currentLocation } = useNavigatorGeolocation();
+  const { currentLocation, initialLocation } = useNavigatorGeolocation();
   const { current: map } = useMap();
 
-  // Centrer la carte sur la position actuelle quand elle est obtenue
+  // Centrer la carte sur la position initiale quand elle est obtenue
   useEffect(() => {
     if (!map) return;
-    if (currentLocation) {
+    if (initialLocation) {
       map.flyTo({
-        center: [currentLocation[0], currentLocation[1]],
+        center: [initialLocation[0], initialLocation[1]],
         zoom: 14,
         speed: 1.2,
       });
     }
-  }, [currentLocation, map]);
+  }, [initialLocation, map]);
 
   // Créer les données GeoJSON pour la position actuelle
   const currentLocationGeoJSON: FeatureCollection<Point> = {
