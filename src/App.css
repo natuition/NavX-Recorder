@@ -4,13 +4,26 @@
   position: relative;
 }
 
+#position {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 1rem;
+  color: white;
+  padding: 0.5em 1em;
+  min-width: 25ch;
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  z-index: 1;
+}
+
 #map {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  border: 3px solid red;
 }
 
 .btn {

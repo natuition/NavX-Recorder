@@ -5,6 +5,7 @@ import { useNavigatorGeolocation } from "../hooks/useNavigatorGeolocation";
 import { useEffect } from "react";
 
 const CurrentLocation = () => {
+  console.log("Render CurrentLocation");
   const { currentLocation, initialLocation } = useNavigatorGeolocation();
   const { current: map } = useMap();
 

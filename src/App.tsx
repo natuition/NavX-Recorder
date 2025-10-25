@@ -8,6 +8,8 @@ import { useBluetooth } from "./contexts/BluetoothContext.tsx";
 import ZoneGeometry from "./components/ZoneGeometry.tsx";
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+const MAP_INITIAL_LATITUDE = 46.1591;
+const MAP_INITIAL_LONGITUDE = -1.1517;
 
 if (!MAPBOX_ACCESS_TOKEN) {
   console.error(
@@ -18,31 +20,40 @@ if (!MAPBOX_ACCESS_TOKEN) {
 const App = () => {
   console.log("App rendered");
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
+  const [mapCenterPosition, setMapCenterPosition] = useState<number[] | null>([
+    MAP_INITIAL_LONGITUDE,
+    MAP_INITIAL_LATITUDE,
+  ]);
 
   const { bluetoothConnected, connectBluetooth, disconnectBluetooth } =
     useBluetooth();
 
   return (
     <div className="map-container">
+      {mapCenterPosition && (
+        <h1 id="position">{`Lat: ${mapCenterPosition[1]} , Long: ${mapCenterPosition[0]}`}</h1>
+      )}
       <Map
         id="map"
         mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
-        interactive
         initialViewState={{
-          longitude: -1.1517,
-          latitude: 46.1591,
+          longitude: MAP_INITIAL_LONGITUDE,
+          latitude: MAP_INITIAL_LATITUDE,
           zoom: 10,
         }}
         mapStyle="mapbox://styles/vincentlb/cmfwcr7jb008101sc99fk3cfo"
         attributionControl={false}
         onLoad={() => setIsMapLoaded(true)}
         onMove={(evt) => {
-          console.log("Map moved:", evt.viewState);
+          setMapCenterPosition([
+            Number(evt.viewState.longitude.toFixed(4)),
+            Number(evt.viewState.latitude.toFixed(4)),
+          ]);
         }}
       >
         {isMapLoaded && (
           <>
-            <header className="header">
+            {/* <header className="header">
               <h1>NavX</h1>
               <div className="header-buttons">
                 <button
@@ -56,7 +67,7 @@ const App = () => {
                   {bluetoothConnected ? "Disconnect BLE" : "Connect BLE"}
                 </button>
               </div>
-            </header>
+            </header> */}
 
             <CurrentPosition />
             <ZoneGeometry />
