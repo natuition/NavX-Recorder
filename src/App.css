@@ -6,7 +6,7 @@
 
 #position {
   position: absolute;
-  top: 10px;
+  top: 85px;
   left: 10px;
   font-size: 1rem;
   color: white;
@@ -78,6 +78,37 @@
 }
 
 .tab--active .tab__label {
+  font-weight: 600;
+}
+
+.toolbar-container {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgb(31, 130, 22);
+  color: white;
+  height: 75px;
+  z-index: 2;
+  padding-inline: 1em;
+}
+
+.toolbar-left {
+  display: flex;
+  flex: 3;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar-right {
+  flex: 1;
+}
+
+.toolbar__title {
+  font-size: 1.75rem;
   font-weight: 600;
 }
 

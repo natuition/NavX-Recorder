@@ -139,12 +139,12 @@ const ZoneGeometry = () => {
         <Layer {...gpsPolygonLayer} />
       </Source>
 
-      <button
+      {/* <button
         onClick={() => setIsRecording(!isRecording)}
         className="btn btn--medium"
       >
         {isRecording ? "⏹ Arrêter" : "📍 Créer un relevé"}
-      </button>
+      </button> */}
     </>
   );
 };
