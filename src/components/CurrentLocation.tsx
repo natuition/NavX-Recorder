@@ -2,12 +2,24 @@ import type { FeatureCollection, Point } from "geojson";
 import { Layer, Source, useMap } from "react-map-gl/mapbox";
 import type { CircleLayerSpecification } from "react-map-gl/mapbox";
 import { useNavigatorGeolocation } from "../hooks/useNavigatorGeolocation";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import { IoMdLocate } from "react-icons/io";
 
 const CurrentLocation = () => {
   console.log("Render CurrentLocation");
   const { currentLocation, initialLocation } = useNavigatorGeolocation();
   const { current: map } = useMap();
+
+  const handleGeolocateClick = useCallback(() => {
+    if (!map) return;
+    if (currentLocation) {
+      map.flyTo({
+        center: [currentLocation[0], currentLocation[1]],
+        zoom: 14,
+        speed: 1.2,
+      });
+    }
+  }, [map, currentLocation]);
 
   // Centrer la carte sur la position initiale quand elle est obtenue
   useEffect(() => {
@@ -52,9 +64,18 @@ const CurrentLocation = () => {
   };
 
   return (
-    <Source id="current-location" type="geojson" data={currentLocationGeoJSON}>
-      <Layer {...layerSpecifications} />
-    </Source>
+    <>
+      <div id="geolocate" onClick={handleGeolocateClick}>
+        <IoMdLocate size={24} />
+      </div>
+      <Source
+        id="current-location"
+        type="geojson"
+        data={currentLocationGeoJSON}
+      >
+        <Layer {...layerSpecifications} />
+      </Source>
+    </>
   );
 };
 

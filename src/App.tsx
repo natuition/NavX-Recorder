@@ -3,7 +3,7 @@ import "./App.css";
 import Map from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useState } from "react";
-import CurrentPosition from "./components/CurrentLocation.tsx";
+import CurrentLocation from "./components/CurrentLocation.tsx";
 import { useBluetooth } from "./contexts/BluetoothContext.tsx";
 import ZoneGeometry from "./components/ZoneGeometry.tsx";
 import BaseLayout from "./layouts/BaseLayout.tsx";
@@ -55,7 +55,7 @@ const App = () => {
         >
           {isMapLoaded && (
             <>
-              <CurrentPosition />
+              <CurrentLocation />
               <ZoneGeometry />
             </>
           )}
