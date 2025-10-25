@@ -6,10 +6,10 @@ import { BleClient } from "@capacitor-community/bluetooth-le";
  */
 export class BluetoothService {
   // Web Bluetooth handles
-  private device: BluetoothDevice | null = null;
-  private server: BluetoothRemoteGATTServer | null = null;
-  private characteristic: BluetoothRemoteGATTCharacteristic | null = null; // TX notify
-  private rxCharacteristic: BluetoothRemoteGATTCharacteristic | null = null; // RX write
+  private device: unknown | null = null;
+  private server: unknown | null = null;
+  private characteristic: unknown | null = null; // TX notify
+  private rxCharacteristic: unknown | null = null; // RX write
 
   // Capacitor BLE handles
   private useNative = Capacitor.isNativePlatform();
@@ -74,11 +74,12 @@ export class BluetoothService {
 
   private async connectWeb(): Promise<void> {
     try {
-      if (!("bluetooth" in navigator)) {
+      if (!("bluetooth" in navigator) || !navigator.bluetooth) {
         throw new Error(
           "Web Bluetooth non supporté dans ce navigateur. Utilisez l'application native (Capacitor) sur iOS."
         );
       }
+
       this.device = await navigator.bluetooth.requestDevice({
         filters: [{ services: [BluetoothService.UART_SERVICE_UUID] }],
         optionalServices: [BluetoothService.UART_SERVICE_UUID],
