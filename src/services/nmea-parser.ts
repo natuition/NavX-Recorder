@@ -17,18 +17,19 @@ export class NmeaParser {
   private static gsvSentences: string[][] = [];
 
 
-  static parse(data: string): NmeaData | null {
+  static parse(data: string): NmeaData[] | null {
+    const parsed: NmeaData[] = [];
     const lines = data.split("\n");
     for (const line of lines) {
       const sentence = line.trim();
       if (sentence.startsWith("$")) {
-        const parsed = NmeaParser.parseSentence(sentence);
-        if (parsed) {
-          return parsed;
+        const parsedSentence = NmeaParser.parseSentence(sentence);
+        if (parsedSentence) {
+          parsed.push(parsedSentence);
         }
       }
     }
-    return null;
+    return parsed.length > 0 ? parsed : null;
   }
 
   /**
