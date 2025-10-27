@@ -1,23 +1,4 @@
-// GPS position data
-export interface GpsPosition {
-  latitude: number;
-  longitude: number;
-  altitude?: number;
-  accuracy?: number;
-  timestamp: Date;
-}
-
-// NTRIP configuration
-export interface NtripConfig {
-  host: string;
-  port: number;
-  mountpoint: string;
-  username: string;
-  password: string;
-  sendGpsToServer?: boolean; // Option pour envoyer les coordonnées GPS au caster
-  wsUrl?: string; // Optional full WebSocket URL (ws:// or wss://) to connect through a proxy
-}
-
+import type { NtripConfig, GpsPosition } from '../types';
 
 /**
  * NTRIP client for receiving RTCM corrections

@@ -39,7 +39,7 @@ const BaseLayout = ({ children }: { children: React.ReactNode }) => {
           </li>
         </ul>
       </div>
-      <ToolBar />
+      {/* <ToolBar /> */}
       {children}
       <Tabs />
     </div>

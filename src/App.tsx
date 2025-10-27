@@ -3,9 +3,7 @@ import "./App.css";
 import Map from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useState } from "react";
-import CurrentLocation from "./components/CurrentLocation.tsx";
 import { useBluetooth } from "./contexts/BluetoothContext.tsx";
-import ZoneGeometry from "./components/ZoneGeometry.tsx";
 import BaseLayout from "./layouts/BaseLayout.tsx";
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
@@ -28,6 +26,8 @@ const App = () => {
 
   const { bluetoothConnected, connectBluetooth, disconnectBluetooth } =
     useBluetooth();
+
+  const [position, setPosition] = useState<GpsPosition | null>(null);
 
   return (
     <BaseLayout>
@@ -55,8 +55,25 @@ const App = () => {
         >
           {isMapLoaded && (
             <>
-              <CurrentLocation />
-              <ZoneGeometry />
+              <header className="header">
+                <h1>NavX</h1>
+                <div className="header-buttons">
+                  <button
+                    onClick={
+                      bluetoothConnected
+                        ? disconnectBluetooth
+                        : connectBluetooth
+                    }
+                    style={{
+                      backgroundColor: bluetoothConnected
+                        ? "#dc3545"
+                        : "#007bff",
+                    }}
+                  >
+                    {bluetoothConnected ? "Disconnect BLE" : "Connect BLE"}
+                  </button>
+                </div>
+              </header>
             </>
           )}
         </Map>
