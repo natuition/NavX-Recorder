@@ -136,7 +136,7 @@ export class BluetoothService {
             BluetoothService.UART_SERVICE_UUID,
             BluetoothService.UART_TX_CHAR_UUID
           );
-        } catch {}
+        } catch { }
         await BleClient.disconnect(this.nativeDeviceId);
       }
     } finally {
@@ -151,7 +151,7 @@ export class BluetoothService {
     if (this.characteristic) {
       try {
         await this.characteristic.stopNotifications();
-      } catch {}
+      } catch { }
       this.characteristic.removeEventListener(
         "characteristicvaluechanged",
         this.handleWebNotification
@@ -181,8 +181,16 @@ export class BluetoothService {
       }
     }
 
+
+
+    if (this.writeQueue.length > 50) {
+      // éviter une file d'attente trop longue
+      this.writeQueue = this.writeQueue.slice(-50);
+    }
+
     // Ajouter au buffer d'envoi et démarrer le traitement si nécessaire
     this.writeQueue.push(data);
+
     if (!this.isWriting) {
       this.processWriteQueue().catch((err) => {
         console.error("Bluetooth write queue error:", err);

@@ -4,46 +4,61 @@ import type { CircleLayerSpecification } from "react-map-gl/mapbox";
 import { useNavigatorGeolocation } from "../hooks/useNavigatorGeolocation";
 import { useCallback, useEffect } from "react";
 import { IoMdLocate } from "react-icons/io";
+import { useLocation } from "../contexts/LocationContext";
 
 const CurrentLocation = () => {
-  console.log("Render CurrentLocation");
-  const { currentLocation, initialLocation } = useNavigatorGeolocation();
+  console.debug("Render CurrentLocation");
+  // const { currentLocation, initialLocation } = useNavigatorGeolocation();
+  const { position, initialPosition } = useLocation().state;
   const { current: map } = useMap();
+
+  // Centrer la carte sur la position initiale quand elle est obtenue
+  // Via le hook useNavigatorGeolocation
+  // useEffect(() => {
+  //   if (!map) return;
+  //   if (initialLocation) {
+  //     map.flyTo({
+  //       center: [initialLocation[0], initialLocation[1]],
+  //       zoom: 14,
+  //       speed: 1.2,
+  //     });
+  //   }
+  // }, [initialLocation, map]);
+
+  // Via le contexte LocationContext
+  useEffect(() => {
+    if (!map) return;
+    if (initialPosition) {
+      map.flyTo({
+        center: [initialPosition.longitude, initialPosition.latitude],
+        zoom: 14,
+        speed: 1.2,
+      });
+    }
+  }, [initialPosition, map]);
 
   const handleGeolocateClick = useCallback(() => {
     if (!map) return;
-    if (currentLocation) {
+    if (position) {
       map.flyTo({
-        center: [currentLocation[0], currentLocation[1]],
+        center: [position.longitude, position.latitude],
         zoom: 14,
         speed: 1.2,
       });
     }
-  }, [map, currentLocation]);
-
-  // Centrer la carte sur la position initiale quand elle est obtenue
-  useEffect(() => {
-    if (!map) return;
-    if (initialLocation) {
-      map.flyTo({
-        center: [initialLocation[0], initialLocation[1]],
-        zoom: 14,
-        speed: 1.2,
-      });
-    }
-  }, [initialLocation, map]);
+  }, [map, position]);
 
   // Créer les données GeoJSON pour la position actuelle
   const currentLocationGeoJSON: FeatureCollection<Point> = {
     type: "FeatureCollection",
-    features: currentLocation
+    features: position
       ? [
           {
             type: "Feature",
             properties: { current: true },
             geometry: {
               type: "Point",
-              coordinates: currentLocation,
+              coordinates: [position.longitude, position.latitude],
             },
           },
         ]

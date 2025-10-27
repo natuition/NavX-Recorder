@@ -1,6 +1,6 @@
 import PWABadge from "./PWABadge.tsx";
 import "./App.css";
-import Map, { Layer, Source } from "react-map-gl/mapbox";
+import Map, { Layer, Source, useMap } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useEffect, useState } from "react";
 import { useBluetooth } from "./contexts/BluetoothContext.tsx";
@@ -10,6 +10,8 @@ import { NtripClient } from "./services/ntrip-client.ts";
 import { NmeaParser } from "./services/nmea-parser.ts";
 import type { CircleLayerSpecification } from "react-map-gl/mapbox";
 import type { FeatureCollection, Point } from "geojson";
+import { useLocation } from "./contexts/LocationContext.tsx";
+import CurrentLocation from "./components/CurrentLocation.tsx";
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 const MAP_INITIAL_LATITUDE = 46.1591;
@@ -22,6 +24,8 @@ if (!MAPBOX_ACCESS_TOKEN) {
 }
 
 const App = () => {
+  console.debug("App component rendered");
+
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
   const [mapCenterPosition, setMapCenterPosition] = useState<number[] | null>([
     MAP_INITIAL_LONGITUDE,
@@ -36,134 +40,124 @@ const App = () => {
     bluetoothService,
   } = useBluetooth();
 
-  const [position, setPosition] = useState<GpsPosition | null>(null);
+  // const [position, setPosition] = useState<GpsPosition | null>(null);
   const [ntripClient] = useState(() => new NtripClient());
   const [ntripConnected, setNtripConnected] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
 
+  const { position, initialPosition } = useLocation().state;
+  const { current: map } = useMap();
+
   useEffect(() => {
-    if (!isRecording) return;
+    console.log(map);
+    if (!map) return;
+    console.log("Initial position from context:", initialPosition);
+    if (initialPosition) {
+      map.flyTo({
+        center: [initialPosition.longitude, initialPosition.latitude],
+        zoom: 14,
+        speed: 1.2,
+      });
+    }
+  }, [initialPosition, map]);
 
-    const handler = (chunk: string) => {
-      const parsed = NmeaParser.parse(chunk);
+  // useEffect(() => {
+  //   if (!isRecording) return;
+  //   let lastRecordTime = Date.now();
 
-      if (parsed) {
-        const GGA = parsed.find((p) => p.type === "GGA");
+  //   const handler = (chunk: string) => {
+  //     if (Date.now() - lastRecordTime < 400) return;
+  //     lastRecordTime = Date.now();
 
-        console.log("Fix quality:", GGA?.fixQuality);
+  //     const parsed = NmeaParser.parse(chunk);
 
-        if (GGA?.latitude === undefined || GGA?.longitude === undefined) return;
+  //     if (parsed) {
+  //       const GGA = parsed.find((p) => p.type === "GGA");
 
-        const newPosition: GpsPosition = {
-          latitude: GGA?.latitude,
-          longitude: GGA?.longitude,
-          altitude: GGA?.altitude,
-          timestamp: new Date(),
-        };
-        console.log(newPosition);
-        setPosition(newPosition);
+  //       console.log("Fix quality:", GGA?.fixQuality);
 
-        // Envoyer la position au client NTRIP si connecté
-        if (ntripClient.isConnected()) {
-          ntripClient.updateGpsPosition(newPosition);
-        }
-      }
-    };
-    const unsubscribe = subscribeBluetoothData(handler);
-    return () => {
-      unsubscribe();
-    };
-  }, [isRecording, subscribeBluetoothData]);
+  //       if (GGA?.latitude === undefined || GGA?.longitude === undefined) return;
+
+  //       const newPosition: GpsPosition = {
+  //         latitude: GGA?.latitude,
+  //         longitude: GGA?.longitude,
+  //         altitude: GGA?.altitude,
+  //         timestamp: new Date(),
+  //       };
+  //       console.log(newPosition);
+  //       setPosition(newPosition);
+
+  //       // Envoyer la position au client NTRIP si connecté
+  //       if (ntripClient.isConnected()) {
+  //         ntripClient.updateGpsPosition(newPosition);
+  //       }
+  //     }
+  //   };
+  //   const unsubscribe = subscribeBluetoothData(handler);
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, [isRecording, subscribeBluetoothData]);
 
   // Handle NTRIP connection
-  const handleNtripConnect = async (
-    config: NtripConfig | undefined = {
-      host: "crtk.net",
-      port: 2101,
-      mountpoint: "NEAR",
-      username: "", // optionnel;
-      password: "", // optionnel;
-      sendGpsToServer: true,
-      wsUrl: "wss://ws-tcp-ntrip-client.natuition.com",
-    }
-  ) => {
-    try {
-      // Pour le mountpoint NEAR, s'assurer qu'on a une position GPS
-      if (config.mountpoint.toUpperCase() === "NEAR" && !position) {
-        alert(
-          "Position GPS requise pour le mountpoint NEAR. Veuillez attendre que votre position soit détectée."
-        );
-        return;
-      }
+  // const handleNtripConnect = async (
+  //   config: NtripConfig | undefined = {
+  //     host: "crtk.net",
+  //     port: 2101,
+  //     mountpoint: "NEAR",
+  //     username: "", // optionnel;
+  //     password: "", // optionnel;
+  //     sendGpsToServer: true,
+  //     wsUrl: "wss://ws-tcp-ntrip-client.natuition.com",
+  //   }
+  // ) => {
+  //   try {
+  //     // Pour le mountpoint NEAR, s'assurer qu'on a une position GPS
+  //     if (config.mountpoint.toUpperCase() === "NEAR" && !position) {
+  //       alert(
+  //         "Position GPS requise pour le mountpoint NEAR. Veuillez attendre que votre position soit détectée."
+  //       );
+  //       return;
+  //     }
 
-      // Définir la position initiale si disponible
-      if (position) {
-        ntripClient.setInitialPosition(position);
-      }
+  //     // Définir la position initiale si disponible
+  //     if (position) {
+  //       ntripClient.setInitialPosition(position);
+  //     }
 
-      await ntripClient.connect(config);
-      setNtripConnected(true);
+  //     await ntripClient.connect(config);
+  //     setNtripConnected(true);
 
-      // Forward RTCM data to Bluetooth device
-      ntripClient.onData(async (data) => {
-        if (bluetoothConnected) {
-          try {
-            await bluetoothService.write(data);
-          } catch (error) {
-            console.error("Failed to forward RTCM data:", error);
-          }
-        }
-      });
+  //     // Forward RTCM data to Bluetooth device
+  //     ntripClient.onData(async (data) => {
+  //       if (bluetoothConnected) {
+  //         try {
+  //           await bluetoothService.write(data);
+  //         } catch (error) {
+  //           console.error("Failed to forward RTCM data:", error);
+  //         }
+  //       }
+  //     });
 
-      // Afficher un message informatif pour NEAR
-      if (config.mountpoint.toUpperCase() === "NEAR") {
-        console.log(
-          "Connecté avec mountpoint NEAR - sélection automatique de la station la plus proche"
-        );
-      }
-    } catch (error) {
-      console.error("NTRIP connection failed:", error);
-      alert(
-        "Failed to connect to NTRIP caster. Please check your configuration."
-      );
-    }
-  };
+  //     // Afficher un message informatif pour NEAR
+  //     if (config.mountpoint.toUpperCase() === "NEAR") {
+  //       console.log(
+  //         "Connecté avec mountpoint NEAR - sélection automatique de la station la plus proche"
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("NTRIP connection failed:", error);
+  //     alert(
+  //       "Failed to connect to NTRIP caster. Please check your configuration."
+  //     );
+  //   }
+  // };
 
   // Handle NTRIP disconnection
-  const handleNtripDisconnect = () => {
-    ntripClient.disconnect();
-    setNtripConnected(false);
-  };
-
-  // Créer les données GeoJSON pour la position actuelle
-  const currentLocationGeoJSON: FeatureCollection<Point> = {
-    type: "FeatureCollection",
-    features: position
-      ? [
-          {
-            type: "Feature",
-            properties: { current: true },
-            geometry: {
-              type: "Point",
-              coordinates: [position.longitude, position.latitude],
-            },
-          },
-        ]
-      : [],
-  };
-
-  const layerSpecifications: CircleLayerSpecification = {
-    id: "current-location",
-    type: "circle",
-    paint: {
-      "circle-color": "#b31fc7",
-      "circle-opacity": 0.8,
-      "circle-radius": 8,
-      "circle-stroke-color": "#ffffff",
-      "circle-stroke-width": 3,
-    },
-    source: "current-location",
-  };
+  // const handleNtripDisconnect = () => {
+  //   ntripClient.disconnect();
+  //   setNtripConnected(false);
+  // };
 
   return (
     <BaseLayout>
@@ -208,7 +202,7 @@ const App = () => {
                   >
                     {bluetoothConnected ? "Disconnect BLE" : "Connect BLE"}
                   </button>
-                  <button
+                  {/* <button
                     onClick={
                       ntripConnected
                         ? handleNtripDisconnect
@@ -225,7 +219,7 @@ const App = () => {
                     disabled={!bluetoothConnected}
                   >
                     {ntripConnected ? "Disconnect NTRIP" : "Connect NTRIP"}
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setIsRecording(!isRecording)}
                     style={{
@@ -236,13 +230,7 @@ const App = () => {
                   </button>
                 </div>
               </header>
-              <Source
-                id="current-location"
-                type="geojson"
-                data={currentLocationGeoJSON}
-              >
-                <Layer {...layerSpecifications} />
-              </Source>
+              <CurrentLocation />
             </>
           )}
         </Map>

@@ -4,12 +4,15 @@ import "./index.css";
 import App from "./App.tsx";
 import { BluetoothProvider } from "./contexts/BluetoothContext.tsx";
 import { AppProvider } from "./contexts/AppContext.tsx";
+import { LocationProvider } from "./contexts/LocationContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AppProvider>
       <BluetoothProvider>
-        <App />
+        <LocationProvider>
+          <App />
+        </LocationProvider>
       </BluetoothProvider>
     </AppProvider>
   </StrictMode>
