@@ -1,13 +1,16 @@
 import type { FeatureCollection, Point } from "geojson";
 import { Layer, Source, useMap } from "react-map-gl/mapbox";
 import type { CircleLayerSpecification } from "react-map-gl/mapbox";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IoMdLocate } from "react-icons/io";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useNtripClient from "../hooks/useNtripClient";
+import FixStatus from "./FixStatus";
 
 const CurrentLocation = () => {
-  console.debug("Render CurrentLocation");
+  // console.debug("Render CurrentLocation");
+  const [isInitialCenteringDone, setIsInitialCenteringDone] = useState(false);
+
   const position = useGeolocation();
 
   const { nearestMountpoint, disconnectNtrip } = useNtripClient({
@@ -33,12 +36,13 @@ const CurrentLocation = () => {
   // Via le hook useGeolocation
   useEffect(() => {
     if (!map) return;
-    if (position) {
+    if (position && !isInitialCenteringDone) {
       map.flyTo({
         center: [position.longitude, position.latitude],
         zoom: 14,
         speed: 1.2,
       });
+      setIsInitialCenteringDone(true);
     }
   }, [position, map]);
 
@@ -85,6 +89,7 @@ const CurrentLocation = () => {
 
   return (
     <>
+      <FixStatus fixQuality={position?.fixQuality ?? 0} />
       <div id="geolocate" onClick={handleGeolocateClick}>
         <IoMdLocate size={24} />
       </div>

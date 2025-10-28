@@ -11,7 +11,7 @@ export const useGeolocation = () => {
 
   useEffect(() => {
     if (!bluetoothConnected) {
-      console.debug('Bluetooth not connected, skipping.')
+      // console.debug('Bluetooth not connected, skipping.')
       return;
     };
 

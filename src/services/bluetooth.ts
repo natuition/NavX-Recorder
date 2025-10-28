@@ -195,10 +195,10 @@ export class BluetoothService {
 
 
 
-    if (this.writeQueue.length > 50) {
-      // éviter une file d'attente trop longue
-      this.writeQueue = this.writeQueue.slice(-50);
-    }
+    // if (this.writeQueue.length > 50) {
+    //   // éviter une file d'attente trop longue
+    //   this.writeQueue = this.writeQueue.slice(-50);
+    // }
 
     // Ajouter au buffer d'envoi et démarrer le traitement si nécessaire
     this.writeQueue.push(data);

@@ -14,7 +14,7 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
 
   const { bluetoothConnected, bluetoothService } = useBluetooth()
 
-  const findNearestMountpoint = useCallback(async () => {
+  const findNearestMountpoint = async () => {
     if (latitude === undefined || longitude === undefined) return;
 
     try {
@@ -40,29 +40,32 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
       const nearest = mountpoints[0];
 
       if (previousMountpointRef.current !== nearest.mountpoint) {
-        console.info(
-          `Mountpoint le plus proche mis à jour : ${nearest.mountpoint} (${nearest.distance?.toFixed(1)}km)`
-        );
+        // console.info(
+        //   `Mountpoint le plus proche mis à jour : ${nearest.mountpoint} (${nearest.distance?.toFixed(1)}km)`
+        // );
         setMountpoint(nearest);
         previousMountpointRef.current = nearest.mountpoint;
       }
     } catch (err) {
       console.error("Error fetching NTRIP sourcetable:", err);
     }
-  }, [latitude, longitude]);
+  };
 
 
   useEffect(() => {
+    console.log('Init Ntrip Client Hook')
+
     // Appel immédiat
     findNearestMountpoint();
 
-    // Puis toutes les 10s
-    const interval = setInterval(findNearestMountpoint, 10000);
+    // Puis toutes les 10 minutes
+    const interval = setInterval(findNearestMountpoint, 10 * 60 * 1000);
 
     return () => {
+      console.log('Destroy NtripClient')
       clearInterval(interval);
     };
-  }, [findNearestMountpoint]);
+  }, []);
 
 
   // Streamer les données RTCM quand le mountpoint change
@@ -71,7 +74,7 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
 
     const streamMountpoint = async () => {
       try {
-        console.info(`Starting to stream from ${mountpoint.mountpoint}`);
+        // console.info(`Starting to stream from ${mountpoint.mountpoint}`);
 
         // Désabonner l'ancien listener avant de se reconnecter
         if (unsubRtcmRef.current) {
@@ -100,7 +103,7 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
           }
         );
 
-        console.info(`NTRIP stream active for ${mountpoint.mountpoint}`);
+        // console.info(`NTRIP stream active for ${mountpoint.mountpoint}`);
       } catch (err) {
         console.error("Error streaming NTRIP:", err);
       }
