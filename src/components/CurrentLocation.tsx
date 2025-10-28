@@ -1,15 +1,20 @@
 import type { FeatureCollection, Point } from "geojson";
 import { Layer, Source, useMap } from "react-map-gl/mapbox";
 import type { CircleLayerSpecification } from "react-map-gl/mapbox";
-import { useNavigatorGeolocation } from "../hooks/useNavigatorGeolocation";
 import { useCallback, useEffect } from "react";
 import { IoMdLocate } from "react-icons/io";
-import { useLocation } from "../contexts/LocationContext";
+import { useGeolocation } from "../hooks/useGeolocation";
+import useNtripClient from "../hooks/useNtripClient";
 
 const CurrentLocation = () => {
   console.debug("Render CurrentLocation");
-  // const { currentLocation, initialLocation } = useNavigatorGeolocation();
-  const { position, initialPosition } = useLocation().state;
+  const position = useGeolocation();
+
+  const { nearestMountpoint, disconnectNtrip } = useNtripClient({
+    latitude: position?.latitude,
+    longitude: position?.longitude,
+  });
+
   const { current: map } = useMap();
 
   // Centrer la carte sur la position initiale quand elle est obtenue
@@ -25,17 +30,17 @@ const CurrentLocation = () => {
   //   }
   // }, [initialLocation, map]);
 
-  // Via le contexte LocationContext
+  // Via le hook useGeolocation
   useEffect(() => {
     if (!map) return;
-    if (initialPosition) {
+    if (position) {
       map.flyTo({
-        center: [initialPosition.longitude, initialPosition.latitude],
+        center: [position.longitude, position.latitude],
         zoom: 14,
         speed: 1.2,
       });
     }
-  }, [initialPosition, map]);
+  }, [position, map]);
 
   const handleGeolocateClick = useCallback(() => {
     if (!map) return;

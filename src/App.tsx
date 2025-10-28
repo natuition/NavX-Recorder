@@ -3,15 +3,15 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { useBluetooth } from "./contexts/BluetoothContext.tsx";
 import useNtripClient from "./hooks/useNtripClient.ts";
 import { useGeolocation } from "./hooks/useGeolocation.ts";
+import BaseLayout from "./layouts/BaseLayout.tsx";
+import CurrentLocation from "./components/CurrentLocation.tsx";
+import PWABadge from "./PWABadge.tsx";
+import { useState } from "react";
 
 const App = () => {
   console.debug("render App");
-  const position = useGeolocation();
 
-  const { nearestMountpoint, disconnectNtrip } = useNtripClient({
-    latitude: position?.latitude,
-    longitude: position?.longitude,
-  });
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   const { bluetoothConnected, connectBluetooth, disconnectBluetooth } =
     useBluetooth();
@@ -23,35 +23,39 @@ const App = () => {
   };
 
   return (
-    <main>
-      <h1>NavX Recorder</h1>
-      <div>
-        <ul>
-          <li>Latitude: {position?.latitude}</li>
-          <li>Longitude: {position?.longitude}</li>
-          <li>Fix: {position?.fixQuality}</li>
-        </ul>
-        <h2>Nearest Mountpoint:</h2>
-        {nearestMountpoint && (
-          <ul>
-            <li key={nearestMountpoint.mountpoint}>
-              [{nearestMountpoint.mountpoint}] {nearestMountpoint.identifier} -
-              Distance: {nearestMountpoint.distance?.toFixed(2)} meters
-            </li>
-          </ul>
+    <BaseLayout>
+      <div className="map-container">
+        {mapCenterPosition && (
+          <h1 id="position">{`Lat: ${mapCenterPosition[1]} , Long: ${mapCenterPosition[0]}`}</h1>
         )}
-
-        <button
-          onClick={() =>
-            bluetoothConnected
-              ? handleDisconnectBluetooth()
-              : connectBluetooth()
-          }
+        <Map
+          id="map"
+          mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
+          initialViewState={{
+            longitude: MAP_INITIAL_LONGITUDE,
+            latitude: MAP_INITIAL_LATITUDE,
+            zoom: 10,
+          }}
+          mapStyle="mapbox://styles/vincentlb/cmfwcr7jb008101sc99fk3cfo"
+          attributionControl={false}
+          onLoad={() => setIsMapLoaded(true)}
+          onMove={(evt) => {
+            setMapCenterPosition([
+              Number(evt.viewState.longitude.toFixed(4)),
+              Number(evt.viewState.latitude.toFixed(4)),
+            ]);
+          }}
         >
-          {bluetoothConnected ? "Disconnect BT" : "Connect BT"}
-        </button>
+          {isMapLoaded && (
+            <>
+              <CurrentLocation />
+            </>
+          )}
+        </Map>
+
+        <PWABadge />
       </div>
-    </main>
+    </BaseLayout>
   );
 };
 
