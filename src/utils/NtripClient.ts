@@ -108,7 +108,7 @@ export class NtripClient {
       this.streamSocket &&
       this.currentMountpoint !== options.mountpoint
     ) {
-      console.log(
+      console.debug(
         `Switching from mountpoint ${this.currentMountpoint} to ${options.mountpoint}`
       );
       this.closeSocket();
@@ -119,7 +119,7 @@ export class NtripClient {
       this.currentMountpoint === options.mountpoint &&
       this.streamSocket?.readyState === WebSocket.OPEN
     ) {
-      console.log(`Already streaming from ${options.mountpoint}`);
+      console.debug(`Already streaming from ${options.mountpoint}`);
       return;
     }
 

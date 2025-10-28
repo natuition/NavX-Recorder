@@ -49,5 +49,4 @@ export const useGeolocation = () => {
   }, [bluetoothConnected]);
 
   return position;
-
 }

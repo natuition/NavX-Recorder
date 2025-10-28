@@ -17,7 +17,7 @@ const App = () => {
     useBluetooth();
 
   const handleDisconnectBluetooth = async () => {
-    console.log("Disconnecting Bluetooth and NTRIP...");
+    console.debug("Disconnecting Bluetooth and NTRIP...");
     await disconnectBluetooth();
     disconnectNtrip();
   };

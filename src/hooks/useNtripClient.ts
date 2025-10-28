@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from "react";
 import { NtripClient } from "../utils/NtripClient";
 import type { Mountpoint } from "../utils/types";
-import { BluetoothLe } from "@capacitor-community/bluetooth-le";
 import { useBluetooth } from "../contexts/BluetoothContext";
 
 
@@ -12,7 +11,6 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
   const previousMountpointRef = useRef<string | null>(null);
   const ntripClientRef = useRef(new NtripClient());
   const unsubRtcmRef = useRef<(() => void) | null>(null);
-
 
   const { bluetoothConnected, bluetoothService } = useBluetooth()
 
@@ -73,8 +71,7 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
 
     const streamMountpoint = async () => {
       try {
-        console.log(`Starting to stream from ${mountpoint.mountpoint}`);
-
+        console.info(`Starting to stream from ${mountpoint.mountpoint}`);
 
         // Désabonner l'ancien listener avant de se reconnecter
         if (unsubRtcmRef.current) {
@@ -95,11 +92,7 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
         unsubRtcmRef.current = ntripClientRef.current.onRTCMData(
           async (rtcmData) => {
             try {
-              if (bluetoothConnected && bluetoothService) {
-                console.log("Sending RTCM to Bluetooth:", rtcmData);
-                bluetoothService.write(rtcmData)
-              }
-
+              bluetoothService.write(rtcmData)
             } catch (err) {
               console.error("Failed to send RTCM to Bluetooth:", err);
             }
@@ -107,7 +100,7 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
           }
         );
 
-        console.log(`✅ NTRIP stream active for ${mountpoint.mountpoint}`);
+        console.info(`NTRIP stream active for ${mountpoint.mountpoint}`);
       } catch (err) {
         console.error("Error streaming NTRIP:", err);
       }
