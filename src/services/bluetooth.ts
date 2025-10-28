@@ -148,23 +148,35 @@ export class BluetoothService {
   }
 
   private async disconnectWeb(): Promise<void> {
+    console.log("🛑 Disconnecting Web Bluetooth...");
+
     if (this.characteristic) {
       try {
         await this.characteristic.stopNotifications();
-      } catch { }
+        console.log("✅ Stopped characteristic notifications");
+      } catch (e) {
+        console.warn("Error stopping notifications:", e);
+      }
       this.characteristic.removeEventListener(
         "characteristicvaluechanged",
         this.handleWebNotification
       );
     }
+
     if (this.server?.connected) {
-      this.server.disconnect();
+      try {
+        await this.server.disconnect();  // ← AWAIT !
+        console.log("✅ Server disconnected");
+      } catch (e) {
+        console.warn("Error disconnecting server:", e);
+      }
     }
+
     this.device = null;
     this.server = null;
     this.characteristic = null;
     this.rxCharacteristic = null;
-    console.log("Web Bluetooth device disconnected");
+    console.log("✅ Web Bluetooth device fully disconnected");
   }
 
   /**
