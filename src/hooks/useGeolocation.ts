@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useBluetooth } from "../contexts/BluetoothContext";
 import { NmeaParser } from "../services/nmea-parser";
 import type { PositionGPS } from "../utils/types";
@@ -10,23 +10,21 @@ export const useGeolocation = () => {
     useBluetooth();
 
   useEffect(() => {
-    if (!bluetoothConnected) {
-      // console.debug('Bluetooth not connected, skipping.')
-      return;
-    };
+    if (!bluetoothConnected) return;
 
-    let lastRecordTime = Date.now();
+    let lastUpdate = Date.now();
 
     const handler = (chunk: string) => {
-      if (Date.now() - lastRecordTime < 1000) return;
-
-      lastRecordTime = Date.now();
+      const now = Date.now()
+      if (now - lastUpdate < 500) return;
+      lastUpdate = now;
 
       const parsed = NmeaParser.parse(chunk);
 
       if (parsed) {
         const GGA = parsed.find((p) => p.type === "GGA");
 
+        // Traitements pour filtrer les trames (à améliorer)
         if (GGA?.latitude === undefined || GGA?.longitude === undefined) return;
 
         const newPosition: PositionGPS = {
@@ -39,7 +37,6 @@ export const useGeolocation = () => {
         }
 
         setPosition(newPosition)
-
       }
     };
     const unsubscribe = subscribeBluetoothData(handler);

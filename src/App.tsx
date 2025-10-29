@@ -11,18 +11,19 @@ import {
 } from "react-icons/md";
 import { useBluetooth } from "./contexts/BluetoothContext.tsx";
 import FixStatus from "./components/FixStatus.tsx";
+import { useGeolocation } from "./hooks/useGeolocation.ts";
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 const MAP_INITIAL_LATITUDE = 46.1591;
 const MAP_INITIAL_LONGITUDE = -1.1517;
 
 const App = () => {
-  // console.debug("render App");
-
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  console.debug("render App");
 
   const { bluetoothConnected, connectBluetooth, disconnectBluetooth } =
     useBluetooth();
+
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   return (
     <BaseLayout>
@@ -53,13 +54,10 @@ const App = () => {
                   <MdOutlineBluetooth size={24} className="disconnected" />
                 )}
               </div>
-
               <CurrentLocation />
             </>
           )}
         </Map>
-
-        <PWABadge />
       </div>
     </BaseLayout>
   );
