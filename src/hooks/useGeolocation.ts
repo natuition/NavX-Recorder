@@ -120,8 +120,6 @@ export const useGeolocation = () => {
           hdop: GGA.hdop,
         }
 
-        console.log(position)
-
         setPosition(newPosition)
         positionRef.current = newPosition
       }
@@ -132,7 +130,7 @@ export const useGeolocation = () => {
 
     // Si on a déjà une position on tente une première fois
     if (positionRef.current !== undefined) {
-      console.info('Finding nearest mountpoint from position obtained instantly:', positionRef)
+      console.info('Finding nearest mountpoint from position obtained instantly:', positionRef.current)
       findNearestMountpoint();
     } else {
       console.info('Finding nearest mountpoint from position obtained after delay of 5 seconds')
