@@ -64,10 +64,14 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
       // vider nos listeners pour éviter fuite mémoire
       listenersRef.current.clear();
 
-      // cleanup : s'assurer que l'on déconnecte si le provider est démonté
-      bluetoothService.disconnect().catch(() => {});
+      if (bluetoothConnected) {
+        console.warn(
+          "BluetoothProvider unmounting while still connected. Disconnecting..."
+        );
+        bluetoothService.disconnect().catch(() => {});
+      }
     };
-  }, [bluetoothService]);
+  }, []);
 
   const connectBluetooth = useCallback(async () => {
     try {
