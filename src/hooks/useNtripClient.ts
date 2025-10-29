@@ -11,6 +11,7 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
   const previousMountpointRef = useRef<string | null>(null);
   const ntripClientRef = useRef(new NtripClient());
   const unsubRtcmRef = useRef<(() => void) | null>(null);
+  const last_latitude = useRef<number | undefined>(undefined);
 
   const { bluetoothConnected, bluetoothService } = useBluetooth()
 
@@ -51,22 +52,26 @@ const useNtripClient = ({ latitude, longitude }: { latitude?: number, longitude?
     }
   };
 
-
   useEffect(() => {
-    console.log('Init Ntrip Client Hook')
+    let interval = undefined;
 
-    // Appel immédiat
-    findNearestMountpoint();
+    if (last_latitude.current === undefined && latitude !== undefined) {
+      last_latitude.current = latitude;
 
-    // Puis toutes les 10 minutes
-    const interval = setInterval(findNearestMountpoint, 10 * 60 * 1000);
+      console.log('findNearestMountpoint')
+      // Appel immédiat
+      findNearestMountpoint();
 
-    return () => {
+      // Puis toutes les 10 minutes
+      interval = setInterval(findNearestMountpoint, 10 * 60 * 1000);
+
+    } else if (last_latitude.current !== undefined && latitude === undefined) {
+      last_latitude.current = latitude;
+
       console.log('Destroy NtripClient')
-      clearInterval(interval);
-    };
-  }, []);
-
+      if (interval !== undefined) clearInterval(interval);
+    }
+  }, [latitude, longitude]);
 
   // Streamer les données RTCM quand le mountpoint change
   useEffect(() => {
