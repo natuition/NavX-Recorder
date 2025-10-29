@@ -11,12 +11,7 @@ const CurrentLocation = () => {
   // console.debug("Render CurrentLocation");
   const [isInitialCenteringDone, setIsInitialCenteringDone] = useState(false);
 
-  const position = useGeolocation();
-
-  // const { nearestMountpoint, disconnectNtrip } = useNtripClient({
-  //   latitude: position?.latitude,
-  //   longitude: position?.longitude,
-  // });
+  const { position, positionRef } = useGeolocation();
 
   const { current: map } = useMap();
 
@@ -89,7 +84,7 @@ const CurrentLocation = () => {
 
   return (
     <>
-      {/* <FixStatus fixQuality={position?.fixQuality ?? 0} /> */}
+      <FixStatus fixQuality={position?.fixQuality ?? 0} />
       <div id="geolocate" onClick={handleGeolocateClick}>
         <IoMdLocate size={24} />
       </div>
