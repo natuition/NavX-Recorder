@@ -8,15 +8,16 @@ const ONE_SECOND = 1000
 
 export const useGeolocation = () => {
   const [position, setPosition] = useState<PositionGPS | undefined>(undefined)
-  const [currentMountpoint, setCurrentMountpoint] = useState<Mountpoint | undefined>(undefined)
+  // const [currentMountpoint, setCurrentMountpoint] = useState<Mountpoint | undefined>(undefined)
 
   const ntripClientRef = useRef(new NtripClient());
   const unsubRtcmRef = useRef<(() => void) | null>(null);
   const positionRef = useRef<PositionGPS>(undefined)
-  const previousMountpointRef = useRef<string | null>(undefined);
+  const mountpointRef = useRef<Mountpoint | null>(undefined);
   const intervalRef = useRef<number>(undefined)
+  const timeoutRef = useRef<number>(undefined);
 
-  const { bluetoothService, bluetoothConnected, subscribeBluetoothData } =
+  const { bluetoothConnected, subscribeBluetoothData, writeBluetoothData } =
     useBluetooth();
 
   const findNearestMountpoint = async () => {
@@ -44,9 +45,8 @@ export const useGeolocation = () => {
 
       const nearest = mountpoints[0];
 
-      if (previousMountpointRef.current !== nearest.mountpoint) {
-        previousMountpointRef.current = nearest.mountpoint;
-        setCurrentMountpoint(nearest)
+      if (mountpointRef.current?.mountpoint !== nearest.mountpoint) {
+        mountpointRef.current = nearest;
         console.info(
           `Mountpoint le plus proche mis à jour : ${nearest.mountpoint} (${nearest.distance?.toFixed(1)}km)`
         );
@@ -59,7 +59,7 @@ export const useGeolocation = () => {
 
   const streamRTCMFromMountpoint = async () => {
     try {
-      console.info(`Starting to stream RTCM data from ${currentMountpoint!.identifier} [${currentMountpoint!.mountpoint}]`);
+      console.info(`Starting to stream RTCM data from ${mountpointRef.current!.identifier} [${mountpointRef.current!.mountpoint}]`);
 
       // Désabonner l'ancien listener avant de se reconnecter
       if (unsubRtcmRef.current) {
@@ -71,16 +71,17 @@ export const useGeolocation = () => {
       await ntripClientRef.current.streamMountpointData({
         host: "crtk.net",
         port: 2101,
-        mountpoint: currentMountpoint!.mountpoint,
+        mountpoint: mountpointRef.current!.mountpoint,
         username: "",
         password: "",
       });
 
       // S'abonner aux paquets RTCM et les transférer au device Bluetooth
       unsubRtcmRef.current = ntripClientRef.current.onRTCMData(
-        async (rtcmData) => {
+        async (rtcmData: ArrayBuffer) => {
           try {
-            bluetoothService.write(rtcmData)
+            // console.log(rtcmData)
+            writeBluetoothData(rtcmData);
           } catch (err) {
             console.error("Failed to send RTCM to Bluetooth:", err);
           }
@@ -120,6 +121,8 @@ export const useGeolocation = () => {
           hdop: GGA.hdop,
         }
 
+        // console.log(newPosition);
+
         setPosition(newPosition)
         positionRef.current = newPosition
       }
@@ -134,7 +137,7 @@ export const useGeolocation = () => {
       findNearestMountpoint();
     } else {
       console.info('Finding nearest mountpoint from position obtained after delay of 5 seconds')
-      setTimeout(findNearestMountpoint, 5 * ONE_SECOND);
+      timeoutRef.current = setTimeout(findNearestMountpoint, 5 * ONE_SECOND);
     }
 
     // On retente ensuite toutes les 10 minutes
@@ -143,14 +146,15 @@ export const useGeolocation = () => {
     return () => {
       unsubscribe();
       clearInterval(intervalRef.current);
+      clearTimeout(timeoutRef.current);
       setPosition(undefined);
-      setCurrentMountpoint(undefined);
+      mountpointRef.current = undefined;
     };
   }, [bluetoothConnected]);
 
   // Rediriger les données RTCM quand le mountpoint change
   useEffect(() => {
-    if (currentMountpoint === undefined || !bluetoothConnected) return;
+    if (mountpointRef.current === undefined || !bluetoothConnected) return;
 
     streamRTCMFromMountpoint();
 
@@ -161,7 +165,7 @@ export const useGeolocation = () => {
       }
       ntripClientRef.current.disconnect();
     };
-  }, [currentMountpoint])
+  }, [mountpointRef.current, bluetoothConnected])
 
 
   return { position, positionRef: positionRef.current };
