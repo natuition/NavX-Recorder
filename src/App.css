@@ -124,6 +124,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.15em;
+  cursor: pointer;
 }
 
 .tab--button {
@@ -147,7 +148,7 @@
   font-weight: 600;
 }
 
-.toolbar-container {
+.topbar-container {
   position: absolute;
   display: flex;
   align-items: center;
@@ -162,18 +163,23 @@
   padding-inline: 1em;
 }
 
-.toolbar-left {
+.topbar-left {
   display: flex;
   flex: 3;
+  gap: 1em;
   align-items: center;
-  justify-content: space-between;
+  justify-content: left;
 }
 
-.toolbar-right {
+.topbar-left__button {
+  cursor: pointer;
+}
+
+.topbar-right {
   flex: 1;
 }
 
-.toolbar__title {
+.topbar__title {
   font-size: 1.75rem;
   font-weight: 600;
 }

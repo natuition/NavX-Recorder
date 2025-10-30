@@ -5,22 +5,30 @@ import React, {
   type ReactNode,
 } from "react";
 
+export type AppPageType =
+  | "Home"
+  | "Projects"
+  | "Distance"
+  | "Surface"
+  | "Search"
+  | "Settings";
+
 // Types pour le state du contexte
 interface AppState {
-  // Ajoutez vos propriétés ici
+  currentPage: AppPageType;
   isLoading: boolean;
   isActionMenuOpen: boolean;
 }
 
 // Types pour les actions du contexte
-interface AppContextType {
-  state: AppState;
+interface AppContextType extends AppState {
+  setCurrentPage: (page: AppPageType) => void;
   setLoading: (loading: boolean) => void;
-  toggleActionMenu: () => void;
 }
 
 // State initial
 const initialState: AppState = {
+  currentPage: "Home",
   isLoading: false,
   isActionMenuOpen: false,
 };
@@ -40,17 +48,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setState((prev) => ({ ...prev, isLoading: loading }));
   };
 
-  const toggleActionMenu = () => {
-    setState((prev) => ({
-      ...prev,
-      isActionMenuOpen: !prev.isActionMenuOpen,
-    }));
+  const setCurrentPage = (page: AppPageType) => {
+    setState((prev) => ({ ...prev, currentPage: page }));
   };
 
   const value: AppContextType = {
-    state,
+    ...state,
     setLoading,
-    toggleActionMenu,
+    setCurrentPage,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

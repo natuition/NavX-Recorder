@@ -101,6 +101,5 @@ export const useNavigatorGeolocation = (
     initialLocation,
     locationError,
     isNavigatorGeolocationSupported,
-    getCurrentLocation,
   };
 };
