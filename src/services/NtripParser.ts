@@ -1,4 +1,4 @@
-import type { Mountpoint } from "./types";
+import type { Mountpoint } from "../utils/types";
 
 type NtripParseResult = {
   metadata: string[];

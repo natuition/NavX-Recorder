@@ -13,23 +13,25 @@ export type AppPageType =
   | "Search"
   | "Settings";
 
+export type AppToolType = "Distance" | "Surface" | null;
+
 // Types pour le state du contexte
 interface AppState {
   currentPage: AppPageType;
-  isLoading: boolean;
+  currentTool: AppToolType;
   isActionMenuOpen: boolean;
 }
 
 // Types pour les actions du contexte
 interface AppContextType extends AppState {
+  setCurrentTool: (tool: AppToolType) => void;
   setCurrentPage: (page: AppPageType) => void;
-  setLoading: (loading: boolean) => void;
 }
 
 // State initial
 const initialState: AppState = {
   currentPage: "Home",
-  isLoading: false,
+  currentTool: null,
   isActionMenuOpen: false,
 };
 
@@ -52,10 +54,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setState((prev) => ({ ...prev, currentPage: page }));
   };
 
+  const setCurrentTool = (tool: AppToolType) => {
+    setState((prev) => ({ ...prev, currentTool: tool }));
+  };
+
   const value: AppContextType = {
     ...state,
-    setLoading,
     setCurrentPage,
+    setCurrentTool,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

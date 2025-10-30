@@ -1,21 +1,36 @@
-import { useEffect, useRef, useState } from "react"
-import { useBluetooth } from "../contexts/BluetoothContext";
-import { NmeaParser } from "../services/nmea-parser";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import { useBluetooth } from "./BluetoothContext";
+import { NmeaParser } from "../services/NmeaParser";
 import type { Mountpoint, PositionGPS } from "../utils/types";
-import { NtripClient } from "../utils/NtripClient";
+import { NtripClient } from "../services/NtripClient";
 
-const ONE_SECOND = 1000
+const ONE_SECOND = 1000;
 
-export const useGeolocation = () => {
-  const [position, setPosition] = useState<PositionGPS | undefined>(undefined)
-  // const [currentMountpoint, setCurrentMountpoint] = useState<Mountpoint | undefined>(undefined)
+interface GeolocationContextType {
+  position: PositionGPS | undefined;
+  positionRef: PositionGPS | undefined;
+}
+
+const GeolocationContext = createContext<GeolocationContextType | undefined>(
+  undefined
+);
+
+export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
+  const [position, setPosition] = useState<PositionGPS | undefined>(undefined);
 
   const ntripClientRef = useRef(new NtripClient());
   const unsubRtcmRef = useRef<(() => void) | null>(null);
-  const positionRef = useRef<PositionGPS>(undefined)
-  const mountpointRef = useRef<Mountpoint | null>(undefined);
-  const intervalRef = useRef<number>(undefined)
-  const timeoutRef = useRef<number>(undefined);
+  const positionRef = useRef<PositionGPS | undefined>(undefined);
+  const mountpointRef = useRef<Mountpoint | null>(null);
+  const intervalRef = useRef<number | undefined>(undefined);
+  const timeoutRef = useRef<number | undefined>(undefined);
 
   const { bluetoothConnected, subscribeBluetoothData, writeBluetoothData } =
     useBluetooth();
@@ -48,7 +63,9 @@ export const useGeolocation = () => {
       if (mountpointRef.current?.mountpoint !== nearest.mountpoint) {
         mountpointRef.current = nearest;
         console.info(
-          `Mountpoint le plus proche mis à jour : ${nearest.mountpoint} (${nearest.distance?.toFixed(1)}km)`
+          `Mountpoint le plus proche mis à jour : ${
+            nearest.mountpoint
+          } (${nearest.distance?.toFixed(1)}km)`
         );
       }
     } catch (err) {
@@ -56,10 +73,13 @@ export const useGeolocation = () => {
     }
   };
 
-
   const streamRTCMFromMountpoint = async () => {
     try {
-      console.info(`Starting to stream RTCM data from ${mountpointRef.current!.identifier} [${mountpointRef.current!.mountpoint}]`);
+      console.info(
+        `Starting to stream RTCM data from ${
+          mountpointRef.current!.identifier
+        } [${mountpointRef.current!.mountpoint}]`
+      );
 
       // Désabonner l'ancien listener avant de se reconnecter
       if (unsubRtcmRef.current) {
@@ -80,28 +100,25 @@ export const useGeolocation = () => {
       unsubRtcmRef.current = ntripClientRef.current.onRTCMData(
         async (rtcmData: ArrayBuffer) => {
           try {
-            // console.log(rtcmData)
             writeBluetoothData(rtcmData);
           } catch (err) {
             console.error("Failed to send RTCM to Bluetooth:", err);
           }
         }
       );
-
     } catch (err) {
       console.error("Error streaming NTRIP:", err);
     }
   };
 
-
   useEffect(() => {
-    if (!bluetoothConnected) return;
+    if (!bluetoothConnected || mountpointRef.current) return;
 
     let lastUpdate = Date.now();
 
     const handler = (chunk: string) => {
-      const now = Date.now()
-      if (now - lastUpdate < 1000) return;
+      const now = Date.now();
+      if (now - lastUpdate < 400) return;
       lastUpdate = now;
 
       const parsed = NmeaParser.parse(chunk);
@@ -119,12 +136,10 @@ export const useGeolocation = () => {
           numSatellites: GGA.numSatellites,
           fixQuality: GGA.fixQuality,
           hdop: GGA.hdop,
-        }
+        };
 
-        // console.log(newPosition);
-
-        setPosition(newPosition)
-        positionRef.current = newPosition
+        setPosition(newPosition);
+        positionRef.current = newPosition;
       }
     };
 
@@ -133,11 +148,16 @@ export const useGeolocation = () => {
 
     // Si on a déjà une position on tente une première fois
     if (positionRef.current !== undefined) {
-      console.info('Finding nearest mountpoint from position obtained instantly:', positionRef.current)
+      console.info(
+        "Position available instantly, performing first mountpoint search",
+        positionRef.current
+      );
       findNearestMountpoint();
     } else {
-      console.info('Finding nearest mountpoint from position obtained after delay of 5 seconds')
-      timeoutRef.current = setTimeout(findNearestMountpoint, 5 * ONE_SECOND);
+      console.info(
+        "Position not available instantly, scheduling first mountpoint search in 10 seconds"
+      );
+      timeoutRef.current = setTimeout(findNearestMountpoint, 10 * ONE_SECOND);
     }
 
     // On retente ensuite toutes les 10 minutes
@@ -148,13 +168,13 @@ export const useGeolocation = () => {
       clearInterval(intervalRef.current);
       clearTimeout(timeoutRef.current);
       setPosition(undefined);
-      mountpointRef.current = undefined;
+      mountpointRef.current = null;
     };
-  }, [bluetoothConnected]);
+  }, [bluetoothConnected, subscribeBluetoothData, writeBluetoothData]);
 
   // Rediriger les données RTCM quand le mountpoint change
   useEffect(() => {
-    if (mountpointRef.current === undefined || !bluetoothConnected) return;
+    if (mountpointRef.current === null || !bluetoothConnected) return;
 
     streamRTCMFromMountpoint();
 
@@ -165,8 +185,24 @@ export const useGeolocation = () => {
       }
       ntripClientRef.current.disconnect();
     };
-  }, [mountpointRef.current, bluetoothConnected])
+  }, [mountpointRef.current, bluetoothConnected]);
 
+  const value: GeolocationContextType = {
+    position,
+    positionRef: positionRef.current,
+  };
 
-  return { position, positionRef: positionRef.current };
-}
+  return (
+    <GeolocationContext.Provider value={value}>
+      {children}
+    </GeolocationContext.Provider>
+  );
+};
+
+export const useGeolocation = (): GeolocationContextType => {
+  const ctx = useContext(GeolocationContext);
+  if (ctx === undefined) {
+    throw new Error("useGeolocation must be used within GeolocationProvider");
+  }
+  return ctx;
+};
