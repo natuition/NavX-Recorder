@@ -2,12 +2,12 @@ import { useApp } from "../contexts/AppContext";
 import { IoIosArrowBack } from "react-icons/io";
 
 const TopBar = () => {
-  const { currentPage, setCurrentPage } = useApp();
+  const { currentPage, currentTool, setCurrentPage, setCurrentTool } = useApp();
 
   const title = () => {
     switch (currentPage) {
       case "Home":
-        return "NavX Recorder";
+        return currentTool ?? "NavX Recorder";
       case "Distance":
         return "Mesure de distance";
       case "Surface":
@@ -21,14 +21,24 @@ const TopBar = () => {
     }
   };
 
+  const showBackButton = currentPage !== "Home" || currentTool;
+
+  const handleClickBack = () => {
+    if (currentTool) {
+      setCurrentTool(null);
+    } else {
+      setCurrentPage("Home");
+    }
+  };
+
   return (
     <>
       <header className="topbar-container">
         <div className="topbar-left">
-          {currentPage !== "Home" && (
+          {showBackButton && (
             <IoIosArrowBack
               className="topbar-left__button"
-              onClick={() => setCurrentPage("Home")}
+              onClick={handleClickBack}
               size={28}
             />
           )}

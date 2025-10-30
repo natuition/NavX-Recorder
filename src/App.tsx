@@ -14,18 +14,16 @@ import Surface from "./pages/Surface.tsx";
 const App = () => {
   console.debug("render App");
 
-  const { currentPage } = useApp();
+  const { currentPage, currentTool } = useApp();
 
   return (
     <>
       <BaseLayout>
         {currentPage === "Home" && <Home />}
         {currentPage === "Projects" && <Projects />}
-        {currentPage === "Distance" && <Distance />}
-        {currentPage === "Surface" && <Surface />}
         {currentPage === "Search" && <Search />}
         {currentPage === "Settings" && <Settings />}
-        {currentPage === "Home" && <Tabs />}
+        {currentPage === "Home" && !currentTool && <Tabs />}
       </BaseLayout>
     </>
   );

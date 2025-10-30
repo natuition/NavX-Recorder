@@ -8,8 +8,9 @@ import {
 } from "react-map-gl/mapbox";
 import type { FeatureCollection, LineString, Point } from "geojson";
 import DistanceToolBar from "../components/DistanceToolBar";
-import { useNavigatorGeolocation } from "../hooks/useNavigatorGeolocation";
 import { Distance as DistanceTool } from "../utils/Distance";
+import FixStatus from "../components/FixStatus";
+import { useGeolocation } from "../contexts/GeolocationContext";
 
 type GPSPoint = [number, number]; // [longitude, latitude]
 
@@ -17,16 +18,16 @@ const Distance = () => {
   const [gpsPoints, setGpsPoints] = useState<GPSPoint[]>([]);
   const [distances, setDistances] = useState<number[]>([]);
 
-  const { currentLocation } = useNavigatorGeolocation();
+  const { position } = useGeolocation();
 
   const totalDistance = () => {
     return distances.reduce((prev, current) => prev + current, 0);
   };
 
   const handleAddGPSPoint = () => {
-    if (!currentLocation) return;
+    if (!position) return;
 
-    const newPoint: GPSPoint = [currentLocation[0], currentLocation[1]];
+    const newPoint: GPSPoint = [position.longitude, position.latitude];
 
     if (gpsPoints.length > 0) {
       const lastPoint = gpsPoints[gpsPoints.length - 1];
@@ -37,15 +38,8 @@ const Distance = () => {
         newPoint[1],
         newPoint[0]
       );
-
-      console.debug("New distance: ", newDistance);
-
       setDistances((prev) => [...prev, newDistance]);
-
-      console.debug("Distance total: ", totalDistance());
     }
-
-    console.log("Nouveau point ajouté:", newPoint);
     setGpsPoints((prev) => [...prev, newPoint]);
   };
 
@@ -78,42 +72,52 @@ const Distance = () => {
         : [],
   };
 
-  const gpsLineLayer: LineLayerSpecification = {
-    id: "gps-line",
-    type: "line",
-    paint: {
-      "line-color": "#005eff",
-      "line-width": 3,
-      "line-dasharray": [2, 2],
-    },
-    source: "gps-line",
-  };
-
-  const gpsPointsLayer: CircleLayerSpecification = {
-    id: "gps-points",
-    type: "circle",
-    paint: {
-      "circle-color": "#005eff",
-      "circle-radius": 6,
-      "circle-stroke-color": "#ffffff",
-      "circle-stroke-width": 2,
-    },
-    source: "gps-points",
-  };
-
   return (
     <>
-      <MapLayout>
-        <Source id="gps-points" type="geojson" data={gpsPointsGeoJSON}>
-          <Layer {...gpsPointsLayer} />
-        </Source>
-        <Source id="gps-line" type="geojson" data={gpsLineGeoJSON}>
-          <Layer {...gpsLineLayer} />
-        </Source>
-        <DistanceToolBar onAdd={handleAddGPSPoint} />
-      </MapLayout>
+      <Source id="gps-points" type="geojson" data={gpsPointsGeoJSON}>
+        <Layer {...gpsPointsLayer} />
+      </Source>
+      <Source id="gps-line" type="geojson" data={gpsLineGeoJSON}>
+        <Layer {...gpsLineLayer} />
+      </Source>
+      <DistanceToolBar
+        distance={totalDistance()}
+        onAdd={handleAddGPSPoint}
+        onRemoveLast={() => setGpsPoints((prev) => prev.slice(0, -1))}
+        onClearAll={() => setGpsPoints([])}
+        onSave={() => console.log("Saving distance...")}
+      />
     </>
   );
 };
+
+const gpsLineLayer: LineLayerSpecification = {
+  id: "gps-line",
+  type: "line",
+  paint: {
+    "line-color": "#005eff",
+    "line-width": 3,
+    "line-dasharray": [2, 2],
+  },
+  source: "gps-line",
+};
+
+const gpsPointsLayer: CircleLayerSpecification = {
+  id: "gps-points",
+  type: "circle",
+  paint: {
+    "circle-color": "#2dbf80",
+    "circle-radius": 5,
+  },
+  source: "gps-points",
+};
+
+// const Distance = () => {
+//   return (
+//     <MapLayout>
+//       <DistanceContent />
+//     </MapLayout>
+//   );
+// };
 
 export default Distance;

@@ -3,46 +3,31 @@ import { Layer, Source, useMap } from "react-map-gl/mapbox";
 import type { CircleLayerSpecification } from "react-map-gl/mapbox";
 import { useCallback, useEffect, useState } from "react";
 import { IoMdLocate } from "react-icons/io";
-import { useGeolocation } from "../hooks/useGeolocation";
-import useNtripClient from "../hooks/useNtripClient";
-import FixStatus from "./FixStatus";
+import { useGeolocation } from "../contexts/GeolocationContext";
 
 const CurrentLocation = () => {
-  // console.debug("Render CurrentLocation");
   const [isInitialCenteringDone, setIsInitialCenteringDone] = useState(false);
-
-  const { position, positionRef } = useGeolocation();
+  const { position } = useGeolocation();
 
   const { current: map } = useMap();
 
-  // Centrer la carte sur la position initiale quand elle est obtenue
-  // Via le hook useNavigatorGeolocation
-  // useEffect(() => {
-  //   if (!map) return;
-  //   if (initialLocation) {
-  //     map.flyTo({
-  //       center: [initialLocation[0], initialLocation[1]],
-  //       zoom: 14,
-  //       speed: 1.2,
-  //     });
-  //   }
-  // }, [initialLocation, map]);
-
-  // Via le hook useGeolocation
   useEffect(() => {
-    if (!map) return;
-    if (position && !isInitialCenteringDone) {
+    if (!map || !position) return;
+
+    if (!isInitialCenteringDone) {
       map.flyTo({
         center: [position.longitude, position.latitude],
         zoom: 14,
         speed: 1.2,
       });
+
       setIsInitialCenteringDone(true);
     }
   }, [position, map]);
 
   const handleGeolocateClick = useCallback(() => {
     if (!map) return;
+
     if (position) {
       map.flyTo({
         center: [position.longitude, position.latitude],
@@ -69,22 +54,8 @@ const CurrentLocation = () => {
       : [],
   };
 
-  const layerSpecifications: CircleLayerSpecification = {
-    id: "current-location",
-    type: "circle",
-    paint: {
-      "circle-color": "#2a5ebe",
-      "circle-opacity": 0.8,
-      "circle-radius": 8,
-      "circle-stroke-color": "#ffffff",
-      "circle-stroke-width": 3,
-    },
-    source: "current-location",
-  };
-
   return (
     <>
-      <FixStatus fixQuality={position?.fixQuality ?? 0} />
       <div id="geolocate" onClick={handleGeolocateClick}>
         <IoMdLocate size={24} />
       </div>
@@ -97,6 +68,19 @@ const CurrentLocation = () => {
       </Source>
     </>
   );
+};
+
+const layerSpecifications: CircleLayerSpecification = {
+  id: "current-location",
+  type: "circle",
+  paint: {
+    "circle-color": "#2a5ebe",
+    "circle-opacity": 0.8,
+    "circle-radius": 8,
+    "circle-stroke-color": "#ffffff",
+    "circle-stroke-width": 3,
+  },
+  source: "current-location",
 };
 
 export default CurrentLocation;

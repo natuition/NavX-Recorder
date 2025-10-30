@@ -1,6 +1,5 @@
 import { FaDrawPolygon, FaRuler } from "react-icons/fa";
 import { useApp } from "../contexts/AppContext";
-import Measurement from "../pages/Distance";
 
 type TabsMenuProps = {
   active: boolean;
@@ -8,7 +7,7 @@ type TabsMenuProps = {
 };
 
 const TabsMenu = ({ onHide, active }: TabsMenuProps) => {
-  const { setCurrentPage } = useApp();
+  const { setCurrentTool } = useApp();
 
   return (
     <div onClick={onHide} id="scrim" className={active ? "" : "invisible"}>
@@ -17,7 +16,7 @@ const TabsMenu = ({ onHide, active }: TabsMenuProps) => {
           <button
             className="action-menu__button"
             onClick={() => {
-              setCurrentPage("Distance");
+              setCurrentTool("Distance");
             }}
           >
             <FaRuler size={24} />
@@ -28,7 +27,7 @@ const TabsMenu = ({ onHide, active }: TabsMenuProps) => {
           <button
             className="action-menu__button"
             onClick={() => {
-              setCurrentPage("Surface");
+              setCurrentTool("Surface");
             }}
           >
             <FaDrawPolygon size={24} />
