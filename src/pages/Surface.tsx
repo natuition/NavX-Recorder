@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Layer,
   Source,
@@ -10,17 +10,27 @@ import type { FeatureCollection, LineString, Point, Polygon } from "geojson";
 import { useGeolocation } from "../contexts/GeolocationContext";
 import SurfaceToolBar from "../components/SurfaceToolBar";
 import { Distance } from "../utils/Distance";
+import area from "@turf/area";
 
-type GPSPoint = [number, number]; // [longitude, latitude]
+type LonLat = [number, number]; // [longitude, latitude]
 
 const DISTANCE_THRESHOLD_METERS = 1; // Seuil de distance minimale entre deux points GPS
 const UPDATE_INTERVAL_MILLISECONDS = 500; // Intervalle d'ajout de points GPS
 
 const Surface = () => {
-  const [gpsPoints, setGpsPoints] = useState<GPSPoint[]>([]);
+  const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
   const [isRecording, setIsRecording] = useState(false);
 
   const { positionRef } = useGeolocation();
+
+  const surfaceArea = useCallback(() => {
+    // Calcul de la surface geodésique en mètre
+    const polygon: Polygon = {
+      type: "Polygon",
+      coordinates: [[...gpsPoints, gpsPoints[0]]],
+    };
+    return area(polygon);
+  }, [gpsPoints]);
 
   const handleSave = () => {
     console.log("Surface enregistrée ✅");
@@ -44,7 +54,7 @@ const Surface = () => {
         return;
       }
 
-      const newPoint: GPSPoint = [
+      const newPoint: LonLat = [
         positionRef.current.longitude,
         positionRef.current.latitude,
       ];
@@ -133,7 +143,7 @@ const Surface = () => {
         <Layer {...gpsFillLayer} />
       </Source>
       <SurfaceToolBar
-        surface={0} // Calcul de la surface à implémenter
+        surface={surfaceArea()}
         onSave={handleSave}
         unit="m²"
         onToggleRecording={handleSurfaceRecording}
