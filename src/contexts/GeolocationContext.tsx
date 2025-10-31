@@ -11,7 +11,9 @@ import { NmeaParser } from "../services/NmeaParser";
 import type { Mountpoint, PositionGPS } from "../utils/types";
 import { NtripClient } from "../services/NtripClient";
 
-const ONE_SECOND = 1000;
+const GEOLOCATION_REFRESH_INTERVAL = 250; // ms
+const MOUNTPOINT_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const MOUNTPOINT_RETRIEVAL_DELAY = 10 * 1000; // 10 secondes
 
 interface GeolocationContextType {
   position: PositionGPS | undefined;
@@ -38,6 +40,12 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
   const findNearestMountpoint = async () => {
     if (positionRef.current === undefined) return;
 
+    console.debug(
+      `Searching for nearest NTRIP mountpoints from current location (${positionRef.current.latitude.toFixed(
+        2
+      )}, ${positionRef.current.longitude.toFixed(2)})...`
+    );
+
     try {
       const sourcetable = await NtripClient.fetchSourceTableWithProxy({
         host: "crtk.net",
@@ -53,19 +61,25 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
 
       if (mountpoints.length === 0) {
         console.warn(
-          "Aucun mountpoint trouvé pour la position actuelle dans un rayon de 50kms"
+          `No mount points found within 50 km of your current location (${positionRef.current.latitude.toFixed(
+            2
+          )}, ${positionRef.current.longitude.toFixed(2)})`
         );
         return;
       }
+
+      console.debug(
+        `${mountpoints.length} mountpoints found within 50 km of your current location`
+      );
 
       const nearest = mountpoints[0];
 
       if (mountpointRef.current?.mountpoint !== nearest.mountpoint) {
         mountpointRef.current = nearest;
-        console.info(
-          `Mountpoint le plus proche mis à jour : ${
+        console.debug(
+          `Nearest mountpoint updated: ${
             nearest.mountpoint
-          } (${nearest.distance?.toFixed(1)}km)`
+          } (${nearest.distance?.toFixed(1)} km)`
         );
       }
     } catch (err) {
@@ -75,7 +89,7 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
 
   const streamRTCMFromMountpoint = async () => {
     try {
-      console.info(
+      console.debug(
         `Starting to stream RTCM data from ${
           mountpointRef.current!.identifier
         } [${mountpointRef.current!.mountpoint}]`
@@ -118,7 +132,7 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
 
     const handler = (chunk: string) => {
       const now = Date.now();
-      if (now - lastUpdate < 400) return;
+      if (now - lastUpdate < GEOLOCATION_REFRESH_INTERVAL) return;
       lastUpdate = now;
 
       const parsed = NmeaParser.parse(chunk);
@@ -148,20 +162,26 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
 
     // Si on a déjà une position on tente une première fois
     if (positionRef.current !== undefined) {
-      console.info(
-        "Position available instantly, performing first mountpoint search",
+      console.debug(
+        "Position available, performing first mountpoint search",
         positionRef.current
       );
       findNearestMountpoint();
     } else {
-      console.info(
-        "Position not available instantly, scheduling first mountpoint search in 10 seconds"
+      console.warn(
+        "Position not available yet, scheduling first mountpoint search in 10 seconds"
       );
-      timeoutRef.current = setTimeout(findNearestMountpoint, 10 * ONE_SECOND);
+      timeoutRef.current = setTimeout(
+        findNearestMountpoint,
+        MOUNTPOINT_RETRIEVAL_DELAY
+      );
     }
 
     // On retente ensuite toutes les 10 minutes
-    intervalRef.current = setInterval(findNearestMountpoint, 10 * 60 * 1000);
+    intervalRef.current = setInterval(
+      findNearestMountpoint,
+      MOUNTPOINT_REFRESH_INTERVAL
+    );
 
     return () => {
       unsubscribe();

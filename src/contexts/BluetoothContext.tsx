@@ -15,7 +15,9 @@ const UART_RX_CHAR_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 const UART_TX_CHAR_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
 // Configuration — ÉCRITURE À 1Hz EXACTEMENT
-const WRITE_INTERVAL = 1000; // 1 seconde (1Hz)
+const BLE_WRITE_INTERVAL = 1000; // 1 seconde (1Hz)
+const BLE_DISCONNECT_TIMEOUT = 2000; // 2 secondes
+const BLE_STOP_NOTIFS_WARN_THRESHOLD = 5000; // 5 secondes
 
 type BluetoothContextValue = {
   bluetoothConnected: boolean;
@@ -66,8 +68,6 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    console.info("🔄 Starting 1Hz write interval...");
-
     writeIntervalRef.current = setInterval(() => {
       if (isDisconnectingRef.current || !bluetoothConnected) {
         return;
@@ -79,16 +79,16 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
         latestRtcmPacketRef.current = null; // Consommer le paquet
 
         console.debug(
-          `📤 Sending latest RTCM packet (${packetToSend.byteLength} bytes)`
+          `Sending latest RTCM packet (${packetToSend.byteLength} bytes)`
         );
         _writeDataChunked(packetToSend);
       } else if (!latestRtcmPacketRef.current) {
         writeStatsRef.current.skipped++;
-        console.debug("⏭️ No new RTCM data to send (skipped)");
+        console.debug("No new RTCM data to send (skipped)");
       } else {
-        console.warn("⚠️ Write still in progress, skipping this interval");
+        console.warn("Write still in progress, skipping this interval");
       }
-    }, WRITE_INTERVAL);
+    }, BLE_WRITE_INTERVAL);
 
     return () => {
       if (writeIntervalRef.current !== null) {
@@ -230,21 +230,19 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
       isDisconnectingRef.current = false;
       writeStatsRef.current = { sent: 0, skipped: 0, errors: 0 };
 
-      console.info("Bluetooth initializing connection...");
+      console.debug("Bluetooth initializing connection...");
       await BleClient.initialize();
-      console.info("Bluetooth initialized");
+      console.debug("Bluetooth initialized");
 
-      console.info("Requesting Bluetooth device...");
+      console.debug("Requesting Bluetooth device...");
       deviceRef.current = await BleClient.requestDevice({
         services: [UART_SERVICE_UUID],
       });
-      console.info(
-        `Device selected: ${deviceRef.current.name} (${deviceRef.current.deviceId})`
-      );
+      console.debug(`Device selected: ${deviceRef.current.name}`);
 
-      console.info("Connecting to selected Bluetooth device...");
-      await BleClient.connect(deviceRef.current.deviceId, (deviceId) => {
-        console.log(`Device ${deviceId} disconnected`);
+      console.debug(`Connecting to ${deviceRef.current.name}...`);
+      await BleClient.connect(deviceRef.current.deviceId, () => {
+        console.debug(`${deviceRef.current?.name} disconnected`);
         setBluetoothConnected(false);
         deviceRef.current = null;
         isWritingRef.current = false;
@@ -255,20 +253,18 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
           writeIntervalRef.current = null;
         }
       });
-      console.info(
-        `Connected to device ${deviceRef.current.name} (${deviceRef.current.deviceId})`
-      );
+      console.debug(`Connected to ${deviceRef.current.name}`);
 
       setBluetoothConnected(true);
 
-      console.info("Starting notifications from Bluetooth device...");
+      console.debug("Starting notifications from Bluetooth device...");
       await BleClient.startNotifications(
         deviceRef.current.deviceId,
         UART_SERVICE_UUID,
         UART_TX_CHAR_UUID,
         handleNotifications
       );
-      console.info("Bluetooth notifications started");
+      console.debug("Bluetooth notifications started");
       lastNotificationRef.current = Date.now();
     } catch (error: any) {
       if (error.message.includes("User cancelled")) {
@@ -286,7 +282,6 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      console.info("🛑 Stopping all write operations...");
       isDisconnectingRef.current = true;
 
       // Arrêter l'intervalle d'écriture
@@ -298,35 +293,52 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
       // Vider le buffer
       latestRtcmPacketRef.current = null;
 
-      // Attendre que l'écriture en cours se termine (timeout 2s)
+      // Attendre que l'écriture en cours se termine
+      console.debug("Waiting for ongoing write operations to finish...");
       const startWait = Date.now();
-      while (isWritingRef.current && Date.now() - startWait < 2000) {
+      while (
+        isWritingRef.current &&
+        Date.now() - startWait < BLE_DISCONNECT_TIMEOUT
+      ) {
         await sleep(50);
       }
+      console.debug("Write operations stopped");
 
       if (isWritingRef.current) {
-        console.warn("⚠️ Force-stopping write operation (timeout)");
+        console.warn(
+          "Force-stopping write operation (consider increasing BLUETOOTH_DISCONNECT_TIMEOUT)"
+        );
         isWritingRef.current = false;
       }
 
-      console.info("Stopping Bluetooth notifications...");
+      console.debug("Stopping Bluetooth notifications...");
+      const notificationsStoppedAt = Date.now();
       await BleClient.stopNotifications(
         deviceRef.current.deviceId,
         UART_SERVICE_UUID,
         UART_TX_CHAR_UUID
       );
-      console.info("Bluetooth notifications stopped");
 
-      console.info("Disconnecting Bluetooth...");
+      if (
+        Date.now() - notificationsStoppedAt >
+        BLE_STOP_NOTIFS_WARN_THRESHOLD
+      ) {
+        console.warn(
+          `Bluetooth notifications stop is taking too long consider reworking disconnection logic`
+        );
+      }
+
+      console.debug("Bluetooth notifications stopped");
+
+      console.debug(`Disconnecting ${deviceRef.current.name}...`);
       await BleClient.disconnect(deviceRef.current.deviceId);
       setBluetoothConnected(false);
       deviceRef.current = null;
       isDisconnectingRef.current = false;
-      console.info("✅ Bluetooth disconnected");
 
       // Log stats finales
-      console.info(
-        `📊 Final stats: sent=${writeStatsRef.current.sent}, skipped=${writeStatsRef.current.skipped}, errors=${writeStatsRef.current.errors}`
+      console.debug(
+        `Final stats: sent=${writeStatsRef.current.sent}, skipped=${writeStatsRef.current.skipped}, errors=${writeStatsRef.current.errors}`
       );
     } catch (error) {
       console.error("Bluetooth disconnection error:", error);
