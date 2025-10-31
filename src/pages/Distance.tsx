@@ -12,6 +12,8 @@ import { useGeolocation } from "../contexts/GeolocationContext";
 
 type GPSPoint = [number, number]; // [longitude, latitude]
 
+const DISTANCE_UNIT = "m";
+
 const Distance = () => {
   const [gpsPoints, setGpsPoints] = useState<GPSPoint[]>([]);
   const [distances, setDistances] = useState<number[]>([]);
@@ -30,12 +32,14 @@ const Distance = () => {
     if (gpsPoints.length > 0) {
       const lastPoint = gpsPoints[gpsPoints.length - 1];
 
-      const newDistance = DistanceTool.haversine(
-        lastPoint[1],
-        lastPoint[0],
-        newPoint[1],
-        newPoint[0]
-      );
+      const newDistance =
+        DistanceTool.haversine(
+          lastPoint[1],
+          lastPoint[0],
+          newPoint[1],
+          newPoint[0]
+        ) * 1000; // TODO: configurable
+
       setDistances((prev) => [...prev, newDistance]);
     }
     setGpsPoints((prev) => [...prev, newPoint]);
