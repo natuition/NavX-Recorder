@@ -1,5 +1,6 @@
 import { useApp } from "../contexts/AppContext";
 import { IoIosArrowBack } from "react-icons/io";
+import NavxLogo from "../assets/navx-logo.svg.svg";
 
 const TopBar = () => {
   const { currentPage, currentTool, setCurrentPage, setCurrentTool } = useApp();
@@ -7,7 +8,11 @@ const TopBar = () => {
   const title = () => {
     switch (currentPage) {
       case "Home":
-        return currentTool ?? "NavX Recorder";
+        return (
+          currentTool ?? (
+            <img src={NavxLogo} alt="NavX Logo" className="navx-logo" />
+          )
+        );
       case "Distance":
         return "Mesure de distance";
       case "Surface":
