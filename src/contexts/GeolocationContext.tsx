@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
 } from "react";
 import { useBluetooth } from "./BluetoothContext";
 import { NtripClient } from "../services/NtripClient";
@@ -17,7 +18,7 @@ const MOUNTPOINT_RETRIEVAL_DELAY = 10 * 1000; // 10 secondes
 
 interface GeolocationContextType {
   position: GNSSPosition | undefined;
-  positionRef: GNSSPosition | undefined;
+  positionRef: RefObject<GNSSPosition | undefined>;
 }
 
 const GeolocationContext = createContext<GeolocationContextType | undefined>(
@@ -224,7 +225,7 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
 
   const value: GeolocationContextType = {
     position,
-    positionRef: positionRef.current,
+    positionRef: positionRef,
   };
 
   return (
