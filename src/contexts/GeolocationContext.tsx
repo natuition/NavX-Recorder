@@ -7,17 +7,17 @@ import {
   type ReactNode,
 } from "react";
 import { useBluetooth } from "./BluetoothContext";
-import { NmeaParser } from "../services/NmeaParser";
-import type { Mountpoint, PositionGPS } from "../utils/types";
 import { NtripClient } from "../services/NtripClient";
+import type { GNSSPosition, Mountpoint, NMEA } from "../types";
+import { NmeaParser } from "../services/NmeaParser";
 
 const GEOLOCATION_REFRESH_INTERVAL = 250; // ms
 const MOUNTPOINT_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const MOUNTPOINT_RETRIEVAL_DELAY = 10 * 1000; // 10 secondes
 
 interface GeolocationContextType {
-  position: PositionGPS | undefined;
-  positionRef: PositionGPS | undefined;
+  position: GNSSPosition | undefined;
+  positionRef: GNSSPosition | undefined;
 }
 
 const GeolocationContext = createContext<GeolocationContextType | undefined>(
@@ -25,11 +25,11 @@ const GeolocationContext = createContext<GeolocationContextType | undefined>(
 );
 
 export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
-  const [position, setPosition] = useState<PositionGPS | undefined>(undefined);
+  const [position, setPosition] = useState<GNSSPosition | undefined>(undefined);
 
   const ntripClientRef = useRef(new NtripClient());
   const unsubRtcmRef = useRef<(() => void) | null>(null);
-  const positionRef = useRef<PositionGPS | undefined>(undefined);
+  const positionRef = useRef<GNSSPosition | undefined>(undefined);
   const mountpointRef = useRef<Mountpoint | null>(null);
   const intervalRef = useRef<number | undefined>(undefined);
   const timeoutRef = useRef<number | undefined>(undefined);
@@ -130,26 +130,41 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
 
     let lastUpdate = Date.now();
 
-    const handler = (chunk: string) => {
+    const handler = (data: string) => {
       const now = Date.now();
       if (now - lastUpdate < GEOLOCATION_REFRESH_INTERVAL) return;
       lastUpdate = now;
 
-      const parsed = NmeaParser.parse(chunk);
+      const parsed: NMEA[] | null = NmeaParser.parse(data);
 
       if (parsed) {
+        const RMC = parsed.find((p) => p.type === "RMC");
         const GGA = parsed.find((p) => p.type === "GGA");
 
         // Traitements pour filtrer les trames (à améliorer)
-        if (GGA?.latitude === undefined || GGA?.longitude === undefined) return;
+        // On veut à minima latitude et longitude définies et valides parmi les trames GGA et RMC
+        // On privilégie les données de la trame GGA si disponibles
+        if (!GGA || GGA.latitude === undefined || GGA.longitude === undefined) {
+          if (
+            !RMC ||
+            RMC.latitude === undefined ||
+            RMC.longitude === undefined
+          ) {
+            // Pas de position valide
+            return;
+          }
+        }
 
-        const newPosition: PositionGPS = {
-          latitude: GGA.latitude,
-          longitude: GGA.longitude,
-          altitude: GGA.altitude,
-          numSatellites: GGA.numSatellites,
-          fixQuality: GGA.fixQuality,
-          hdop: GGA.hdop,
+        const newPosition: GNSSPosition = {
+          nmeaType: GGA ? "GGA" : "RMC",
+          latitude: GGA?.latitude ?? RMC!.latitude!,
+          longitude: GGA?.longitude ?? RMC!.longitude!,
+          altitude: GGA?.altitude,
+          numSatellites: GGA?.numSatellites,
+          hdop: GGA?.hdop,
+          fixQuality: GGA?.fixQuality ?? 1,
+          time: GGA ? GGA.time : RMC!.time,
+          speed: RMC?.speed,
         };
 
         setPosition(newPosition);

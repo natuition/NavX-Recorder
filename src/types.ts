@@ -1,24 +1,51 @@
-// GPS position data
-export interface GpsPosition {
-  latitude: number;
-  longitude: number;
-  altitude?: number;
-  accuracy?: number;
-  timestamp: Date;
+export type NmeaType = 'GGA' | "RMC" | "GSV" | "GST" | string;
+
+export type GGA = {
+  type: "GGA";
+  time: Date;
+  talkerId?: string;
+  latitude?: number;
+  longitude?: number;
+  altitude?: number; // m
+  fixQuality?: number;
+  numSatellites?: number;
+  hdop?: number;
 }
 
-export interface AutoMountpointConfig {
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  maxDistance?: number; // Distance maximum en km (par défaut: 50km)
-  sendGpsToServer?: boolean; // Option pour envoyer les coordonnées GPS au caster
-  wsUrl?: string; // Optional full WebSocket URL (ws:// or wss://) to use for the sourcetable request via proxy
+export type RMC = {
+  type: "RMC";
+  talkerId?: string;
+  time: Date;
+  state: string; // A: valid / V: invalid
+  latitude?: number;
+  longitude?: number;
+  speed: number; // km/h
 }
 
-// NTRIP Mountpoint information
-export interface MountpointInfo {
+export type GsvSatellite = {
+  prn: number | null;
+  elevation: number | null;
+  azimuth: number | null;
+  snr: number | null; // Signal-to-noise ratio, dBHz
+}
+
+export type GSV = {
+  type: "GSV";
+  talkerId: string;         // ex: "GP", "GL", "GA"
+  totalMessages: number;    // nombre total de trames GSV
+  messageNumber: number;    // numéro de cette trame
+  satellitesInView: number; // total visible
+  satellites: GsvSatellite[];
+}
+
+export type NMEA = GGA | RMC | GSV;
+
+export type SourceTableData = {
+  metadata: string[];
+  mountpoints: Mountpoint[];
+};
+
+export type Mountpoint = {
   mountpoint: string;
   identifier: string;
   format: string;
@@ -37,16 +64,24 @@ export interface MountpointInfo {
   fee: boolean;
   bitrate: number;
   misc: string;
-  distance?: number; // Distance calculée depuis la position actuelle
+  distance?: number
+};
+
+export type Position = {
+  latitude: number;
+  longitude: number;
+};
+
+export type GNSSPosition = {
+  nmeaType: NmeaType;
+  latitude: number;
+  longitude: number;
+  altitude?: number;
+  numSatellites?: number;
+  hdop?: number;
+  fixQuality: number;
+  time: Date;
+  speed?: number;
 }
 
-// NTRIP configuration
-export interface NtripConfig {
-  host: string;
-  port: number;
-  mountpoint: string;
-  username: string;
-  password: string;
-  sendGpsToServer?: boolean; // Option pour envoyer les coordonnées GPS au caster
-  wsUrl?: string; // Optional full WebSocket URL (ws:// or wss://) to connect through a proxy
-}
+

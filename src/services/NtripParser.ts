@@ -1,15 +1,10 @@
-import type { Mountpoint } from "../utils/types";
-
-type NtripParseResult = {
-  metadata: string[];
-  mountpoints: Mountpoint[];
-};
+import type { Mountpoint, SourceTableData } from "../types";
 
 export class NtripParser {
   /**
    * Parse la sourcetable NTRIP pour extraire les metadata et mountpoints associés
    */
-  public static parse(data: string): NtripParseResult {
+  public static parse(data: string): SourceTableData {
     const lines = data.split("\n");
     const mountpoints: Mountpoint[] = [];
     const metadata: string[] = [];

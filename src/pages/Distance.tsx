@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { MapLayout } from "../layouts/MapLayout";
 import {
   Layer,
   Source,
@@ -9,7 +8,6 @@ import {
 import type { FeatureCollection, LineString, Point } from "geojson";
 import DistanceToolBar from "../components/DistanceToolBar";
 import { Distance as DistanceTool } from "../utils/Distance";
-import FixStatus from "../components/FixStatus";
 import { useGeolocation } from "../contexts/GeolocationContext";
 
 type GPSPoint = [number, number]; // [longitude, latitude]

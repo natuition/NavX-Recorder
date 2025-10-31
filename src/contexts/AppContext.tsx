@@ -46,10 +46,6 @@ interface AppProviderProps {
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [state, setState] = useState<AppState>(initialState);
 
-  const setLoading = (loading: boolean) => {
-    setState((prev) => ({ ...prev, isLoading: loading }));
-  };
-
   const setCurrentPage = (page: AppPageType) => {
     setState((prev) => ({ ...prev, currentPage: page }));
   };

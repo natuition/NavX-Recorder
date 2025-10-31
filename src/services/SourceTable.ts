@@ -1,6 +1,6 @@
+import type { Mountpoint, Position } from "../types.ts";
 import { Distance } from "../utils/Distance.ts";
 import { NtripParser } from "./NtripParser.ts";
-import type { Mountpoint, Position } from "../utils/types.ts";
 
 export class SourceTable {
   private readonly metadata: string[];

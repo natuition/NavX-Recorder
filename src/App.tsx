@@ -8,12 +8,8 @@ import Projects from "./pages/Projects.tsx";
 import Settings from "./pages/Settings.tsx";
 import Search from "./pages/Search.tsx";
 import Tabs from "./components/Tabs.tsx";
-import Distance from "./pages/Distance.tsx";
-import Surface from "./pages/Surface.tsx";
 
 const App = () => {
-  console.debug("render App");
-
   const { currentPage, currentTool } = useApp();
 
   return (

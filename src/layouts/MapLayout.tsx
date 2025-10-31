@@ -1,6 +1,5 @@
-import Map, { useMap } from "react-map-gl/mapbox";
-import { useEffect, useState, type ReactNode } from "react";
-import { useNavigatorGeolocation } from "../hooks/useNavigatorGeolocation";
+import Map from "react-map-gl/mapbox";
+import { useState, type ReactNode } from "react";
 import {
   MdOutlineBluetooth,
   MdOutlineBluetoothConnected,
@@ -13,25 +12,25 @@ const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 const MAP_INITIAL_LATITUDE = 46.1591;
 const MAP_INITIAL_LONGITUDE = -1.1517;
 
-const Camera = () => {
-  const { initialLocation } = useNavigatorGeolocation();
+// const Camera = () => {
+//   const { initialLocation } = useNavigatorGeolocation();
 
-  const { current: map } = useMap();
+//   const { current: map } = useMap();
 
-  useEffect(() => {
-    if (!map) return;
+//   useEffect(() => {
+//     if (!map) return;
 
-    if (initialLocation) {
-      map.flyTo({
-        center: [initialLocation[0], initialLocation[1]],
-        zoom: 14,
-        speed: 1.2,
-      });
-    }
-  }, [initialLocation, map]);
+//     if (initialLocation) {
+//       map.flyTo({
+//         center: [initialLocation[0], initialLocation[1]],
+//         zoom: 14,
+//         speed: 1.2,
+//       });
+//     }
+//   }, [initialLocation, map]);
 
-  return <></>;
-};
+//   return <></>;
+// };
 
 export const MapLayout = ({ children }: { children: ReactNode }) => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
