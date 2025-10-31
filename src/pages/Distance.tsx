@@ -10,12 +10,12 @@ import DistanceToolBar from "../components/DistanceToolBar";
 import { Distance as DistanceTool } from "../utils/Distance";
 import { useGeolocation } from "../contexts/GeolocationContext";
 
-type GPSPoint = [number, number]; // [longitude, latitude]
+type LonLat = [number, number]; // [longitude, latitude]
 
 const DISTANCE_UNIT = "m";
 
 const Distance = () => {
-  const [gpsPoints, setGpsPoints] = useState<GPSPoint[]>([]);
+  const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
   const [distances, setDistances] = useState<number[]>([]);
 
   const { position } = useGeolocation();
@@ -27,7 +27,7 @@ const Distance = () => {
   const handleAddGPSPoint = () => {
     if (!position) return;
 
-    const newPoint: GPSPoint = [position.longitude, position.latitude];
+    const newPoint: LonLat = [position.longitude, position.latitude];
 
     if (gpsPoints.length > 0) {
       const lastPoint = gpsPoints[gpsPoints.length - 1];
@@ -113,13 +113,5 @@ const gpsPointsLayer: CircleLayerSpecification = {
   },
   source: "gps-points",
 };
-
-// const Distance = () => {
-//   return (
-//     <MapLayout>
-//       <DistanceContent />
-//     </MapLayout>
-//   );
-// };
 
 export default Distance;

@@ -28,10 +28,8 @@ const Surface = () => {
 
   const handleSurfaceRecording = () => {
     if (isRecording) {
-      console.log("Arrêt de l'enregistrement de la surface...");
       setIsRecording(false);
     } else {
-      console.log("Démarrage de l'enregistrement de la surface...");
       setGpsPoints([]);
       setIsRecording(true);
     }
@@ -40,11 +38,9 @@ const Surface = () => {
   useEffect(() => {
     if (!isRecording) return;
 
-    console.log("🔄 Démarrage de l'intervalle d'ajout de points GPS...");
-
     const intervalId = setInterval(() => {
       if (!positionRef.current) {
-        console.warn("⚠️ Position GPS non disponible");
+        console.warn("Position GPS non disponible");
         return;
       }
 
@@ -55,38 +51,26 @@ const Surface = () => {
 
       setGpsPoints((prev) => {
         if (prev.length === 0) {
-          console.log("Ajout du premier point GPS:", newPoint);
           return [newPoint];
         }
 
         const lastPoint = prev[prev.length - 1];
-        const startBenchmark = performance.now();
         const distance = Distance.equirectangular(
           lastPoint[1],
           lastPoint[0],
           newPoint[1],
           newPoint[0]
         );
-        const endBenchmark = performance.now();
-        console.log(
-          `Distance entre le dernier point et le nouveau : ${distance.toFixed(
-            2
-          )} m (calculé en ${(endBenchmark - startBenchmark).toFixed(10)} ms)`
-        );
 
         if (distance < DISTANCE_THRESHOLD_METERS) {
-          console.log("Point GPS ignoré (trop proche du précédent):", newPoint);
           return prev;
         }
-
-        console.log("Ajout d'un nouveau point GPS:", newPoint);
 
         return [...prev, newPoint];
       });
     }, UPDATE_INTERVAL_MILLISECONDS);
 
     return () => {
-      console.log("🛑 Nettoyage de l'intervalle");
       clearInterval(intervalId);
     };
   }, [isRecording]);
