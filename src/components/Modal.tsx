@@ -1,4 +1,4 @@
-import React, { type ReactNode, useEffect } from "react";
+import { type ReactNode } from "react";
 
 type ModalProps = {
   isOpen: boolean;
