@@ -1,0 +1,61 @@
+.status-bar {
+  position: absolute;
+  top: 75px;
+  left: 0;
+  right: 0;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.25);
+}
+
+.status-bar__indicators {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 2em;
+  background-color: #ffffff;
+  color: rgb(50, 50, 50);
+  padding: 0.75em 1em;
+  z-index: 10;
+}
+
+.indicator {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+}
+
+.indicator__icon {
+  opacity: 50%;
+  flex-shrink: 0;
+}
+
+.indicator__data {
+  font-size: 1.4rem;
+}
+
+.indicator__level {
+  height: 0.5em;
+  width: 0.5em;
+  border-radius: 100%;
+  opacity: 75%;
+}
+
+.indicator__level--none {
+  background-color: red;
+}
+
+.indicator__level--gps {
+  background-color: orangered;
+}
+
+.indicator__level--dgps {
+  background-color: orangered;
+}
+
+.indicator__level--rtk-fixed {
+  background-color: rgb(40, 110, 30);
+}
+
+.indicator__level--rtk-float {
+  background-color: orange;
+}

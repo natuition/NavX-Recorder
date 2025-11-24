@@ -1,93 +1,78 @@
-import { useBluetooth } from "../contexts/BluetoothContext";
 import { useGeolocation } from "../contexts/GeolocationContext";
-
-type FixQualityType = "NONE" | "GPS" | "DGPS" | "RTK_FIXED" | "RTK_FLOAT";
+import { TbWorldLongitude, TbWorldLatitude } from "react-icons/tb";
+import { RiGpsFill } from "react-icons/ri";
+import { FaSatellite } from "react-icons/fa6";
 
 interface FixQualityInfo {
+  id: string;
   label: string;
+  slug: string;
 }
 
-const FIX_QUALITY_MAP: Record<FixQualityType, FixQualityInfo> = {
-  NONE: {
-    label: "None",
+const FIX_QUALITY_MAP: Record<number, FixQualityInfo> = {
+  0: {
+    id: "NO_FIX",
+    label: "Aucun signal",
+    slug: "none",
   },
-  GPS: {
+  1: {
+    id: "GPS",
     label: "GPS",
+    slug: "gps",
   },
-  DGPS: {
+  2: {
+    id: "DGPS",
     label: "DGPS",
+    slug: "dgps",
   },
-  RTK_FIXED: {
+  4: {
+    id: "RTK_FIXED",
     label: "RTK Fixed",
+    slug: "rtk-fixed",
   },
-  RTK_FLOAT: {
+  5: {
+    id: "RTK_FLOAT",
     label: "RTK Float",
+    slug: "rtk-float",
   },
 };
 
 const StatusBar = () => {
   const { position } = useGeolocation();
-  const { bluetoothConnected } = useBluetooth();
 
-  const fixQuality = () => {
-    const qualityMap: Record<number, FixQualityType> = {
-      0: "NONE",
-      1: "GPS",
-      2: "DGPS",
-      4: "RTK_FIXED",
-      5: "RTK_FLOAT",
-    };
-
-    const qualityType = qualityMap[position?.fixQuality ?? 0] || "NO_FIX";
-    return FIX_QUALITY_MAP[qualityType].label;
-  };
+  const fixLabel = FIX_QUALITY_MAP[position?.fixQuality ?? 0]?.label;
+  const fixSlug = FIX_QUALITY_MAP[position?.fixQuality ?? 0]?.slug;
 
   return (
-    <div style={styles.container}>
-      {position && <div style={styles.item}>🛰️ {position?.numSatellites}</div>}
+    <div className="status-bar">
       {position && (
-        <div style={styles.item}> Lat : {position?.latitude.toFixed(6)}</div>
+        <div className="status-bar__indicators">
+          <div className="indicator">
+            <FaSatellite size={18} className="indicator__icon" />
+            <p className="indicator__data">{position?.numSatellites}</p>
+          </div>
+
+          <div className="indicator">
+            <TbWorldLatitude size={18} className="indicator__icon" />
+            <p className="indicator__data">{position?.latitude.toFixed(6)}</p>
+          </div>
+
+          <div className="indicator">
+            <TbWorldLongitude size={18} className="indicator__icon" />
+            <p className="indicator__data">{position?.longitude.toFixed(6)}</p>
+          </div>
+
+          <div className="indicator">
+            <RiGpsFill size={18} className="indicator__icon" />
+            <p className="indicator__data">{fixLabel}</p>
+            <span
+              className={`indicator__level indicator__level--${fixSlug}`}
+            ></span>
+          </div>
+        </div>
       )}
-      {position && (
-        <div style={styles.item}>Lon : {position?.longitude.toFixed(6)}</div>
-      )}
-      {position && <div style={styles.item}>🌐 {fixQuality()}</div>}
-      <div style={styles.item}>
-        🔵
-        <span
-          style={{
-            color: bluetoothConnected ? "limegreen" : "red",
-            fontWeight: "bold",
-          }}
-        >
-          {bluetoothConnected ? "Connecté" : "Déconnecté"}
-        </span>
-      </div>
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    position: "absolute",
-    top: "75px",
-    left: 0,
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#1e1e1e",
-    color: "white",
-    padding: "8px 0",
-    fontFamily: "sans-serif",
-    fontSize: "14px",
-    zIndex: 10,
-  },
-  item: {
-    display: "flex",
-    alignItems: "center",
-    gap: "4px",
-  },
 };
 
 export default StatusBar;

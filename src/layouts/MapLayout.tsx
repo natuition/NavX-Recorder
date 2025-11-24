@@ -64,7 +64,8 @@ export const MapLayout = ({ children }: { children: ReactNode }) => {
           <Modal
             message="Déconnecter le Bluetooth ?"
             onYes={handleBluetoothDisconnect}
-            isOpen={true}
+            onNo={modal.close}
+            isOpen={modal.isOpen}
             onClose={modal.close}
             status="info"
           ></Modal>
