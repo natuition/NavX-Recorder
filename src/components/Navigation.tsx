@@ -3,18 +3,21 @@ import { IoMdMore } from "react-icons/io";
 import { useState } from "react";
 import TabsButton from "./TabsButton";
 import { useApp } from "../contexts/AppContext";
-import TabsMenu from "./TabsMenu";
+import ActionMenu from "./ActionMenu";
 
-const Tabs = () => {
+const Navigation = () => {
   const { currentPage, setCurrentPage } = useApp();
 
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
 
   return (
     <>
-      <TabsMenu active={isMenuVisible} onHide={() => setIsMenuVisible(false)} />
-      <nav className="tabs-container">
-        <ul className="tabs">
+      <ActionMenu
+        active={isMenuVisible}
+        onHide={() => setIsMenuVisible(false)}
+      />
+      <nav className="navigation">
+        <ul className="navigation__tabs">
           <li
             className={`tab ${currentPage === "Home" ? "tab--active" : ""}`}
             onClick={() => setCurrentPage("Home")}
@@ -50,4 +53,4 @@ const Tabs = () => {
   );
 };
 
-export default Tabs;
+export default Navigation;

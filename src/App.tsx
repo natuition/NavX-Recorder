@@ -7,7 +7,7 @@ import Home from "./pages/Home.tsx";
 import Projects from "./pages/Projects.tsx";
 import Settings from "./pages/Settings.tsx";
 import Search from "./pages/Search.tsx";
-import Tabs from "./components/Tabs.tsx";
+import Tabs from "./components/Navigation.tsx";
 
 const App = () => {
   const { currentPage, currentTool } = useApp();
