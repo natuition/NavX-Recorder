@@ -1,3 +1,11 @@
+.action-menu__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background-color: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+}
+
 .action-menu {
   display: flex;
   flex-direction: column;

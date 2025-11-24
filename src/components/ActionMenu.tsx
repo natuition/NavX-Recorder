@@ -10,7 +10,10 @@ const ActionMenu = ({ onHide, active }: ActionMenuProps) => {
   const { setCurrentTool } = useApp();
 
   return (
-    <div onClick={onHide} id="scrim" className={active ? "" : "invisible"}>
+    <div
+      onClick={onHide}
+      className={`action-menu__overlay ${active ? "" : "invisible"}`}
+    >
       <ul className="action-menu">
         <li className="action-menu__item">
           <button

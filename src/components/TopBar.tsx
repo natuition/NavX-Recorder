@@ -38,8 +38,8 @@ const TopBar = () => {
 
   return (
     <>
-      <header className="topbar-container">
-        <div className="topbar-left">
+      <header className="topbar">
+        <div className="topbar__left">
           {showBackButton && (
             <IoIosArrowBack
               className="topbar-left__button"

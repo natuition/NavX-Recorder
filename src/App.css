@@ -48,53 +48,6 @@
   box-sizing: border-box;
 }
 
-#scrim {
-  position: absolute;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 4;
-}
-
-.navx-logo {
-  height: 2.75rem;
-}
-
-.topbar-container {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  top: 0;
-  left: 0;
-  right: 0;
-  background-color: rgb(31, 130, 22);
-  color: white;
-  height: 75px;
-  z-index: 2;
-  padding-inline: 1em;
-}
-
-.topbar-left {
-  display: flex;
-  flex: 3;
-  gap: 1em;
-  align-items: center;
-  justify-content: left;
-}
-
-.topbar-left__button {
-  cursor: pointer;
-}
-
-.topbar-right {
-  flex: 1;
-}
-
-.topbar__title {
-  font-size: 1.75rem;
-  font-weight: 600;
-}
-
 .fix-legend {
   position: absolute;
   top: 85px;
