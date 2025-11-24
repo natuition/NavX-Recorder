@@ -83,6 +83,7 @@ const Distance = () => {
         <Layer {...gpsLineLayer} />
       </Source>
       <DistanceToolBar
+        nbPoints={gpsPoints.length}
         distance={totalDistance()}
         onAdd={handleAddGPSPoint}
         onRemoveLast={() => setGpsPoints((prev) => prev.slice(0, -1))}

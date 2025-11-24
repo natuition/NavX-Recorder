@@ -1,9 +1,15 @@
+import { IoIosUndo } from "react-icons/io";
+import { FaRuler } from "react-icons/fa";
+import { MdOutlineAddLocationAlt, MdLocationOn } from "react-icons/md";
+import { FaSave } from "react-icons/fa";
+
 type DistanceToolBarProps = {
   onAdd: () => void;
   onSave: () => void;
   onRemoveLast?: () => void;
   onClearAll?: () => void;
   distance: number;
+  nbPoints: number;
 };
 
 const DistanceToolBar = ({
@@ -12,58 +18,46 @@ const DistanceToolBar = ({
   onRemoveLast,
   onClearAll,
   distance,
+  nbPoints,
 }: DistanceToolBarProps) => {
   return (
-    <div
-      className="toolbar"
-      style={{
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
-        borderTop: "1px solid #ccc",
-        display: "flex",
-        justifyContent: "space-around",
-        alignItems: "center",
-        padding: "10px",
-        boxShadow: "0 -2px 5px rgba(0, 0, 0, 0.1)",
-        zIndex: 1000,
-      }}
-    >
-      <button onClick={onRemoveLast} style={buttonStyle}>
-        🔙
-      </button>
-
-      <button onClick={onClearAll} style={buttonStyle}>
-        🗑️
-      </button>
-
-      <button onClick={onAdd} style={buttonStyle}>
-        ➕
-      </button>
-
-      <div style={{ fontWeight: 600 }}>
-        Distance totale : {distance.toFixed(2)} m
+    <div className="toolbar">
+      <div className="toolbar__infos">
+        <div className="wrapper">
+          <div className="toolbar-indicator">
+            <MdLocationOn className="toolbar-indicator__icon" size={18} />
+            <p className="toolbar-indicator__data">{nbPoints}</p>
+          </div>
+          <div className="toolbar-indicator">
+            <FaRuler className="toolbar-indicator__icon" size={18} />
+            <p className="toolbar-indicator__data">{distance.toFixed(2)} m</p>
+          </div>
+        </div>
       </div>
-
-      <button
-        onClick={onSave}
-        style={{ ...buttonStyle, backgroundColor: "#4CAF50" }}
-      >
-        💾 Enregistrer
-      </button>
+      <div className="toolbar__actions">
+        <button
+          className="button button--neutral toolbar__action"
+          onClick={onRemoveLast}
+        >
+          <IoIosUndo size={18} />
+        </button>
+        <button
+          disabled={nbPoints < 2}
+          className="button button--neutral toolbar__action"
+          onClick={onSave}
+        >
+          Enregistrer
+          <FaSave size={18} />
+        </button>
+        <button
+          className="button button--success toolbar__action"
+          onClick={onAdd}
+        >
+          <MdOutlineAddLocationAlt size={18} />
+        </button>
+      </div>
     </div>
   );
-};
-
-const buttonStyle: React.CSSProperties = {
-  padding: "8px 16px",
-  borderRadius: "4px",
-  border: "1px solid #ccc",
-  backgroundColor: "#f5f5f5",
-  cursor: "pointer",
-  fontSize: "14px",
 };
 
 export default DistanceToolBar;

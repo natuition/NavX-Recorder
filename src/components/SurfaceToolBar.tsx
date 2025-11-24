@@ -1,79 +1,62 @@
-import React from "react";
+import { FaSave } from "react-icons/fa";
+import { FaDrawPolygon } from "react-icons/fa6";
+import { MdLocationOn } from "react-icons/md";
+import { FaPlayCircle } from "react-icons/fa";
+import { FaPause } from "react-icons/fa6";
 
 interface SurfaceToolBarProps {
-  surface: number; // Surface courante (m², ha, etc.)
-  unit?: string; // Optionnel : unité d'affichage
-  isRecording?: boolean; // Indique si l'enregistrement est en cours
-  onToggleRecording?: () => void; // Callback pour démarrer/arrêter l'enregistrement
-  onSave: () => void; // Callback pour sauvegarder
+  surface: number;
+  unit?: string;
+  isRecording?: boolean;
+  onSave: () => void;
+  onToggleRecording: () => void;
+  nbPoints?: number;
 }
 
-/**
- * Barre d’outils positionnée en bas de l’écran,
- * affichant la surface actuelle et un bouton d’enregistrement.
- */
-export const SurfaceToolBar: React.FC<SurfaceToolBarProps> = ({
+export const SurfaceToolBar = ({
   surface,
-  isRecording,
   unit = "m²",
+  nbPoints = 0,
+  isRecording,
   onToggleRecording,
   onSave,
-}) => {
+}: SurfaceToolBarProps) => {
   return (
-    <div style={styles.container}>
-      <div style={styles.info}>
-        <span style={styles.label}>Surface :</span>
-        <span style={styles.value}>
-          {surface.toFixed(2)} {unit}
-        </span>
+    <div className="toolbar">
+      <div className="toolbar__infos">
+        <div className="wrapper">
+          <div className="toolbar-indicator">
+            <MdLocationOn className="toolbar-indicator__icon" size={18} />
+            <p className="toolbar-indicator__data">{nbPoints}</p>
+          </div>
+          <div className="toolbar-indicator">
+            <FaDrawPolygon className="toolbar-indicator__icon" size={18} />
+            <p className="toolbar-indicator__data">
+              {surface.toFixed(2)} {unit}
+            </p>
+          </div>
+        </div>
       </div>
-      <button style={styles.button} onClick={onToggleRecording}>
-        {isRecording ? "⏸️ Stop" : "▶️ Démarrer"}
-      </button>
-      <button style={styles.button} onClick={onSave}>
-        💾 Enregistrer
-      </button>
+      <div className="toolbar__actions">
+        <button
+          disabled={isRecording || nbPoints < 3}
+          className="button button--neutral toolbar__action"
+          onClick={onSave}
+        >
+          Enregistrer
+          <FaSave size={18} />
+        </button>
+        <button
+          className={`button button--${
+            isRecording ? "neutral" : "success"
+          } toolbar__action`}
+          onClick={onToggleRecording}
+        >
+          {isRecording ? <FaPause size={18} /> : <FaPlayCircle size={18} />}
+        </button>
+      </div>
     </div>
   );
-};
-
-// 🎨 Styles inline (simples, pas de lib externe)
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "12px 20px",
-    backgroundColor: "#222",
-    color: "#fff",
-    boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.3)",
-    fontFamily: "sans-serif",
-    fontSize: "1rem",
-    zIndex: 1000,
-  },
-  info: {
-    display: "flex",
-    gap: "8px",
-    alignItems: "center",
-  },
-  label: {
-    opacity: 0.7,
-  },
-  value: {
-    fontWeight: "bold",
-  },
-  button: {
-    backgroundColor: "#4CAF50",
-    border: "none",
-    color: "white",
-    padding: "8px 16px",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
 };
 
 export default SurfaceToolBar;
