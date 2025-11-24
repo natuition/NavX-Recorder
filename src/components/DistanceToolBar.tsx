@@ -15,6 +15,7 @@ const DistanceToolBar = ({
 }: DistanceToolBarProps) => {
   return (
     <div
+      className="toolbar"
       style={{
         position: "absolute",
         bottom: 0,
