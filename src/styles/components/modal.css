@@ -1,0 +1,75 @@
+.modal__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  font-size: 1rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  gap: 3em;
+  background-color: white;
+  border-radius: 4px;
+  min-width: min(50%, 50rem);
+  padding: 0.75em 0.75em;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.modal__status {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.modal__status--info {
+  color: rgb(67, 124, 214);
+}
+
+.modal__status--warning {
+  color: rgb(160, 108, 39);
+}
+
+.modal__status--error {
+  color: rgb(214, 67, 77);
+}
+
+.modal__content {
+  font-size: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  width: 100%;
+  padding: 1em;
+}
+
+.modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+}
+
+.modal__close {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  margin: 0;
+  cursor: pointer;
+}

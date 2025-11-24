@@ -1,0 +1,27 @@
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25em 2em;
+  cursor: pointer;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.button--primary {
+  color: white;
+  background-color: rgb(67, 124, 214);
+}
+
+.button--neutral {
+  color: black;
+  background-color: rgb(188, 188, 188);
+}
+
+.button--danger {
+  color: white;
+  background-color: rgb(214, 67, 77);
+}

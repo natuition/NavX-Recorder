@@ -61,11 +61,13 @@ export const MapLayout = ({ children }: { children: ReactNode }) => {
         )}
 
         {isMapLoaded && (
-          <Modal isOpen={modal.isOpen} onClose={modal.close}>
-            <h2>Déconnecter le Bluetooth ?</h2>
-            <button onClick={handleBluetoothDisconnect}>Oui</button>
-            <button onClick={modal.close}>Non</button>
-          </Modal>
+          <Modal
+            message="Déconnecter le Bluetooth ?"
+            onYes={handleBluetoothDisconnect}
+            isOpen={true}
+            onClose={modal.close}
+            status="info"
+          ></Modal>
         )}
       </Map>
     </div>

@@ -81,7 +81,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "8px 0",
     fontFamily: "sans-serif",
     fontSize: "14px",
-    zIndex: 1000,
+    zIndex: 10,
   },
   item: {
     display: "flex",
