@@ -1,12 +1,12 @@
 import { FaDrawPolygon, FaRuler } from "react-icons/fa";
 import { useApp } from "../contexts/AppContext";
 
-type TabsMenuProps = {
+type ActionMenuProps = {
   active: boolean;
   onHide: () => void;
 };
 
-const TabsMenu = ({ onHide, active }: TabsMenuProps) => {
+const ActionMenu = ({ onHide, active }: ActionMenuProps) => {
   const { setCurrentTool } = useApp();
 
   return (
@@ -14,23 +14,23 @@ const TabsMenu = ({ onHide, active }: TabsMenuProps) => {
       <ul className="action-menu">
         <li className="action-menu__item">
           <button
-            className="action-menu__button"
+            className="button"
             onClick={() => {
               setCurrentTool("Distance");
             }}
           >
-            <FaRuler size={24} />
+            <FaRuler className="button__icon-left" size={24} />
             Distance
           </button>
         </li>
         <li className="action-menu__item">
           <button
-            className="action-menu__button"
+            className="button"
             onClick={() => {
               setCurrentTool("Surface");
             }}
           >
-            <FaDrawPolygon size={24} />
+            <FaDrawPolygon className="button__icon-left" size={24} />
             Surface
           </button>
         </li>
@@ -39,4 +39,4 @@ const TabsMenu = ({ onHide, active }: TabsMenuProps) => {
   );
 };
 
-export default TabsMenu;
+export default ActionMenu;

@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from "react";
 import { IoAddCircle } from "react-icons/io5";
 
-const TabsButton = ({
+const TabButton = ({
   onPress,
 }: {
   onPress?: MouseEventHandler<HTMLLIElement>;
@@ -13,4 +13,4 @@ const TabsButton = ({
   );
 };
 
-export default TabsButton;
+export default TabButton;

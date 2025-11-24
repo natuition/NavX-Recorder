@@ -36,7 +36,7 @@ export const Modal = ({
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <header className="modal__header">
           <h2 className={`modal__status modal__status--${status}`}>
-            <IoAlertCircleOutline size={24} />
+            <IoAlertCircleOutline size={16} />
             <span>{StatusMap[status]}</span>
           </h2>
           <IoMdClose className="modal__close" onClick={onClose} size={18} />
@@ -46,10 +46,10 @@ export const Modal = ({
           <p>{message}</p>
 
           <div className="modal__actions">
-            <button className="button button--primary" onClick={onYes}>
+            <button className="button button--success" onClick={onYes}>
               {yesLabel}
             </button>
-            <button className="button button--danger" onClick={onNo}>
+            <button className="button button--neutral" onClick={onNo}>
               {noLabel}
             </button>
           </div>

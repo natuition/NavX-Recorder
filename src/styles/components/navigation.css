@@ -1,5 +1,5 @@
 .navigation {
-  z-index: 2;
+  z-index: 10;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -11,8 +11,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-inline: 0.45em;
-  padding-block: 0.35em;
+  padding-inline: 0.5em;
+  padding-block: 0.5em;
 }
 
 .tab {
@@ -22,20 +22,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.15em;
+  gap: 0.25em;
   cursor: pointer;
 }
 
 .tab--button {
   margin-inline: 0.5em;
-  background-color: #c2c2c22c;
-  box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.137);
   border-radius: 16px;
   color: rgb(31, 130, 22);
 }
 
 .tab__label {
-  font-size: 0.65rem;
+  font-size: 1rem;
   font-weight: 400;
 }
 

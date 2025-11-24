@@ -1,0 +1,12 @@
+.action-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  gap: 1.75em;
+  z-index: 5;
+  bottom: 95px;
+  left: 50%;
+  transform: translateX(-50%);
+}

@@ -18,7 +18,6 @@
 }
 
 .indicator {
-  font-size: 1.8rem;
   display: flex;
   align-items: center;
   gap: 0.25em;
@@ -30,14 +29,15 @@
 }
 
 .indicator__data {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
+  font-family: var(--font-body);
 }
 
 .indicator__level {
   height: 0.5em;
   width: 0.5em;
   border-radius: 100%;
-  opacity: 75%;
+  opacity: 100%;
 }
 
 .indicator__level--none {
