@@ -7,7 +7,6 @@ type DistanceToolBarProps = {
   onAdd: () => void;
   onSave: () => void;
   onRemoveLast?: () => void;
-  onClearAll?: () => void;
   distance: number;
   nbPoints: number;
 };
@@ -16,7 +15,6 @@ const DistanceToolBar = ({
   onAdd,
   onSave,
   onRemoveLast,
-  onClearAll,
   distance,
   nbPoints,
 }: DistanceToolBarProps) => {

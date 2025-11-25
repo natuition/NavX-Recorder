@@ -106,10 +106,6 @@ const Distance = () => {
         distance={totalDistance()}
         onAdd={handleAddGPSPoint}
         onRemoveLast={() => setGpsPoints((prev) => prev.slice(0, -1))}
-        onClearAll={() => {
-          setGpsPoints([]);
-          setDistances([]);
-        }}
         onSave={() => console.log("Saving distance...")}
       />
     </>
