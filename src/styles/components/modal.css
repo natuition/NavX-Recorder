@@ -1,7 +1,7 @@
 .modal__overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 1001;
   background-color: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(4px);
   display: flex;
@@ -18,7 +18,7 @@
   gap: 1em;
   background-color: white;
   border-radius: 4px;
-  min-width: min(50%, 50rem);
+  max-width: min(50%, 50rem);
   padding: 0.75em 0.75em;
 }
 
@@ -49,13 +49,14 @@
 }
 
 .modal__content {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1em;
+  gap: 1.5em;
   width: 100%;
   padding: 1em;
+  text-align: center;
 }
 
 .modal__actions {

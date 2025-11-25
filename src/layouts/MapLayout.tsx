@@ -1,30 +1,17 @@
 import Map from "react-map-gl/mapbox";
-import { useState, type ReactNode } from "react";
-import {
-  MdOutlineBluetooth,
-  MdOutlineBluetoothConnected,
-} from "react-icons/md";
-import { useBluetooth } from "../contexts/BluetoothContext";
-import CurrentLocation from "../components/CurrentLocation";
+import { useState } from "react";
+
+import { Outlet } from "react-router";
 import { GeolocationProvider } from "../contexts/GeolocationContext";
-import { useModal } from "../hooks/useModal";
-import { Modal } from "../components/Modal";
+import CurrentLocation from "../components/CurrentLocation";
+import StatusBar from "../components/StatusBar";
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 const MAP_INITIAL_LATITUDE = 46.1591;
 const MAP_INITIAL_LONGITUDE = -1.1517;
 
-export const MapLayout = ({ children }: { children: ReactNode }) => {
+export const MapLayout = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const { bluetoothConnected, connectBluetooth, disconnectBluetooth } =
-    useBluetooth();
-
-  const modal = useModal();
-
-  const handleBluetoothDisconnect = async () => {
-    await disconnectBluetooth();
-    modal.close();
-  };
 
   return (
     <div className="map-container">
@@ -41,35 +28,11 @@ export const MapLayout = ({ children }: { children: ReactNode }) => {
         onLoad={() => setIsMapLoaded(true)}
       >
         {isMapLoaded && (
-          <div
-            onClick={bluetoothConnected ? modal.open : connectBluetooth}
-            id="bluetoothControl"
-          >
-            {bluetoothConnected ? (
-              <MdOutlineBluetoothConnected size={24} />
-            ) : (
-              <MdOutlineBluetooth size={24} className="disconnected" />
-            )}
-          </div>
-        )}
-
-        {isMapLoaded && (
           <GeolocationProvider>
+            <StatusBar />
             <CurrentLocation />
-            {children}
+            <Outlet />
           </GeolocationProvider>
-        )}
-
-        {isMapLoaded && (
-          <Modal
-            message="Déconnecter le Bluetooth ?"
-            noLabel="Annuler"
-            onYes={handleBluetoothDisconnect}
-            onNo={modal.close}
-            isOpen={modal.isOpen}
-            onClose={modal.close}
-            status="info"
-          ></Modal>
         )}
       </Map>
     </div>

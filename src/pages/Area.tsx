@@ -8,22 +8,35 @@ import {
 } from "react-map-gl/mapbox";
 import type { FeatureCollection, LineString, Point, Polygon } from "geojson";
 import { useGeolocation } from "../contexts/GeolocationContext";
-import SurfaceToolBar from "../components/SurfaceToolBar";
+import AreaToolBar from "../components/AreaToolBar";
 import { Distance } from "../utils/Distance";
 import area from "@turf/area";
+import { useLocation } from "react-router";
+import { useToast } from "../hooks/useToast";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
 const DISTANCE_THRESHOLD_METERS = 1; // Seuil de distance minimale entre deux points GPS
 const UPDATE_INTERVAL_MILLISECONDS = 500; // Intervalle d'ajout de points GPS
 
-const Surface = () => {
+const Area = () => {
+  const location = useLocation();
+  const toast = useToast();
+
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
   const [isRecording, setIsRecording] = useState(false);
 
+  useEffect(() => {
+    if (isRecording || gpsPoints.length > 0) {
+      location.state.measureActive = true;
+    } else {
+      location.state.measureActive = false;
+    }
+  }, [isRecording, location.state, gpsPoints.length]);
+
   const { positionRef } = useGeolocation();
 
-  const surfaceArea = useCallback(() => {
+  const calcArea = useCallback(() => {
     // Calcul de la surface geodésique en mètre
     const polygon: Polygon = {
       type: "Polygon",
@@ -36,10 +49,20 @@ const Surface = () => {
     console.log("Surface enregistrée ✅");
   };
 
-  const handleSurfaceRecording = () => {
+  const handleAreaRecording = () => {
     if (isRecording) {
       setIsRecording(false);
     } else {
+      if (!positionRef.current) {
+        console.warn(
+          "GPS position not available, cannot start recording area."
+        );
+        toast.show({
+          message: "Position GPS non disponible",
+          status: "warn",
+        });
+        return;
+      }
       setGpsPoints([]);
       setIsRecording(true);
     }
@@ -142,11 +165,12 @@ const Surface = () => {
       <Source id="gps-polygon" type="geojson" data={gpsPolygonGeoJSON}>
         <Layer {...gpsFillLayer} />
       </Source>
-      <SurfaceToolBar
-        surface={surfaceArea()}
+      <AreaToolBar
+        area={calcArea()}
+        nbPoints={gpsPoints.length}
         onSave={handleSave}
         unit="m²"
-        onToggleRecording={handleSurfaceRecording}
+        onToggleRecording={handleAreaRecording}
         isRecording={isRecording}
       />
     </>
@@ -184,4 +208,4 @@ const gpsPointsLayer: CircleLayerSpecification = {
   source: "gps-points",
 };
 
-export default Surface;
+export default Area;

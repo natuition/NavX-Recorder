@@ -1,5 +1,5 @@
 import { FaDrawPolygon, FaRuler } from "react-icons/fa";
-import { useApp } from "../contexts/AppContext";
+import { Link } from "react-router";
 
 type ActionMenuProps = {
   active: boolean;
@@ -7,38 +7,42 @@ type ActionMenuProps = {
 };
 
 const ActionMenu = ({ onHide, active }: ActionMenuProps) => {
-  const { setCurrentTool } = useApp();
-
   return (
-    <div
+    <nav
       onClick={onHide}
       className={`action-menu__overlay ${active ? "" : "invisible"}`}
     >
       <ul className="action-menu">
         <li className="action-menu__item">
-          <button
-            className="button"
-            onClick={() => {
-              setCurrentTool("Distance");
+          <Link
+            state={{
+              measureActive: false,
+              mode: "distance",
+              title: "Distance",
             }}
+            className="button button--neutral"
+            to="/distance"
           >
             <FaRuler className="button__icon-left" size={24} />
             Distance
-          </button>
+          </Link>
         </li>
         <li className="action-menu__item">
-          <button
-            className="button"
-            onClick={() => {
-              setCurrentTool("Surface");
+          <Link
+            state={{
+              measureActive: false,
+              mode: "area",
+              title: "Surface",
             }}
+            to="/area"
+            className="button button--neutral"
           >
             <FaDrawPolygon className="button__icon-left" size={24} />
             Surface
-          </button>
+          </Link>
         </li>
       </ul>
-    </div>
+    </nav>
   );
 };
 

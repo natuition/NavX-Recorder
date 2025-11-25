@@ -1,0 +1,27 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+}
+
+.safe-area {
+  position: fixed;
+  z-index: 5;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 4rem;
+  background-color: white;
+}
+
+.base-layout {
+  position: relative;
+}
+
+.base-layout__content {
+  height: 100%;
+}

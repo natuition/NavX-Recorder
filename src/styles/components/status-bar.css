@@ -1,6 +1,4 @@
 .status-bar {
-  position: absolute;
-  top: calc(2.8rem + 2rem);
   background-color: hsla(0, 0%, 100%, 0.75);
   backdrop-filter: blur(8px);
   left: 0;
@@ -56,4 +54,13 @@
 
 .indicator__level--rtk-float {
   background-color: hsl(257, 93%, 64%);
+}
+
+.status-bar__info-msg,
+.status-bar__info-icon {
+  flex-shrink: 0;
+}
+
+.status-bar__connect-ble {
+  width: fit-content;
 }

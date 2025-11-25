@@ -1,0 +1,13 @@
+:root {
+  --color-status-info: rgb(67, 124, 214);
+  --color-status-success: rgb(50, 129, 70);
+  --color-status-warn: rgb(160, 108, 39);
+  --color-status-error: rgb(214, 67, 77);
+  --color-status-neutral: rgb(149, 149, 149);
+
+  --color-status-info-dimmed: rgba(67, 123, 214, 0.25);
+  --color-status-success-dimmed: rgb(50, 129, 70, 0.25);
+  --color-status-warn-dimmed: rgb(160, 108, 39, 0.25);
+  --color-status-error-dimmed: rgb(214, 67, 77, 0.25);
+  --color-status-neutral-dimmed: rgb(149, 149, 149, 0.25);
+}

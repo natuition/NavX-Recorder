@@ -1,11 +1,15 @@
 @import url("./styles/base/reset.css");
 @import url("./styles/base/typography.css");
+@import url("./styles/base/colors.css");
 @import url("./styles/utils/helpers.css");
-@import url("./styles/layout/root.css");
+@import url("./styles/layout/base.css");
+@import url("./styles/layout/panel.css");
 @import url("./styles/components/button.css");
 @import url("./styles/components/modal.css");
+@import url("./styles/components/toast.css");
 @import url("./styles/components/status-bar.css");
 @import url("./styles/components/top-bar.css");
 @import url("./styles/components/navigation.css");
 @import url("./styles/components/action-menu.css");
 @import url("./styles/components/toolbar.css");
+@import url("./styles/pages/settings.css");

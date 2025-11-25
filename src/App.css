@@ -1,5 +1,5 @@
 .map-container {
-  height: 100svh;
+  height: calc(100svh - 5rem);
   width: 100svw;
   position: relative;
 }
@@ -7,7 +7,7 @@
 #geolocate,
 #bluetoothControl {
   position: absolute;
-  top: 125px;
+  top: 50px;
   right: 10px;
   z-index: 1;
   background-color: rgba(255, 255, 255, 0.5);

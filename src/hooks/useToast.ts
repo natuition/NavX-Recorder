@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import AppContext from "../contexts/AppContext";
 
-export function useModal() {
+export function useToast() {
   const { state, actions } = useContext(AppContext);
 
   return {
-    ...state.modal,
-    ...actions.modal
+    ...state.toast,
+    ...actions.toast
   };
 }

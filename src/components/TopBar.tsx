@@ -1,57 +1,60 @@
-import { useApp } from "../contexts/AppContext";
 import { IoIosArrowBack } from "react-icons/io";
 import NavxLogo from "../assets/navx-logo.svg.svg";
+import { useLocation, useNavigate } from "react-router";
+import { capitalize } from "../utils/string";
+import { useModal } from "../hooks/useModal";
 
 const TopBar = () => {
-  const { currentPage, currentTool, setCurrentPage, setCurrentTool } = useApp();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const modal = useModal();
 
-  const title = () => {
-    switch (currentPage) {
-      case "Home":
-        return (
-          currentTool ?? (
-            <img src={NavxLogo} alt="NavX Logo" className="navx-logo" />
-          )
-        );
-      case "Distance":
-        return "Mesure de distance";
-      case "Surface":
-        return "Mesure de surface";
-      case "Projects":
-        return "Projets";
-      case "Search":
-        return "Recherche";
-      case "Settings":
-        return "Paramètres";
-    }
-  };
+  const showBackButton =
+    location.pathname.startsWith("/distance") ||
+    location.pathname.startsWith("/area");
+  const title =
+    location.state?.title ?? capitalize(location.pathname.split("/")[1]); // Fallback title
 
-  const showBackButton = currentPage !== "Home" || currentTool;
-
-  const handleClickBack = () => {
-    if (currentTool) {
-      setCurrentTool(null);
+  const handleBack = () => {
+    if (location.state?.measureActive) {
+      console.debug("Open modal to confirm discard measurement");
+      modal.open({
+        message:
+          "Vous avez une mesure en cours. Voulez-vous vraiment quitter cette page et perdre la mesure en cours ?",
+        yesLabel: "Oui, quitter",
+        noLabel: "Non, rester",
+        onYes: () => {
+          modal.close();
+          navigate("/");
+        },
+        onNo: () => {
+          modal.close();
+        },
+      });
     } else {
-      setCurrentPage("Home");
+      navigate("/");
     }
   };
 
   return (
-    <>
-      <header className="topbar">
-        <div className="topbar__left">
-          {showBackButton && (
+    <div className="topbar">
+      <div className="topbar__left">
+        {showBackButton ? (
+          <>
             <IoIosArrowBack
-              className="topbar-left__button"
-              onClick={handleClickBack}
-              size={28}
+              onClick={handleBack}
+              className="topbar-left__back"
+              size={24}
             />
-          )}
-          <h1 className="topbar__title">{title()}</h1>
-        </div>
-        <div className="topbar-right"></div>
-      </header>
-    </>
+
+            <h1 className="topbar__title">{title}</h1>
+          </>
+        ) : (
+          <img className="topbar__logo" src={NavxLogo} alt="NavX Logo" />
+        )}
+      </div>
+      <div className="topbar-right"></div>
+    </div>
   );
 };
 

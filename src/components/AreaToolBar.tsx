@@ -4,8 +4,8 @@ import { MdLocationOn } from "react-icons/md";
 import { FaPlayCircle } from "react-icons/fa";
 import { FaPause } from "react-icons/fa6";
 
-interface SurfaceToolBarProps {
-  surface: number;
+interface AreaToolBarProps {
+  area: number;
   unit?: string;
   isRecording?: boolean;
   onSave: () => void;
@@ -13,14 +13,14 @@ interface SurfaceToolBarProps {
   nbPoints?: number;
 }
 
-export const SurfaceToolBar = ({
-  surface,
+export const AreaToolBar = ({
+  area,
   unit = "m²",
   nbPoints = 0,
   isRecording,
   onToggleRecording,
   onSave,
-}: SurfaceToolBarProps) => {
+}: AreaToolBarProps) => {
   return (
     <div className="toolbar">
       <div className="toolbar__infos">
@@ -32,7 +32,7 @@ export const SurfaceToolBar = ({
           <div className="toolbar-indicator">
             <FaDrawPolygon className="toolbar-indicator__icon" size={18} />
             <p className="toolbar-indicator__data">
-              {surface.toFixed(2)} {unit}
+              {area.toFixed(2)} {unit}
             </p>
           </div>
         </div>
@@ -59,4 +59,4 @@ export const SurfaceToolBar = ({
   );
 };
 
-export default SurfaceToolBar;
+export default AreaToolBar;

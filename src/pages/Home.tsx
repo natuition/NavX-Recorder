@@ -3,7 +3,7 @@ import { useApp } from "../contexts/AppContext";
 import BaseLayout from "../layouts/BaseLayout";
 import { MapLayout } from "../layouts/MapLayout";
 import Distance from "./Distance";
-import Surface from "./Surface";
+import Surface from "./Area";
 
 const Home = () => {
   const { currentTool } = useApp();

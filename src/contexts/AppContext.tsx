@@ -1,73 +1,98 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useReducer, type ReactNode } from "react";
+import { type ModalProps } from "../components/Modal";
+import type { ToastProps } from "../components/Toast";
 
-export type AppPageType =
-  | "Home"
-  | "Projects"
-  | "Distance"
-  | "Surface"
-  | "Search"
-  | "Settings";
-
-export type AppToolType = "Distance" | "Surface" | null;
-
-// Types pour le state du contexte
-interface AppState {
-  currentPage: AppPageType;
-  currentTool: AppToolType;
-  isActionMenuOpen: boolean;
-}
-
-// Types pour les actions du contexte
-interface AppContextType extends AppState {
-  setCurrentTool: (tool: AppToolType) => void;
-  setCurrentPage: (page: AppPageType) => void;
-}
-
-// State initial
-const initialState: AppState = {
-  currentPage: "Home",
-  currentTool: null,
-  isActionMenuOpen: false,
+type AppStateType = {
+  modal: ModalProps;
+  toast: ToastProps;
 };
 
-// Création du contexte
-const AppContext = createContext<AppContextType | undefined>(undefined);
+type AppActionsType = {
+  modal: {
+    open: (props: ModalProps) => void;
+    close: () => void;
+  };
+  toast: {
+    show: (props: ToastProps) => void;
+    hide: () => void;
+  };
+};
 
-// Provider component
-interface AppProviderProps {
+type AppContextType = {
+  state: AppStateType;
+  actions: AppActionsType;
+};
+
+type AppProviderProps = {
   children: ReactNode;
-}
-
-export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  const [state, setState] = useState<AppState>(initialState);
-
-  const setCurrentPage = (page: AppPageType) => {
-    setState((prev) => ({ ...prev, currentPage: page }));
-  };
-
-  const setCurrentTool = (tool: AppToolType) => {
-    setState((prev) => ({ ...prev, currentTool: tool }));
-  };
-
-  const value: AppContextType = {
-    ...state,
-    setCurrentPage,
-    setCurrentTool,
-  };
-
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-// Hook personnalisé pour utiliser le contexte
-export const useApp = (): AppContextType => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error("useApp must be used within an AppProvider");
-  }
-  return context;
+const defaultAppContext: AppContextType = {
+  state: {
+    modal: { isOpen: false, message: "" },
+    toast: { isVisible: false, message: "", status: "neutral" },
+  },
+  actions: {
+    modal: {
+      open: () => {},
+      close: () => {},
+    },
+    toast: {
+      show: () => {},
+      hide: () => {},
+    },
+  },
 };
+
+const AppContext = createContext<AppContextType>(defaultAppContext);
+
+export const AppProvider = ({ children }: AppProviderProps) => {
+  const [state, dispatch] = useReducer(
+    (state: AppStateType, action: { type: string; payload?: object }) => {
+      switch (action.type) {
+        case "MODAL_OPEN":
+          return {
+            ...state,
+            modal: { ...state.modal, ...action.payload, isOpen: true },
+          };
+        case "MODAL_CLOSE":
+          return { ...state, modal: { ...state.modal, isOpen: false } };
+        case "TOAST_SHOW":
+          return {
+            ...state,
+            toast: { ...state.toast, ...action.payload, isVisible: true },
+          };
+        case "TOAST_HIDE":
+          return { ...state, toast: { ...state.toast, isVisible: false } };
+        default:
+          return state;
+      }
+    },
+    defaultAppContext.state
+  );
+
+  const actions: AppActionsType = {
+    modal: {
+      open: (props: ModalProps) =>
+        dispatch({ type: "MODAL_OPEN", payload: props }),
+      close: () => dispatch({ type: "MODAL_CLOSE" }),
+    },
+    toast: {
+      show: (props: ToastProps) =>
+        dispatch({ type: "TOAST_SHOW", payload: props }),
+      hide: () => dispatch({ type: "TOAST_HIDE" }),
+    },
+  };
+
+  return (
+    <AppContext.Provider
+      value={{
+        state,
+        actions,
+      }}
+    >
+      {children}
+    </AppContext.Provider>
+  );
+};
+export default AppContext;

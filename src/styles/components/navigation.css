@@ -1,6 +1,6 @@
 .navigation {
   z-index: 10;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
@@ -37,10 +37,10 @@
   font-weight: 400;
 }
 
-.tab--active {
+.tab.active {
   color: rgb(31, 130, 22);
 }
 
-.tab--active .tab__label {
+.tab.active .tab__label {
   font-weight: 600;
 }

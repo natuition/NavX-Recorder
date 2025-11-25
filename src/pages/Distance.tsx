@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Layer,
   Source,
@@ -9,14 +9,25 @@ import type { FeatureCollection, LineString, Point } from "geojson";
 import DistanceToolBar from "../components/DistanceToolBar";
 import { Distance as DistanceTool } from "../utils/Distance";
 import { useGeolocation } from "../contexts/GeolocationContext";
+import { useLocation } from "react-router";
+import { useToast } from "../hooks/useToast";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
-const DISTANCE_UNIT = "m";
-
 const Distance = () => {
+  const location = useLocation();
+  const toast = useToast();
+
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
   const [distances, setDistances] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (gpsPoints.length > 0) {
+      location.state.measureActive = true;
+    } else {
+      location.state.measureActive = false;
+    }
+  }, [gpsPoints, location.state]);
 
   const { position } = useGeolocation();
 
@@ -25,7 +36,14 @@ const Distance = () => {
   };
 
   const handleAddGPSPoint = () => {
-    if (!position) return;
+    if (!position) {
+      console.warn("Position is not available, could not add GPS point.");
+      toast.show({
+        message: "Position GPS non disponible",
+        status: "warn",
+      });
+      return;
+    }
 
     const newPoint: LonLat = [position.longitude, position.latitude];
 
@@ -33,6 +51,7 @@ const Distance = () => {
       const lastPoint = gpsPoints[gpsPoints.length - 1];
 
       const newDistance =
+        // TODO: Utiliser turf.js pour le calcul de distance
         DistanceTool.haversine(
           lastPoint[1],
           lastPoint[0],

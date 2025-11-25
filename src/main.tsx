@@ -3,14 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { BluetoothProvider } from "./contexts/BluetoothContext.tsx";
-import { AppProvider } from "./contexts/AppContext.tsx";
+import { BrowserRouter } from "react-router";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AppProvider>
-      <BluetoothProvider>
+    <BluetoothProvider>
+      <BrowserRouter>
         <App />
-      </BluetoothProvider>
-    </AppProvider>
+      </BrowserRouter>
+    </BluetoothProvider>
   </StrictMode>
 );
