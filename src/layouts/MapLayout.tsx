@@ -1,6 +1,6 @@
 import { Outlet } from "react-router";
 import StatusBar from "../components/StatusBar";
-import { ScaleControl } from "react-map-gl/mapbox";
+import { ScaleControl, useMap } from "react-map-gl/mapbox";
 import type { CSSProperties } from "react";
 import GeolocateControl from "../components/GeolocateControl";
 
@@ -10,16 +10,25 @@ const SCALE_CONTROL_UNIT = "metric";
  * Couche de mise ne page pour les éléments liés à la carte.
  */
 export const MapLayout = () => {
+  const { map } = useMap();
+
+  const handleZoomIn = () => {
+    map?.zoomIn();
+  };
+  const handleZoomOut = () => {
+    map?.zoomOut();
+  };
+
   return (
     <>
       <StatusBar />
       <div className="map-layout__controls">
         <GeolocateControl />
-        {/* TODO: Remplacer par des boutons réels de zoom */}
-        <p className="map-control">
+        {/* TODO: Remplacer par des composants */}
+        <p className="map-control" onClick={handleZoomIn}>
           <span className="map-control__icon">+</span>
         </p>
-        <p className="map-control">
+        <p className="map-control" onClick={handleZoomOut}>
           <span className="map-control__icon">-</span>
         </p>
       </div>
