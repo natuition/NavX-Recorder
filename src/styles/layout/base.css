@@ -23,5 +23,5 @@ img {
 }
 
 .base-layout__content {
-  height: 100%;
+  height: fit-content;
 }

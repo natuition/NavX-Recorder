@@ -12,4 +12,5 @@
 @import url("./styles/components/navigation.css");
 @import url("./styles/components/action-menu.css");
 @import url("./styles/components/toolbar.css");
+@import url("./styles/components/loader.css");
 @import url("./styles/pages/settings.css");

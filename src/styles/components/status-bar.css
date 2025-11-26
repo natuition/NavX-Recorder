@@ -1,8 +1,6 @@
 .status-bar {
   background-color: hsla(0, 0%, 100%, 0.75);
   backdrop-filter: blur(8px);
-  left: 0;
-  right: 0;
 }
 
 .status-bar__indicators {

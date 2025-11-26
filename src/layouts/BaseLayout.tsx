@@ -1,7 +1,7 @@
 import { useLocation } from "react-router";
 import Navigation from "../components/Navigation.tsx";
 import TopBar from "../components/TopBar.tsx";
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 const ROUTES_WHITHOUT_NAVIGATION = ["/distance", "/area"];
 
@@ -26,7 +26,7 @@ const BaseLayout = ({ children }: { children: ReactNode }) => {
           <Navigation />
         </footer>
       )}
-      <div className="safe-area"></div>
+      {/* <div className="safe-area"></div> */}
     </div>
   );
 };
