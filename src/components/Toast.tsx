@@ -11,8 +11,17 @@ import { useToast } from "../hooks/useToast";
 type ToastStatus = "success" | "error" | "warn" | "info" | "neutral";
 
 export type ToastProps = {
+  /**
+   * Indique si le toast est visible ou non.
+   */
   isVisible?: boolean;
+  /**
+   * Message à afficher dans le toast.
+   */
   message?: string;
+  /**
+   * Statut du toast (définit l'icône et le style).
+   */
   status?: ToastStatus;
 };
 
@@ -24,6 +33,9 @@ const TOAST_ICONS: Record<ToastStatus, JSX.Element> = {
   neutral: <IoIosInformationCircle className="toast__icon " />,
 };
 
+/**
+ * Composant affichant des notifications temporaires (toasts) à l'utilisateur.
+ */
 const Toast = () => {
   const { isVisible, message, status, hide } = useToast();
 
