@@ -44,8 +44,16 @@ const defaultAppContext: AppContextType = {
   },
 };
 
+/**
+ * Contexte global de l'application pour la gestion des composants à
+ * état global (modal, toast, etc.).
+ */
 const AppContext = createContext<AppContextType>(defaultAppContext);
 
+/**
+ * Fournit le contexte global de l'application aux composants enfants.
+ * Voir `AppContext`.
+ */
 export const AppProvider = ({ children }: AppProviderProps) => {
   const [state, dispatch] = useReducer(
     (state: AppStateType, action: { type: string; payload?: object }) => {
