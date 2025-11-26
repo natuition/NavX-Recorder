@@ -56,8 +56,11 @@ const GeolocateControl = () => {
 
   return (
     <>
-      <div id="geolocate-control" onClick={handleGeolocateClick}>
-        <IoMdLocate size={24} />
+      <div
+        className="map-control map-control--geolocate"
+        onClick={handleGeolocateClick}
+      >
+        <IoMdLocate className="map-control__icon" />
       </div>
       <Source
         id="current-location"

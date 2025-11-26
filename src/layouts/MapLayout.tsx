@@ -13,7 +13,17 @@ export const MapLayout = () => {
   return (
     <>
       <StatusBar />
-      <GeolocateControl />
+      <div className="map-layout__controls">
+        <GeolocateControl />
+        {/* TODO: Remplacer par des boutons réels de zoom */}
+        <p className="map-control">
+          <span className="map-control__icon">+</span>
+        </p>
+        <p className="map-control">
+          <span className="map-control__icon">-</span>
+        </p>
+      </div>
+
       <ScaleControl
         unit={SCALE_CONTROL_UNIT}
         position="bottom-right"

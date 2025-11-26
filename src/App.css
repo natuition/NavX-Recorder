@@ -4,23 +4,6 @@
   position: relative;
 }
 
-#geolocate-control {
-  position: absolute;
-  top: 100px;
-  right: 10px;
-  z-index: 1;
-  background-color: rgba(255, 255, 255, 0.5);
-  box-shadow: inset 0 0 2px 2px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5em;
-  border-radius: 6px;
-  color: rgb(112, 112, 112);
-  cursor: pointer;
-}
-
 #position {
   position: absolute;
   top: 85px;
