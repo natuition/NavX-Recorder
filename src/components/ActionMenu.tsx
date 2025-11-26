@@ -2,10 +2,21 @@ import { FaDrawPolygon, FaRuler } from "react-icons/fa";
 import { Link } from "react-router";
 
 type ActionMenuProps = {
+  /**
+   * Indique si le menu est actif (visible) ou non.
+   */
   active: boolean;
+  /**
+   * Callback appelé lorsque l'utilisateur clique en dehors du menu pour le fermer.
+   * @returns void
+   */
   onHide: () => void;
 };
 
+/**
+ * Ce composant affiche un menu d'action permettant de choisir entre
+ * différentes options de mesure (distance ou surface).
+ */
 const ActionMenu = ({ onHide, active }: ActionMenuProps) => {
   return (
     <nav
