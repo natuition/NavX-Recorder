@@ -1,15 +1,37 @@
 import { useModal } from "../hooks/useModal";
 
 export type ModalProps = {
+  /**
+   * Indique si la modal est ouverte ou non.
+   */
   isOpen?: boolean;
+  /**
+   * Message à afficher dans la modal.
+   */
   message: string;
+  /**
+   * Label du bouton "Oui" (ou true pour afficher le bouton par défaut).
+   */
   yesLabel?: string | boolean;
+  /**
+   * Label du bouton "Non" (ou true pour afficher le bouton par défaut).
+   */
   noLabel?: string | boolean;
+  /**
+   * Callback appelé lorsque l'utilisateur clique sur "Oui".
+   */
   onYes?: () => void;
+  /**
+   * Callback appelé lorsque l'utilisateur clique sur "Non".
+   */
   onNo?: () => void;
 };
 
-export const Modal = () => {
+/**
+ * Permet d'afficher des messages et des actions de confirmation.
+ * Ce composant est contrôlé via le hook `useModal`.
+ */
+const Modal = () => {
   const { isOpen, message, yesLabel, noLabel, close, onYes, onNo } = useModal();
 
   if (!isOpen) return null;
@@ -36,3 +58,5 @@ export const Modal = () => {
     </div>
   );
 };
+
+export default Modal;
