@@ -3,13 +3,13 @@ import { Layer, Source, useMap } from "react-map-gl/mapbox";
 import type { CircleLayerSpecification } from "react-map-gl/mapbox";
 import { useCallback, useEffect, useState } from "react";
 import { IoMdLocate } from "react-icons/io";
-import { useGeolocation } from "../contexts/GeolocationContext";
+import { useGeolocation } from "../hooks/useGeolocation";
 
 const CurrentLocation = () => {
   const [isInitialCenteringDone, setIsInitialCenteringDone] = useState(false);
   const { position } = useGeolocation();
 
-  const { current: map } = useMap();
+  const { map } = useMap();
 
   useEffect(() => {
     if (!map || !position) return;

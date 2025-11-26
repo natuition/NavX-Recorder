@@ -7,12 +7,12 @@ import {
   type FillLayerSpecification,
 } from "react-map-gl/mapbox";
 import type { FeatureCollection, LineString, Point, Polygon } from "geojson";
-import { useGeolocation } from "../contexts/GeolocationContext";
 import AreaToolBar from "../components/AreaToolBar";
 import { Distance } from "../utils/Distance";
 import area from "@turf/area";
 import { useLocation } from "react-router";
 import { useToast } from "../hooks/useToast";
+import { useGeolocation } from "../hooks/useGeolocation";
 
 type LonLat = [number, number]; // [longitude, latitude]
 

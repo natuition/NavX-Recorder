@@ -1,6 +1,5 @@
 import {
   createContext,
-  useContext,
   useState,
   type ReactNode,
   useRef,
@@ -19,7 +18,7 @@ const BLE_WRITE_INTERVAL = 1000; // 1 seconde (1Hz)
 const BLE_DISCONNECT_TIMEOUT = 2000; // 2 secondes
 const BLE_STOP_NOTIFS_WARN_THRESHOLD = 5000; // 5 secondes
 
-type BluetoothContextValue = {
+export type BluetoothContextType = {
   bluetoothConnected: boolean;
   connectBluetooth: () => Promise<void>;
   disconnectBluetooth: () => Promise<void>;
@@ -27,11 +26,11 @@ type BluetoothContextValue = {
   subscribeBluetoothData: (callback: (chunk: string) => void) => () => void;
 };
 
-const BluetoothContext = createContext<BluetoothContextValue | undefined>(
+const BluetoothContext = createContext<BluetoothContextType | undefined>(
   undefined
 );
 
-export function BluetoothProvider({ children }: { children: ReactNode }) {
+export const BluetoothProvider = ({ children }: { children: ReactNode }) => {
   const [bluetoothConnected, setBluetoothConnected] = useState<boolean>(false);
 
   const deviceRef = useRef<BleDevice | null>(null);
@@ -346,7 +345,7 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const value: BluetoothContextValue = {
+  const value: BluetoothContextType = {
     bluetoothConnected,
     connectBluetooth,
     disconnectBluetooth,
@@ -359,12 +358,5 @@ export function BluetoothProvider({ children }: { children: ReactNode }) {
       {children}
     </BluetoothContext.Provider>
   );
-}
-
-export function useBluetooth(): BluetoothContextValue {
-  const ctx = useContext(BluetoothContext);
-  if (!ctx) {
-    throw new Error("useBluetooth must be used within BluetoothProvider");
-  }
-  return ctx;
-}
+};
+export default BluetoothContext;

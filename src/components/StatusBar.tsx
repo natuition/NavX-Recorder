@@ -1,8 +1,8 @@
-import { useGeolocation } from "../contexts/GeolocationContext";
 import { TbWorldLongitude, TbWorldLatitude } from "react-icons/tb";
 import { RiGpsFill } from "react-icons/ri";
 import { FaSatellite } from "react-icons/fa6";
-import { useBluetooth } from "../contexts/BluetoothContext";
+import { useBluetooth } from "../hooks/useBluetooth";
+import { useGeolocation } from "../hooks/useGeolocation";
 
 interface FixQualityInfo {
   id: string;

@@ -1,25 +1,24 @@
 import {
   createContext,
-  useContext,
   useEffect,
   useRef,
   useState,
   type ReactNode,
   type RefObject,
 } from "react";
-import { useBluetooth } from "./BluetoothContext";
 import { NtripClient } from "../services/NtripClient";
 import type { GNSSPosition, Mountpoint, NMEA } from "../types";
 import { NmeaParser } from "../services/NmeaParser";
+import { useBluetooth } from "../hooks/useBluetooth";
 
 const GEOLOCATION_REFRESH_INTERVAL = 250; // ms
 const MOUNTPOINT_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const MOUNTPOINT_RETRIEVAL_DELAY = 10 * 1000; // 10 secondes
 
-interface GeolocationContextType {
+export type GeolocationContextType = {
   position: GNSSPosition | undefined;
   positionRef: RefObject<GNSSPosition | undefined>;
-}
+};
 
 const GeolocationContext = createContext<GeolocationContextType | undefined>(
   undefined
@@ -234,11 +233,4 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
     </GeolocationContext.Provider>
   );
 };
-
-export const useGeolocation = (): GeolocationContextType => {
-  const ctx = useContext(GeolocationContext);
-  if (ctx === undefined) {
-    throw new Error("useGeolocation must be used within GeolocationProvider");
-  }
-  return ctx;
-};
+export default GeolocationContext;

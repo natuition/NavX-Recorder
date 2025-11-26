@@ -8,9 +8,9 @@ import {
 import type { FeatureCollection, LineString, Point } from "geojson";
 import DistanceToolBar from "../components/DistanceToolBar";
 import { Distance as DistanceTool } from "../utils/Distance";
-import { useGeolocation } from "../contexts/GeolocationContext";
 import { useLocation } from "react-router";
 import { useToast } from "../hooks/useToast";
+import { useGeolocation } from "../hooks/useGeolocation";
 
 type LonLat = [number, number]; // [longitude, latitude]
 

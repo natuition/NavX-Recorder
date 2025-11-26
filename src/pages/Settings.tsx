@@ -1,4 +1,4 @@
-import { useBluetooth } from "../contexts/BluetoothContext";
+import { useBluetooth } from "../hooks/useBluetooth";
 import { useModal } from "../hooks/useModal";
 
 const Settings = () => {

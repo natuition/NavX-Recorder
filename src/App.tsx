@@ -6,22 +6,27 @@ import Projects from "./pages/Projects.tsx";
 import Settings from "./pages/Settings.tsx";
 import Search from "./pages/Search.tsx";
 import { Route, Routes } from "react-router";
-import { Map } from "./layouts/Map.tsx";
+import { MapProvider } from "./providers/MapProvider.tsx";
 import Distance from "./pages/Distance.tsx";
 import PanelLayout from "./layouts/PanelLayout.tsx";
-import { AppProvider } from "./contexts/AppContext.tsx";
+import { AppProvider } from "./providers/AppProvider.tsx";
 import Modal from "./components/Modal.tsx";
 import Area from "./pages/Area.tsx";
 import Toast from "./components/Toast.tsx";
 import { MapLayout } from "./layouts/MapLayout.tsx";
 
+/**
+ * Composant principal de l'application NavX Recorder.
+ * Il configure la structure de l'application avec les différents
+ * fournisseurs de contexte et les routes.
+ */
 const App = () => {
   return (
     <>
       <AppProvider>
         <Modal />
         <Toast />
-        <Map>
+        <MapProvider>
           <BaseLayout>
             <Routes>
               <Route path="/" element={<MapLayout />}>
@@ -36,7 +41,7 @@ const App = () => {
               </Route>
             </Routes>
           </BaseLayout>
-        </Map>
+        </MapProvider>
       </AppProvider>
     </>
   );

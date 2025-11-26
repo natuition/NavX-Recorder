@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import AppContext from "../contexts/AppContext";
+import AppContext from "../providers/AppProvider";
 
 export function useToast() {
   const { state, actions } = useContext(AppContext);
