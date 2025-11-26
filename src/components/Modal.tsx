@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useModal } from "../hooks/useModal";
 
 export type ModalProps = {
@@ -8,7 +9,7 @@ export type ModalProps = {
   /**
    * Message à afficher dans la modal.
    */
-  message: string;
+  message?: string | null;
   /**
    * Label du bouton "Oui" (ou true pour afficher le bouton par défaut).
    */
@@ -25,6 +26,10 @@ export type ModalProps = {
    * Callback appelé lorsque l'utilisateur clique sur "Non".
    */
   onNo?: () => void;
+  /**
+   * Experimental
+   */
+  _render?: () => ReactNode;
 };
 
 /**
@@ -32,7 +37,8 @@ export type ModalProps = {
  * Ce composant est contrôlé via le hook `useModal`.
  */
 const Modal = () => {
-  const { isOpen, message, yesLabel, noLabel, close, onYes, onNo } = useModal();
+  const { isOpen, message, yesLabel, noLabel, close, onYes, onNo, _render } =
+    useModal();
 
   if (!isOpen) return null;
 
@@ -40,7 +46,7 @@ const Modal = () => {
     <div className="modal__overlay" onClick={close}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__content">
-          <p>{message}</p>
+          {_render?.() || <p>{message ?? "Hello world!"}</p>}
           <div className="modal__actions">
             {yesLabel && (
               <button className="button button--success" onClick={onYes}>
@@ -58,5 +64,15 @@ const Modal = () => {
     </div>
   );
 };
+
+const SaveDistanceContent = ({ distance }: { distance: number }) => {
+  return (
+    <>
+      <p>Distance à enregistrer: {distance}</p>
+    </>
+  );
+};
+
+Modal.SaveDistance = SaveDistanceContent;
 
 export default Modal;

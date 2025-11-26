@@ -64,7 +64,18 @@ export const AppProvider = ({ children }: AppProviderProps) => {
             modal: { ...state.modal, ...action.payload, isOpen: true },
           };
         case "MODAL_CLOSE":
-          return { ...state, modal: { ...state.modal, isOpen: false } };
+          return {
+            ...state,
+            modal: {
+              message: null,
+              isOpen: false,
+              yesLabel: false,
+              noLabel: false,
+              onNo: () => null,
+              onYes: () => null,
+              _render: () => null,
+            },
+          };
         case "TOAST_SHOW":
           return {
             ...state,

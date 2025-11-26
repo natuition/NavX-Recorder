@@ -1,7 +1,6 @@
 import { TbWorldLongitude, TbWorldLatitude } from "react-icons/tb";
 import { RiGpsFill } from "react-icons/ri";
 import { FaSatellite } from "react-icons/fa6";
-import { useBluetooth } from "../hooks/useBluetooth";
 import { useGeolocation } from "../hooks/useGeolocation";
 
 interface FixQualityInfo {
@@ -40,13 +39,6 @@ const FIX_QUALITY_MAP: Record<number, FixQualityInfo> = {
 
 const StatusBar = () => {
   const { position } = useGeolocation();
-  const { bluetoothConnected, connectBluetooth } = useBluetooth();
-
-  const handleConnectNavX = () => {
-    if (!bluetoothConnected) {
-      connectBluetooth();
-    }
-  };
 
   const fixLabel = FIX_QUALITY_MAP[position?.fixQuality ?? 0]?.label;
   const fixSlug = FIX_QUALITY_MAP[position?.fixQuality ?? 0]?.slug;
@@ -81,12 +73,6 @@ const StatusBar = () => {
       ) : (
         <div className="status-bar__indicators">
           <p className="status-bar__info-msg">Position GPS non disponible</p>
-          <button
-            onClick={handleConnectNavX}
-            className="button button--neutral status-bar__connect-ble"
-          >
-            Connecter NavX
-          </button>
         </div>
       )}
     </div>
