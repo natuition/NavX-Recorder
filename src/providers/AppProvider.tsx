@@ -82,7 +82,14 @@ export const AppProvider = ({ children }: AppProviderProps) => {
             toast: { ...state.toast, ...action.payload, isVisible: true },
           };
         case "TOAST_HIDE":
-          return { ...state, toast: { ...state.toast, isVisible: false } };
+          return {
+            ...state,
+            toast: {
+              message: null,
+              isVisible: false,
+              status: "neutral",
+            } as ToastProps,
+          };
         default:
           return state;
       }

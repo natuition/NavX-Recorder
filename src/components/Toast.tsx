@@ -18,7 +18,7 @@ export type ToastProps = {
   /**
    * Message à afficher dans le toast.
    */
-  message?: string;
+  message?: string | null;
   /**
    * Statut du toast (définit l'icône et le style).
    */
@@ -57,7 +57,7 @@ const Toast = () => {
     <div className={`toast toast--${status}`}>
       <div className="toast__left">{TOAST_ICONS[status!]}</div>
       <div className="toast__right">
-        <p>{message}</p>
+        <p>{message || "Hello world!"}</p>
         <IoMdClose className="toast__close" onClick={hide} />
       </div>
     </div>

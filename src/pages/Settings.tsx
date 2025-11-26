@@ -1,11 +1,13 @@
 import Modal from "../components/Modal";
 import { useBluetooth } from "../hooks/useBluetooth";
 import { useModal } from "../hooks/useModal";
+import { useToast } from "../hooks/useToast";
 
 const Settings = () => {
   const { bluetoothConnected, connectBluetooth, disconnectBluetooth } =
     useBluetooth();
   const modal = useModal();
+  const toast = useToast();
 
   const handleNavxConnection = () => {
     if (bluetoothConnected) {
@@ -53,6 +55,14 @@ const Settings = () => {
     });
   };
 
+  const handleTestToast1 = () => {
+    toast.info("Info toast");
+  };
+
+  const handleTestToast2 = () => {
+    toast.error("Error toast");
+  };
+
   return (
     <>
       <h1 className="page__title">Paramètres</h1>
@@ -73,6 +83,12 @@ const Settings = () => {
         </button>
         <button className="button" onClick={handleTestModal3}>
           Test Modal 3
+        </button>
+        <button className="button" onClick={handleTestToast1}>
+          Test Toast 1
+        </button>
+        <button className="button" onClick={handleTestToast2}>
+          Test Toast 2
         </button>
       </section>
     </>
