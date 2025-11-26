@@ -1,19 +1,38 @@
-import { FaSave } from "react-icons/fa";
-import { FaDrawPolygon } from "react-icons/fa6";
+import { FaSave, FaPlayCircle } from "react-icons/fa";
+import { FaDrawPolygon, FaPause } from "react-icons/fa6";
 import { MdLocationOn } from "react-icons/md";
-import { FaPlayCircle } from "react-icons/fa";
-import { FaPause } from "react-icons/fa6";
 
-interface AreaToolBarProps {
+type AreaToolBarProps = {
+  /**
+   * Surface mesurée en unités carrées.
+   */
   area: number;
+  /**
+   * Unité de mesure de la surface (par défaut "m²").
+   */
   unit?: string;
+  /**
+   * Indique si l'enregistrement est en cours ou non.
+   */
   isRecording?: boolean;
+  /**
+   * Callback appelé lorsque l'utilisateur clique sur le bouton "Enregistrer".
+   */
   onSave: () => void;
+  /**
+   * Callback appelé lorsque l'utilisateur clique sur le bouton d'enregistrement/pause.
+   */
   onToggleRecording: () => void;
+  /**
+   * Nombre de points constituant la surface mesurée.
+   */
   nbPoints?: number;
-}
+};
 
-export const AreaToolBar = ({
+/**
+ * Barre d'outils pour la mesure de surface.
+ */
+const AreaToolBar = ({
   area,
   unit = "m²",
   nbPoints = 0,
