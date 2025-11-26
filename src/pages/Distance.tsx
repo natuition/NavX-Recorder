@@ -38,10 +38,7 @@ const Distance = () => {
   const handleAddGPSPoint = () => {
     if (!position) {
       console.warn("Position is not available, could not add GPS point.");
-      toast.show({
-        message: "Position GPS non disponible",
-        status: "warn",
-      });
+      toast.warn("Position GPS non disponible");
       return;
     }
 
