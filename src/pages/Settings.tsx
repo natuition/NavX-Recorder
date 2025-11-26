@@ -27,8 +27,8 @@ const Settings = () => {
 
   return (
     <>
-      <h1 className="settings__title">Paramètres</h1>
-      <section className="settings__section">
+      <h1 className="page__title">Paramètres</h1>
+      <section className="page__section">
         <button className="button" onClick={handleNavxConnection}>
           {bluetoothConnected ? "Déconnecter" : "Connecter"} NavX
         </button>
