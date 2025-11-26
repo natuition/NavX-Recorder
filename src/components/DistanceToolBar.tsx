@@ -1,16 +1,33 @@
 import { IoIosUndo } from "react-icons/io";
-import { FaRuler } from "react-icons/fa";
+import { FaRuler, FaSave } from "react-icons/fa";
 import { MdOutlineAddLocationAlt, MdLocationOn } from "react-icons/md";
-import { FaSave } from "react-icons/fa";
 
 type DistanceToolBarProps = {
+  /**
+   * Callback appelé lorsque l'utilisateur clique sur le bouton d'ajout de point.
+   */
   onAdd: () => void;
+  /**
+   * Callback appelé lorsque l'utilisateur clique sur le bouton "Enregistrer".
+   */
   onSave: () => void;
+  /**
+   * Callback appelé lorsque l'utilisateur clique sur le bouton de suppression du dernier point.
+   */
   onRemoveLast?: () => void;
+  /**
+   * Distance mesurée en mètres.
+   */
   distance: number;
+  /**
+   * Nombre de points constituant la mesure de distance.
+   */
   nbPoints: number;
 };
 
+/**
+ * Barre d'outils pour la mesure de distance.
+ */
 const DistanceToolBar = ({
   onAdd,
   onSave,
