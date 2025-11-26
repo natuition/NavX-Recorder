@@ -4,6 +4,10 @@ import { useLocation, useNavigate } from "react-router";
 import { capitalize } from "../utils/string";
 import { useModal } from "../hooks/useModal";
 
+/**
+ * Barre supérieure de l'application affichant le logo ou le
+ * bouton de retour selon la route.
+ */
 const TopBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -13,7 +17,7 @@ const TopBar = () => {
     location.pathname.startsWith("/distance") ||
     location.pathname.startsWith("/area");
   const title =
-    location.state?.title ?? capitalize(location.pathname.split("/")[1]); // Fallback title
+    location.state?.title ?? capitalize(location.pathname.split("/")[1]); // Fallback title: utiliser le nom de la route
 
   const handleBack = () => {
     if (location.state?.measureActive) {
