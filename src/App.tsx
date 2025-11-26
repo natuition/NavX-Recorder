@@ -10,7 +10,7 @@ import { MapLayout } from "./layouts/MapLayout.tsx";
 import Distance from "./pages/Distance.tsx";
 import PanelLayout from "./layouts/PanelLayout.tsx";
 import { AppProvider } from "./contexts/AppContext.tsx";
-import { Modal } from "./components/Modal.tsx";
+import Modal from "./components/Modal.tsx";
 import Area from "./pages/Area.tsx";
 import Toast from "./components/Toast.tsx";
 
