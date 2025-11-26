@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { IoMdLocate } from "react-icons/io";
 import { useGeolocation } from "../hooks/useGeolocation";
 
-const CurrentLocation = () => {
+const GeolocateControl = () => {
   const [isInitialCenteringDone, setIsInitialCenteringDone] = useState(false);
   const { position } = useGeolocation();
 
@@ -56,7 +56,7 @@ const CurrentLocation = () => {
 
   return (
     <>
-      <div id="geolocate" onClick={handleGeolocateClick}>
+      <div id="geolocate-control" onClick={handleGeolocateClick}>
         <IoMdLocate size={24} />
       </div>
       <Source
@@ -83,4 +83,4 @@ const layerSpecifications: CircleLayerSpecification = {
   source: "current-location",
 };
 
-export default CurrentLocation;
+export default GeolocateControl;
