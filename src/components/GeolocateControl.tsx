@@ -2,12 +2,14 @@ import { Marker, useMap } from "react-map-gl/mapbox";
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { IoMdLocate } from "react-icons/io";
 import { useGeolocation } from "../hooks/useGeolocation";
+import { useToast } from "../hooks/useToast";
 
 const GeolocateControl = () => {
   const [isInitialCenteringDone, setIsInitialCenteringDone] = useState(false);
   const { position } = useGeolocation();
 
   const { map } = useMap();
+  const toast = useToast();
 
   useEffect(() => {
     if (!map || !position) return;
@@ -26,13 +28,17 @@ const GeolocateControl = () => {
   const handleGeolocateClick = useCallback(() => {
     if (!map) return;
 
-    if (position) {
-      map.flyTo({
-        center: [position.longitude, position.latitude],
-        zoom: 18,
-        speed: 1.2,
-      });
+    if (!position) {
+      console.warn("Position is not available, could not geolocate.");
+      toast.warn("Position GPS non disponible");
+      return;
     }
+
+    map.flyTo({
+      center: [position.longitude, position.latitude],
+      zoom: 18,
+      speed: 1.2,
+    });
   }, [map, position]);
 
   return (
