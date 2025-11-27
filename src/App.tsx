@@ -14,6 +14,7 @@ import Modal from "./components/Modal.tsx";
 import Area from "./pages/Area.tsx";
 import Toast from "./components/Toast.tsx";
 import { MapLayout } from "./layouts/MapLayout.tsx";
+import ProjectDetails from "./pages/ProjectDetails.tsx";
 
 /**
  * Composant principal de l'application NavX Recorder.
@@ -36,6 +37,7 @@ const App = () => {
               </Route>
               <Route path="/" element={<PanelLayout />}>
                 <Route path="projects" element={<Projects />} />
+                <Route path="projects/:id" element={<ProjectDetails />} />
                 <Route path="search" element={<Search />} />
                 <Route path="settings" element={<Settings />} />
               </Route>

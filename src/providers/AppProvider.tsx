@@ -1,10 +1,13 @@
-import { createContext, useReducer, type ReactNode } from "react";
+import { createContext, useEffect, useReducer, type ReactNode } from "react";
 import { type ModalProps } from "../components/Modal";
 import type { ToastProps } from "../components/Toast";
+import type { TopBarProps } from "../components/TopBar";
+import { useLocation } from "react-router";
 
 type AppStateType = {
   modal: ModalProps;
   toast: ToastProps;
+  topBar: TopBarProps;
 };
 
 type AppActionsType = {
@@ -31,6 +34,7 @@ const defaultAppContext: AppContextType = {
   state: {
     modal: { isOpen: false, message: "" },
     toast: { isVisible: false, message: "", status: "neutral" },
+    topBar: { title: "", showBackButton: false },
   },
   actions: {
     modal: {
@@ -55,6 +59,18 @@ const AppContext = createContext<AppContextType>(defaultAppContext);
  * Voir `AppContext`.
  */
 export const AppProvider = ({ children }: AppProviderProps) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    dispatch({
+      type: "TOPBAR_UPDATE",
+      payload: {
+        title: location.state?.title,
+        showBackButton: !!location.state?.title,
+      },
+    });
+  }, [location]);
+
   const [state, dispatch] = useReducer(
     (state: AppStateType, action: { type: string; payload?: object }) => {
       switch (action.type) {
@@ -89,6 +105,11 @@ export const AppProvider = ({ children }: AppProviderProps) => {
               isVisible: false,
               status: "neutral",
             } as ToastProps,
+          };
+        case "TOPBAR_UPDATE":
+          return {
+            ...state,
+            topBar: { ...state.topBar, ...action.payload } as TopBarProps,
           };
         default:
           return state;

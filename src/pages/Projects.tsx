@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router";
 import Modal from "../components/Modal";
 import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
@@ -25,6 +26,14 @@ const projects: Project[] = [];
 const Projects = () => {
   const modal = useModal();
   const toast = useToast();
+  const navigate = useNavigate();
+
+  const handleNavigateToProject = (projectId: string) => {
+    console.debug("Navigating to project with ID:", projectId);
+    navigate(`/projects/${projectId}`, {
+      state: { title: "Détails du projet", from: "/projects" },
+    });
+  };
 
   const handleCreateProject = () => {
     console.debug("Creating a new project...");
@@ -49,7 +58,11 @@ const Projects = () => {
       <section className="page__section projects">
         {projects.length > 0 ? (
           projects.map((project) => (
-            <div key={project.id} className="project-card">
+            <div
+              key={project.id}
+              className="project-card"
+              onClick={() => handleNavigateToProject(project.id)}
+            >
               <h2 className="project-card__name">{project.name}</h2>
               <p className="project-card__description">{project.description}</p>
               <p className="project-card__date">

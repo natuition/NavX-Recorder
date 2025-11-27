@@ -8,7 +8,7 @@ import {
 import type { FeatureCollection, LineString, Point } from "geojson";
 import DistanceToolBar from "../components/DistanceToolBar";
 import { Distance as DistanceTool } from "../utils/Distance";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useToast } from "../hooks/useToast";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { useModal } from "../hooks/useModal";
@@ -17,6 +17,7 @@ type LonLat = [number, number]; // [longitude, latitude]
 
 const Distance = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const toast = useToast();
   const modal = useModal();
 
@@ -24,12 +25,19 @@ const Distance = () => {
   const [distances, setDistances] = useState<number[]>([]);
 
   useEffect(() => {
+    // TODO: trouver un moyen de factoriser dans un hook utilitaire
+    if (!location.state) {
+      // Si on accède directement à la page sans état, revenir à l'accueil
+      navigate("/", { replace: true });
+      return;
+    }
+
     if (gpsPoints.length > 0) {
       location.state.measureActive = true;
     } else {
       location.state.measureActive = false;
     }
-  }, [gpsPoints, location.state]);
+  }, [gpsPoints, location, navigate]);
 
   const { position } = useGeolocation();
 

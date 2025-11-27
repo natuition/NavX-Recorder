@@ -10,7 +10,7 @@ import type { FeatureCollection, LineString, Point, Polygon } from "geojson";
 import AreaToolBar from "../components/AreaToolBar";
 import { Distance } from "../utils/Distance";
 import area from "@turf/area";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useToast } from "../hooks/useToast";
 import { useGeolocation } from "../hooks/useGeolocation";
 
@@ -21,18 +21,26 @@ const UPDATE_INTERVAL_MILLISECONDS = 500; // Intervalle d'ajout de points GPS
 
 const Area = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const toast = useToast();
 
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
   const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
+    // TODO: trouver un moyen de factoriser dans un hook utilitaire
+    if (!location.state) {
+      // Si on accède directement à la page sans état, revenir à l'accueil
+      navigate("/", { replace: true });
+      return;
+    }
+
     if (isRecording || gpsPoints.length > 0) {
       location.state.measureActive = true;
     } else {
       location.state.measureActive = false;
     }
-  }, [isRecording, location.state, gpsPoints.length]);
+  }, [isRecording, location.state, gpsPoints.length, navigate]);
 
   const { positionRef } = useGeolocation();
 

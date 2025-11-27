@@ -1,23 +1,21 @@
 import { IoIosArrowBack } from "react-icons/io";
 import NavxLogo from "../assets/navx-logo.svg.svg";
 import { useLocation, useNavigate } from "react-router";
-import { capitalize } from "../utils/string";
 import { useModal } from "../hooks/useModal";
+
+export type TopBarProps = {
+  title: string;
+  showBackButton: boolean;
+};
 
 /**
  * Barre supérieure de l'application affichant le logo ou le
  * bouton de retour selon la route.
  */
-const TopBar = () => {
+const TopBar = ({ title, showBackButton }: TopBarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const modal = useModal();
-
-  const showBackButton =
-    location.pathname.startsWith("/distance") ||
-    location.pathname.startsWith("/area");
-  const title =
-    location.state?.title ?? capitalize(location.pathname.split("/")[1]); // Fallback title: utiliser le nom de la route
 
   const handleBack = () => {
     if (location.state?.measureActive) {
@@ -36,7 +34,7 @@ const TopBar = () => {
         },
       });
     } else {
-      navigate("/");
+      navigate(location.state?.from ?? "/");
     }
   };
 
