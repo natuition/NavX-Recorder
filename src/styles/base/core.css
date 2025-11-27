@@ -7,3 +7,9 @@
 img {
   max-width: 100%;
 }
+
+textarea {
+  resize: none;
+  overflow: auto;
+  font-family: inherit;
+}

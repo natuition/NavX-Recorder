@@ -2,93 +2,44 @@ import Modal from "../components/Modal";
 import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
 
-const reports = [
-  {
-    id: crypto.randomUUID(),
-    name: "Relevé 1",
-    description: "Description du relevé 1",
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-    measurements: [
-      {
-        id: crypto.randomUUID(),
-        name: "Surface de la parcelle",
-        type: "area",
-        value: 42,
-        unit: "m²",
-        points: [
-          [2.2945, 48.8584],
-          [2.295, 48.8585],
-          [2.2955, 48.8583],
-        ],
-      },
-      {
-        id: crypto.randomUUID(),
-        name: "Distance inter-planche 1",
-        type: "distance",
-        value: 15,
-        unit: "m",
-        points: [
-          [2.2945, 48.8584],
-          [2.2955, 48.8583],
-        ],
-      },
-      {
-        id: crypto.randomUUID(),
-        name: "Distance inter-planche 2",
-        type: "distance",
-        value: 15,
-        unit: "m",
-        points: [
-          [2.2945, 48.8584],
-          [2.2955, 48.8583],
-        ],
-      },
-      {
-        id: crypto.randomUUID(),
-        name: "Distance inter-planche 3",
-        type: "distance",
-        value: 15,
-        unit: "m",
-        points: [
-          [2.2945, 48.8584],
-          [2.2955, 48.8583],
-        ],
-      },
-      {
-        id: crypto.randomUUID(),
-        name: "Distance intra-plants",
-        type: "distance",
-        value: 0.5,
-        unit: "m",
-        points: [
-          [2.2945, 48.8584],
-          [2.295, 48.8585],
-        ],
-      },
-      {
-        id: crypto.randomUUID(),
-        name: "Distance inter-plants",
-        type: "distance",
-        value: 0.5,
-        unit: "m",
-        points: [
-          [2.2945, 48.8584],
-          [2.295, 48.8585],
-        ],
-      },
-    ],
-  },
-];
+export type Measurement = {
+  id: string;
+  name: string;
+  type: "distance" | "area";
+  value: number;
+  unit: string;
+  points: [number, number][];
+};
+
+export type Project = {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: number;
+  updatedAt: number;
+  measurements: Measurement[];
+};
+
+const projects: Project[] = [];
 
 const Projects = () => {
   const modal = useModal();
   const toast = useToast();
 
   const handleCreateProject = () => {
-    console.warn("Creating a new project...");
+    console.debug("Creating a new project...");
+    const handler = (project: Project) => {
+      // TODO: Implémenter la sauvegarde réelle
+      projects.push(project);
+
+      modal.close();
+      toast.success(`Projet "${project.name}" créé avec succès !`);
+    };
+
     modal.open({
-      _render: () => <Modal.CreateProject />,
+      _render: () => (
+        <Modal.CreateProject onCreated={handler} onCancel={modal.close} />
+      ),
     });
   };
 
@@ -96,15 +47,19 @@ const Projects = () => {
     <>
       <h1 className="page__title">Projets</h1>
       <section className="page__section projects">
-        {reports.map((report) => (
-          <div key={report.id} className="project-card">
-            <h2 className="project-card__name">{report.name}</h2>
-            <p className="project-card__description">{report.description}</p>
-            <p className="project-card__date">
-              Mis à jour le {new Date(report.updatedAt).toLocaleDateString()}
-            </p>
-          </div>
-        ))}
+        {projects.length > 0 ? (
+          projects.map((project) => (
+            <div key={project.id} className="project-card">
+              <h2 className="project-card__name">{project.name}</h2>
+              <p className="project-card__description">{project.description}</p>
+              <p className="project-card__date">
+                Mis à jour le {new Date(project.updatedAt).toLocaleDateString()}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p>Aucun projet</p>
+        )}
       </section>
       <footer>
         <button

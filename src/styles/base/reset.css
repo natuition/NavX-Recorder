@@ -132,3 +132,8 @@ a {
   color: initial;
   background: none;
 }
+input,
+textarea {
+  padding-block: 0;
+  padding-inline: 0;
+}
