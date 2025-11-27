@@ -1,4 +1,6 @@
 :root {
+  --color-primary: rgb(31, 130, 22);
+
   --color-status-info: rgb(67, 124, 214);
   --color-status-success: rgb(50, 129, 70);
   --color-status-warn: rgb(160, 108, 39);

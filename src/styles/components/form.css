@@ -1,0 +1,33 @@
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  gap: 1em;
+}
+
+form .form__field {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 0.25em;
+}
+
+form label {
+  font-size: 1.2rem;
+}
+
+form input {
+  width: 100%;
+  border: 1px solid rgb(213, 213, 213);
+  border-radius: 4px;
+  padding: 0.5em 1em;
+}
+
+form input:focus {
+  outline: none;
+}
+
+form textarea {
+  width: 100%;
+}

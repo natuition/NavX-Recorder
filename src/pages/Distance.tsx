@@ -11,12 +11,14 @@ import { Distance as DistanceTool } from "../utils/Distance";
 import { useLocation } from "react-router";
 import { useToast } from "../hooks/useToast";
 import { useGeolocation } from "../hooks/useGeolocation";
+import { useModal } from "../hooks/useModal";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
 const Distance = () => {
   const location = useLocation();
   const toast = useToast();
+  const modal = useModal();
 
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
   const [distances, setDistances] = useState<number[]>([]);
@@ -33,6 +35,63 @@ const Distance = () => {
 
   const totalDistance = () => {
     return distances.reduce((prev, current) => prev + current, 0);
+  };
+
+  const handleSave = () => {
+    if (gpsPoints.length < 2) {
+      console.warn("Add at least two GPS points to save the measurement.");
+      return;
+    }
+
+    const newMeasurement = {
+      id: crypto.randomUUID(),
+      type: "distance",
+      value: totalDistance(),
+      unit: "m",
+      points: gpsPoints,
+    };
+
+    modal.open({
+      message: "Enregistrer cette mesure ?",
+      yesLabel: true,
+      noLabel: "Annuler",
+      onNo: modal.close,
+      onYes: () => {
+        console.warn("Saving measurement:", newMeasurement);
+        modal.close();
+        setGpsPoints([]);
+        setDistances([]);
+        toast.success("Mesure enregistrée");
+      },
+    });
+  };
+
+  const handleAddGPSPointMock = () => {
+    let newPoint: LonLat;
+    if (gpsPoints.length === 0) {
+      newPoint = [-1.1517, 46.1591];
+    } else {
+      const lastPoint = gpsPoints[gpsPoints.length - 1];
+      newPoint = [
+        lastPoint[0] + (Math.random() - 0.5) * 0.001,
+        lastPoint[1] + (Math.random() - 0.5) * 0.001,
+      ];
+    }
+
+    if (gpsPoints.length > 0) {
+      const lastPoint = gpsPoints[gpsPoints.length - 1];
+
+      const newDistance =
+        DistanceTool.haversine(
+          lastPoint[1],
+          lastPoint[0],
+          newPoint[1],
+          newPoint[0]
+        ) * 1000;
+
+      setDistances((prev) => [...prev, newDistance]);
+    }
+    setGpsPoints((prev) => [...prev, newPoint]);
   };
 
   const handleAddGPSPoint = () => {
@@ -101,9 +160,9 @@ const Distance = () => {
       <DistanceToolBar
         nbPoints={gpsPoints.length}
         distance={totalDistance()}
-        onAdd={handleAddGPSPoint}
+        onAdd={handleAddGPSPointMock}
         onRemoveLast={() => setGpsPoints((prev) => prev.slice(0, -1))}
-        onSave={() => console.log("Saving distance...")}
+        onSave={handleSave}
       />
     </>
   );

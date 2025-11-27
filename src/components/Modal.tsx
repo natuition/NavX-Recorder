@@ -27,7 +27,7 @@ export type ModalProps = {
    */
   onNo?: () => void;
   /**
-   * Experimental
+   * Experimental, permet de rendre un contenu personnalisé dans la modal.
    */
   _render?: () => ReactNode;
 };
@@ -49,7 +49,7 @@ const Modal = () => {
           {_render?.() || <p>{message ?? "Hello world!"}</p>}
           <div className="modal__actions">
             {yesLabel && (
-              <button className="button button--success" onClick={onYes}>
+              <button className="button button--primary" onClick={onYes}>
                 {typeof yesLabel === "string" ? yesLabel : "Oui"}
               </button>
             )}
@@ -73,6 +73,28 @@ const SaveDistanceContent = ({ distance }: { distance: number }) => {
   );
 };
 
+const CreateProjectContent = () => {
+  return (
+    <div className="cmc-save">
+      <h2 className="cmc-save__title">Nouveau projet</h2>
+      <form>
+        <div className="form__field">
+          <label htmlFor="projectName">Nom</label>
+          <input type="text" name="projectName" id="projectName" />
+        </div>
+        <div className="form__field">
+          <label htmlFor="projectDescription">Description</label>
+          <textarea name="projectDescription" id="projectDescription" />
+        </div>
+        <button type="submit" className="button button--primary">
+          Créer
+        </button>
+      </form>
+    </div>
+  );
+};
+
 Modal.SaveDistance = SaveDistanceContent;
+Modal.CreateProject = CreateProjectContent;
 
 export default Modal;

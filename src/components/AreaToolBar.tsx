@@ -67,7 +67,7 @@ const AreaToolBar = ({
         </button>
         <button
           className={`button button--${
-            isRecording ? "neutral" : "success"
+            isRecording ? "neutral" : "primary"
           } toolbar__action`}
           onClick={onToggleRecording}
         >

@@ -19,7 +19,7 @@
 
 .button--primary {
   color: white;
-  background-color: rgb(67, 124, 214);
+  background-color: var(--color-primary);
 }
 
 .button--success {

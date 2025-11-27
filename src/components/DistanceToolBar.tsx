@@ -65,7 +65,7 @@ const DistanceToolBar = ({
           <FaSave size={18} />
         </button>
         <button
-          className="button button--success toolbar__action"
+          className="button button--primary toolbar__action"
           onClick={onAdd}
         >
           <MdOutlineAddLocationAlt size={18} />
