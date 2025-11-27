@@ -2,7 +2,7 @@
   position: fixed;
   z-index: 50;
   bottom: calc(10rem);
-  right: 1rem;
+  left: 1rem;
   background-color: rgb(255, 255, 255);
   border-radius: 4px;
   font-size: 1.2rem;

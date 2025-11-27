@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import type { Project } from "../domain/project/types";
 import { useProjectManager } from "../hooks/useProjectManager";
+import ProjectChecklist from "../components/ProjectChecklist";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState<Project | null>(null);
@@ -34,8 +35,13 @@ const ProjectDetails = () => {
     project && (
       <>
         <h1 className="page__title">{project.name}</h1>
-        <section className="page__section project-details">
-          <p>Contenu du projet à implémenter...</p>
+        <section className="page__section">
+          <h2 className="page__subtitle">Description</h2>
+          <p>{project.description}</p>
+        </section>
+        <section className="page__section">
+          <h2 className="page__subtitle">Checklist</h2>
+          <ProjectChecklist project={project} />
         </section>
       </>
     )

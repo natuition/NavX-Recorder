@@ -11,5 +11,6 @@
   margin-bottom: 2em;
 }
 
-.page__footer {
+.page__subtitle {
+  font-size: 1.6rem;
 }
