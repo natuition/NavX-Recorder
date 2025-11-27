@@ -3,5 +3,7 @@
   position: relative;
   z-index: 10;
   background-color: white;
-  height: 100vh;
+  height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
 }

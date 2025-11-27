@@ -2,31 +2,26 @@ import { useNavigate } from "react-router";
 import Modal from "../components/Modal";
 import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
-
-export type Measurement = {
-  id: string;
-  name: string;
-  type: "distance" | "area";
-  value: number;
-  unit: string;
-  points: [number, number][];
-};
-
-export type Project = {
-  id: string;
-  name: string;
-  description: string;
-  createdAt: number;
-  updatedAt: number;
-  measurements: Measurement[];
-};
-
-const projects: Project[] = [];
+import type { Project } from "../domain/project/types";
+import { useProjectManager } from "../hooks/useProjectManager";
+import { useEffect, useState } from "react";
+import { MdCreateNewFolder } from "react-icons/md";
 
 const Projects = () => {
+  const projectManager = useProjectManager();
   const modal = useModal();
   const toast = useToast();
   const navigate = useNavigate();
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const fetchedProjects = await projectManager.listProjects();
+      setProjects(fetchedProjects);
+    };
+
+    fetchProjects();
+  }, [projectManager]);
 
   const handleNavigateToProject = (projectId: string) => {
     console.debug("Navigating to project with ID:", projectId);
@@ -37,12 +32,21 @@ const Projects = () => {
 
   const handleCreateProject = () => {
     console.debug("Creating a new project...");
-    const handler = (project: Project) => {
-      // TODO: Implémenter la sauvegarde réelle
-      projects.push(project);
+    const handler = async (project: Project) => {
+      try {
+        await projectManager.saveProject(project);
+      } catch (error) {
+        console.error("Error saving project:", error);
+        toast.error(
+          `Erreur lors de la création du projet. Veuillez réessayer.`
+        );
+        modal.close();
+        return;
+      }
 
       modal.close();
-      toast.success(`Projet "${project.name}" créé avec succès !`);
+      setProjects((prevProjects) => [...prevProjects, project]);
+      toast.success(`Projet "${project.name}" créé.`);
     };
 
     modal.open({
@@ -54,7 +58,15 @@ const Projects = () => {
 
   return (
     <>
-      <h1 className="page__title">Projets</h1>
+      <h1 className="page__title">
+        Projets{" "}
+        <button
+          onClick={handleCreateProject}
+          className="button button--neutral projects__create-button"
+        >
+          <MdCreateNewFolder size={28} />
+        </button>
+      </h1>
       <section className="page__section projects">
         {projects.length > 0 ? (
           projects.map((project) => (
@@ -74,14 +86,6 @@ const Projects = () => {
           <p>Aucun projet</p>
         )}
       </section>
-      <footer>
-        <button
-          onClick={handleCreateProject}
-          className="button button--primary"
-        >
-          Créer un projet
-        </button>
-      </footer>
     </>
   );
 };

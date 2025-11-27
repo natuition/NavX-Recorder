@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from "react";
-import { IoAddCircle } from "react-icons/io5";
+import { FaTools } from "react-icons/fa";
 
 const TabButton = ({
   onPress,
@@ -8,7 +8,7 @@ const TabButton = ({
 }) => {
   return (
     <li onClick={onPress} className="tab tab--button">
-      <IoAddCircle size={40} />
+      <FaTools size={24} />
     </li>
   );
 };

@@ -5,7 +5,7 @@ import {
   type ReactNode,
 } from "react";
 import { useModal } from "../hooks/useModal";
-import type { Project } from "../pages/Projects";
+import type { Project } from "../domain/project/types";
 
 export type ModalProps = {
   /**

@@ -1,8 +1,13 @@
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router";
+import type { Project } from "../domain/project/types";
+import { useProjectManager } from "../hooks/useProjectManager";
 
 const ProjectDetails = () => {
+  const [project, setProject] = useState<Project | null>(null);
+  const projectManager = useProjectManager();
   const location = useLocation();
+  const params = useParams();
   const navigate = useNavigate();
 
   // TODO: trouver un moyen de factoriser dans un hook utilitaire
@@ -14,13 +19,26 @@ const ProjectDetails = () => {
     }
   }, [location.state, navigate]);
 
+  useEffect(() => {
+    const fetchProject = async () => {
+      const projectId = params.id;
+      if (!projectId) return;
+
+      const fetchedProject = await projectManager.getProject(projectId);
+      setProject(fetchedProject);
+    };
+    fetchProject();
+  }, [projectManager, params]);
+
   return (
-    <>
-      <h1 className="page__title">Détails du projet</h1>
-      <section className="page__section project-details">
-        <p>Contenu du projet à implémenter...</p>
-      </section>
-    </>
+    project && (
+      <>
+        <h1 className="page__title">{project.name}</h1>
+        <section className="page__section project-details">
+          <p>Contenu du projet à implémenter...</p>
+        </section>
+      </>
+    )
   );
 };
 

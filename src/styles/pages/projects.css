@@ -4,4 +4,30 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5em;
+  height: calc(100% - 8rem);
+  padding-bottom: 1rem;
+}
+
+.projects {
+  overflow: auto;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE/Edge legacy */
+  -ms-overflow-style: none;
+}
+
+.projects::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+.projects__create-button {
+  position: absolute;
+  width: fit-content;
+  padding: 0.75em;
+  bottom: 8rem;
+  right: 3rem;
+  border-radius: 100%;
+  box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.25);
 }

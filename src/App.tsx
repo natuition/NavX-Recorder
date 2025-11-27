@@ -15,6 +15,7 @@ import Area from "./pages/Area.tsx";
 import Toast from "./components/Toast.tsx";
 import { MapLayout } from "./layouts/MapLayout.tsx";
 import ProjectDetails from "./pages/ProjectDetails.tsx";
+import { DomainProvider } from "./providers/DomainProvider.tsx";
 
 /**
  * Composant principal de l'application NavX Recorder.
@@ -24,26 +25,29 @@ import ProjectDetails from "./pages/ProjectDetails.tsx";
 const App = () => {
   return (
     <>
+      {/* TODO: <ConfigProvider /> */}
       <AppProvider>
         <Modal />
         <Toast />
-        <MapProvider>
-          <BaseLayout>
-            <Routes>
-              <Route path="/" element={<MapLayout />}>
-                <Route index element={<p className="loader">Loading...</p>} />
-                <Route path="distance" element={<Distance />} />
-                <Route path="area" element={<Area />} />
-              </Route>
-              <Route path="/" element={<PanelLayout />}>
-                <Route path="projects" element={<Projects />} />
-                <Route path="projects/:id" element={<ProjectDetails />} />
-                <Route path="search" element={<Search />} />
-                <Route path="settings" element={<Settings />} />
-              </Route>
-            </Routes>
-          </BaseLayout>
-        </MapProvider>
+        <DomainProvider>
+          <MapProvider>
+            <BaseLayout>
+              <Routes>
+                <Route path="/" element={<MapLayout />}>
+                  <Route index element={<p className="loader">Loading...</p>} />
+                  <Route path="distance" element={<Distance />} />
+                  <Route path="area" element={<Area />} />
+                </Route>
+                <Route path="/" element={<PanelLayout />}>
+                  <Route path="projects" element={<Projects />} />
+                  <Route path="projects/:id" element={<ProjectDetails />} />
+                  <Route path="search" element={<Search />} />
+                  <Route path="settings" element={<Settings />} />
+                </Route>
+              </Routes>
+            </BaseLayout>
+          </MapProvider>
+        </DomainProvider>
       </AppProvider>
     </>
   );
