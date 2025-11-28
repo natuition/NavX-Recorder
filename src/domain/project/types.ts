@@ -3,6 +3,7 @@ export type MeasurementType = "distance" | "area";
 export type Measurement = {
   id: string;
   name: string;
+  subject?: string;
   type: MeasurementType;
   value: number;
   unit: string;
@@ -12,6 +13,7 @@ export type Measurement = {
 export type ProjectType = "generic" | "culture"; // Ajouter d'autres types pour des applications futures
 
 export type Task = {
+  id: string;
   name: string;
   measurementType: MeasurementType;
   completed: boolean;

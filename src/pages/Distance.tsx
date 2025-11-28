@@ -110,7 +110,7 @@ const Distance = () => {
             await projectManager.updateChecklist(
               project.id,
               (taskCompleted) => {
-                if (taskCompleted.name === task.name) {
+                if (taskCompleted.id === task.id) {
                   navigate(-1);
                 }
               }

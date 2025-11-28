@@ -11,11 +11,21 @@ export class ProjectManager {
         (m) => m.type === "distance"
       );
     },
+
     "has-some-surface": (project: Project) => {
       return project.measurements.some(
         (m) => m.type === "area"
       );
     },
+
+    "boards-distances-done": (project: Project) => {
+      const requiredDistances = 9; // Par exemple, pour une parcelle de 3 planches il y a 9 distances à mesurer
+      const distanceMeasurements = project.measurements.filter(
+        (m) => m.type === "distance" && m.subject === "boards-distance"
+      );
+      return distanceMeasurements.length >= requiredDistances;
+    },
+
     // Placeholder for future conditions
     "not-implemented": (_: Project) => {
       return false;
@@ -88,10 +98,10 @@ export class ProjectManager {
     switch (type) {
       case "culture":
         return [
-          { name: "Distances entre les planches", measurementType: "distance", completed: false, condition: "not-implemented" },
-          { name: "Surface de la parcelle", measurementType: "area", completed: false, condition: "not-implemented" },
-          { name: "Distance intra-rang", measurementType: "distance", completed: false, condition: "not-implemented" },
-          { name: "Distance inter-rang", measurementType: "distance", completed: false, condition: "not-implemented" },
+          { id: "1", name: "Distances entre les planches", slug: "distance-entre-les-planches", measurementType: "distance", completed: false, condition: "boards-distances-done" },
+          { id: "2", name: "Surface de la parcelle", measurementType: "area", completed: false, condition: "not-implemented" },
+          { id: "3", name: "Distance intra-rang", measurementType: "distance", completed: false, condition: "not-implemented" },
+          { id: "4", name: "Distance inter-rang", measurementType: "distance", completed: false, condition: "not-implemented" },
         ];
       case "generic":
         return genericChecklist as Task[];

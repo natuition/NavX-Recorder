@@ -1,5 +1,6 @@
 [
   {
+    "id": "1",
     "name": "Enregistrer une distance",
     "instructions": [
       "Assurez-vous de capturer au moins deux points GPS pour une mesure précise."
@@ -10,6 +11,7 @@
     "condition": "has-some-distance"
   },
   {
+    "id": "2",
     "name": "Enregistrer une surface",
     "measurementType": "area",
     "completed": false,
