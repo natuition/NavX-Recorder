@@ -4,6 +4,8 @@ import type { ToastProps } from "../components/Toast";
 import type { TopBarProps } from "../components/TopBar";
 import { useLocation } from "react-router";
 
+const ROUTES_WITH_NAVIGATION = ["/", "/projects", "/search", "/settings"];
+
 type AppStateType = {
   modal: ModalProps;
   toast: ToastProps;
@@ -66,7 +68,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
       type: "TOPBAR_UPDATE",
       payload: {
         title: location.state?.title,
-        showBackButton: !!location.state?.title,
+        showBackButton: !ROUTES_WITH_NAVIGATION.includes(location.pathname),
       },
     });
   }, [location]);

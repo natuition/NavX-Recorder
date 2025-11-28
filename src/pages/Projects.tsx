@@ -24,14 +24,12 @@ const Projects = () => {
   }, [projectManager]);
 
   const handleNavigateToProject = (projectId: string) => {
-    console.debug("Navigating to project with ID:", projectId);
     navigate(`/projects/${projectId}`, {
       state: { title: "Détails du projet", from: "/projects" },
     });
   };
 
   const handleCreateProject = () => {
-    console.debug("Creating a new project...");
     const handler = async (project: Project) => {
       try {
         await projectManager.saveProject(project);

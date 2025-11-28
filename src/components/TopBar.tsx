@@ -27,30 +27,29 @@ const TopBar = ({ title, showBackButton }: TopBarProps) => {
         noLabel: "Non, rester",
         onYes: () => {
           modal.close();
-          navigate("/");
+          navigate(-1);
         },
         onNo: () => {
           modal.close();
         },
       });
     } else {
-      navigate(location.state?.from ?? "/");
+      navigate(-1);
     }
   };
 
   return (
     <div className="topbar">
       <div className="topbar__left">
-        {showBackButton ? (
-          <>
-            <IoIosArrowBack
-              onClick={handleBack}
-              className="topbar-left__back"
-              size={24}
-            />
-
-            <h1 className="topbar__title">{title}</h1>
-          </>
+        {showBackButton && (
+          <IoIosArrowBack
+            onClick={handleBack}
+            className="topbar-left__back"
+            size={24}
+          />
+        )}
+        {title ? (
+          <h1 className="topbar__title">{title}</h1>
         ) : (
           <img className="topbar__logo" src={NavxLogo} alt="NavX Logo" />
         )}
