@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Distances entre les planches",
+    "measurementType": "distance",
+    "completed": false,
+    "condition": "not-implemented"
+  },
+  {
+    "name": "Surface de la parcelle",
+    "measurementType": "area",
+    "completed": false,
+    "condition": "not-implemented"
+  },
+  {
+    "name": "Distance intra-rang",
+    "measurementType": "distance",
+    "completed": false,
+    "condition": "not-implemented"
+  },
+  {
+    "name": "Distance inter-rang",
+    "measurementType": "distance",
+    "completed": false,
+    "condition": "not-implemented"
+  }
+]

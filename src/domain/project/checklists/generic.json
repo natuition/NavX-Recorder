@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Enregistrer une distance",
+    "instructions": [
+      "Assurez-vous de capturer au moins deux points GPS pour une mesure précise."
+    ],
+    "imagesForInstructions": ["/images/instruction_distance.example.png"],
+    "measurementType": "distance",
+    "completed": false,
+    "condition": "has-some-distance"
+  },
+  {
+    "name": "Enregistrer une surface",
+    "measurementType": "area",
+    "completed": false,
+    "condition": "has-some-surface"
+  }
+]

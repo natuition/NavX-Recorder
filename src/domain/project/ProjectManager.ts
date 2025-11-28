@@ -1,5 +1,6 @@
 import type { Store } from "../stores/Store";
 import type { Measurement, Project, ProjectType, Task } from "./types";
+import genericChecklist from './checklists/generic.json';
 
 export class ProjectManager {
   private store: Store<Project>;
@@ -93,24 +94,7 @@ export class ProjectManager {
           { name: "Distance inter-rang", measurementType: "distance", completed: false, condition: "not-implemented" },
         ];
       case "generic":
-        return [
-          {
-            name: "Enregistrer une distance",
-            instructions: [
-              "Assurez-vous de capturer au moins deux points GPS pour une mesure précise.",
-            ],
-            imagesForInstructions: ['/images/instruction_distance.example.png'],
-            measurementType: "distance",
-            completed: false,
-            condition: 'has-some-distance'
-          },
-          {
-            name: "Enregistrer une surface",
-            measurementType: "area",
-            completed: false,
-            condition: 'has-some-surface'
-          },
-        ];
+        return genericChecklist as Task[];
       default:
         return [];
     }
