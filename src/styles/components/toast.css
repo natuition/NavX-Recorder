@@ -3,7 +3,7 @@
   z-index: 50;
   bottom: calc(10rem);
   left: 1rem;
-  background-color: rgb(255, 255, 255);
+  background-color: var(--color-secondary);
   border-radius: 4px;
   font-size: 1.2rem;
   font-weight: 500;

@@ -1,5 +1,17 @@
 :root {
-  --color-primary: rgb(31, 130, 22);
+  --green-natuition: #47a857;
+  --blue-natuition: #183c64;
+
+  --color-primary: var(--green-natuition);
+  --color-secondary: rgb(255, 255, 255);
+  --color-neutral: rgb(250, 250, 250);
+
+  --color-text-body: rgb(34, 34, 34);
+  --color-text-body-accent: var(--color-primary);
+  --color-text-body-dimmed: rgb(122, 122, 122);
+  --color-text-on-primary: white;
+  --color-text-on-secondary: rgb(34, 34, 34);
+  --color-text-on-neutral: rgb(99, 99, 99);
 
   --color-status-info: rgb(67, 124, 214);
   --color-status-success: rgb(50, 129, 70);

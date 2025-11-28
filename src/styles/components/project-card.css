@@ -4,7 +4,7 @@
   border-radius: 8px;
   width: 100%;
 
-  background: #fff;
+  background: var(--color-neutral);
 
   display: flex;
   flex-direction: column;
@@ -23,17 +23,17 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
-  color: #222;
+  color: var(--color-text-body);
 }
 
 .project-card__description {
   font-size: 0.95rem;
-  color: #555;
+  color: var(--color-text-body);
   margin: 0;
 }
 
 .project-card__date {
   font-size: 0.8rem;
-  color: #777;
+  color: var(--color-text-body-dimmed);
   margin-top: 0.5rem;
 }

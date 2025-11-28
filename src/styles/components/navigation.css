@@ -4,7 +4,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #fbfbfb;
+  background-color: var(--color-neutral);
 }
 
 .navigation__tabs {
@@ -17,7 +17,7 @@
 
 .tab {
   flex: 1;
-  color: #636363;
+  color: var(--color-text-on-neutral);
   display: flex;
   flex-direction: column;
   align-items: center;

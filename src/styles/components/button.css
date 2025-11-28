@@ -14,27 +14,22 @@
 }
 
 .button__icon-left {
-  color: rgb(31, 130, 22);
+  color: var(--color-primary);
 }
 
 .button--primary {
-  color: white;
+  color: var(--color-text-on-primary);
   background-color: var(--color-primary);
 }
 
-.button--success {
-  color: white;
-  background-color: rgb(31, 130, 22);
-}
-
 .button--neutral {
-  color: black;
-  background-color: rgb(233, 233, 233);
+  color: var(--color-text-on-neutral);
+  background-color: var(--color-neutral);
 }
 
 .button--danger {
-  color: white;
-  background-color: rgb(214, 67, 77);
+  color: var(--color-text-on-primary);
+  background-color: var(--color-status-error);
 }
 
 .button--icon {

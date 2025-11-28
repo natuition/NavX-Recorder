@@ -2,7 +2,7 @@
   padding: 2rem;
   position: relative;
   z-index: 10;
-  background-color: white;
+  background-color: var(--color-secondary);
   height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;
