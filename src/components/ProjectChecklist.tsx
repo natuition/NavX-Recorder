@@ -41,7 +41,9 @@ const ProjectChecklist = ({ project }: ProjectChecklistProps) => {
             ) : (
               <FaRegCheckCircle className="checklist-item__icon" />
             )}
-            <p className="checklist-item__content">{task.name}</p>
+            <p className="checklist-item__content">
+              Etape {index + 1} - {task.name}
+            </p>
           </li>
         ))
       ) : (
