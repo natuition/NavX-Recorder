@@ -5,7 +5,8 @@ import {
   type ReactNode,
 } from "react";
 import { useModal } from "../hooks/useModal";
-import type { Project } from "../domain/project/types";
+import type { Project, ProjectType } from "../domain/project/types";
+import { PiCheckLight } from "react-icons/pi";
 
 export type ModalProps = {
   /**
@@ -89,10 +90,11 @@ const CreateProjectContent = ({
   const [fields, setFields] = useState({
     projectName: "",
     projectDescription: "",
+    projectType: "placeholder",
   });
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFields((prev) => ({ ...prev, [name]: value }));
@@ -101,7 +103,8 @@ const CreateProjectContent = ({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const newProject = {
-      id: crypto.randomUUID(),
+      id: crypto.randomUUID() as string,
+      type: fields.projectType as ProjectType,
       name: fields.projectName,
       description: fields.projectDescription,
       createdAt: Date.now(),
@@ -133,6 +136,21 @@ const CreateProjectContent = ({
             onChange={handleChange}
             value={fields.projectDescription}
           />
+        </div>
+        <div className="form__field">
+          <label htmlFor="projectType">Type</label>
+          <select
+            onChange={handleChange}
+            name="projectType"
+            id="projectType"
+            value={fields.projectType}
+          >
+            <option disabled value="placeholder">
+              Choisir un type de projet
+            </option>
+            <option value="generic">Générique</option>
+            <option value="culture">Culture</option>
+          </select>
         </div>
         <button type="submit" className="button button--primary">
           Créer

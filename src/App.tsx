@@ -5,7 +5,7 @@ import BaseLayout from "./layouts/BaseLayout.tsx";
 import Projects from "./pages/Projects.tsx";
 import Settings from "./pages/Settings.tsx";
 import Search from "./pages/Search.tsx";
-import { Route, Routes } from "react-router";
+import { Route, Routes, useLocation } from "react-router";
 import { MapProvider } from "./providers/MapProvider.tsx";
 import Distance from "./pages/Distance.tsx";
 import PanelLayout from "./layouts/PanelLayout.tsx";
@@ -38,7 +38,7 @@ const App = () => {
                   <Route path="distance" element={<Distance />} />
                   <Route path="area" element={<Area />} />
                 </Route>
-                <Route path="/" element={<PanelLayout />}>
+                <Route element={<PanelLayout />}>
                   <Route path="projects" element={<Projects />} />
                   <Route path="projects/:id" element={<ProjectDetails />} />
                   <Route path="search" element={<Search />} />

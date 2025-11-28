@@ -12,6 +12,9 @@ import { useLocation, useNavigate } from "react-router";
 import { useToast } from "../hooks/useToast";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { useModal } from "../hooks/useModal";
+import { useProjectManager } from "../hooks/useProjectManager";
+import type { Measurement } from "../domain/project/types";
+import ProjectModal from "../domain/project/ProjectModal";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
@@ -20,7 +23,10 @@ const Distance = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const modal = useModal();
+  const projectManager = useProjectManager();
+  const { position } = useGeolocation();
 
+  // TODO: factoriser dans un état unique
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
   const [distances, setDistances] = useState<number[]>([]);
 
@@ -32,6 +38,10 @@ const Distance = () => {
       return;
     }
 
+    /*
+     Flag qui indique à la TopBar si elle doit afficher
+     la modale de confirmation de perte de mesure en cours.
+     */
     if (gpsPoints.length > 0) {
       location.state.measureActive = true;
     } else {
@@ -39,7 +49,28 @@ const Distance = () => {
     }
   }, [gpsPoints, location, navigate]);
 
-  const { position } = useGeolocation();
+  useEffect(() => {
+    // Dans le cas dune tâche de projet, on ouvre une modale avec les explications de la tâche.
+    const showInstructions = () => {
+      if (location.state.task?.instructions) {
+        console.debug("Opening modal with task instructions.");
+        modal.open({
+          _render: () => (
+            <ProjectModal.TaskInstructions
+              instructions={location.state.task?.instructions}
+              images={location.state.task?.imagesForInstructions}
+            />
+          ),
+          yesLabel: "J'ai compris",
+          onYes: () => {
+            modal.close();
+          },
+        });
+      }
+    };
+
+    showInstructions();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalDistance = () => {
     return distances.reduce((prev, current) => prev + current, 0);
@@ -51,14 +82,56 @@ const Distance = () => {
       return;
     }
 
-    const newMeasurement = {
-      id: crypto.randomUUID(),
+    const newMeasurement: Measurement = {
+      id: crypto.randomUUID() as string,
+      name: "Distance inter-planches",
       type: "distance",
       value: totalDistance(),
       unit: "m",
       points: gpsPoints,
     };
 
+    // Cas où l'outil de distance est utilisé dans le contexte d'un projet
+    if (location.state?.project && location.state?.task) {
+      const project = location.state.project;
+      const task = location.state.task;
+
+      modal.open({
+        message: `Ajouter cette mesure au projet ${project.name} ?`,
+        yesLabel: true,
+        noLabel: "Annuler",
+        onNo: modal.close,
+        onYes: async () => {
+          try {
+            await projectManager.addMeasurementToProject(
+              project.id,
+              newMeasurement
+            );
+            await projectManager.updateChecklist(
+              project.id,
+              (taskCompleted) => {
+                if (taskCompleted.name === task.name) {
+                  navigate(-1);
+                }
+              }
+            );
+          } catch (error) {
+            console.error("Error saving measurement to project:", error);
+            toast.error(`Erreur lors de l'enregistrement. Veuillez réessayer.`);
+            modal.close();
+            return;
+          }
+
+          modal.close();
+          setGpsPoints([]);
+          setDistances([]);
+          toast.success("Mesure ajoutée.");
+        },
+      });
+      return;
+    }
+
+    // Cas générique, lorsque l'utilisateur utilise l'outil de distance hors contexte de projet
     modal.open({
       message: "Enregistrer cette mesure ?",
       yesLabel: true,

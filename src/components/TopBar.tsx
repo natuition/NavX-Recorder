@@ -19,7 +19,7 @@ const TopBar = ({ title, showBackButton }: TopBarProps) => {
 
   const handleBack = () => {
     if (location.state?.measureActive) {
-      console.debug("Open modal to confirm discard measurement");
+      console.debug("Opening modal to confirm discard measurement.");
       modal.open({
         message:
           "Vous avez une mesure en cours. Voulez-vous vraiment quitter cette page et perdre la mesure en cours ?",

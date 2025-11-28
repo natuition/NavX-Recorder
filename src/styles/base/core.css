@@ -13,3 +13,13 @@ textarea {
   overflow: auto;
   font-family: inherit;
 }
+
+*::selection {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+*:hover::selection {
+  background-color: var(--color-primary);
+  color: white;
+}
