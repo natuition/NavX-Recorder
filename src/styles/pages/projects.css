@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   gap: 0.5em;
   height: calc(100% - 8rem);
   padding-bottom: 1rem;
@@ -22,6 +22,7 @@
   display: none; /* Chrome, Safari, Edge */
 }
 
+/* TODO: créer un composant FAB */
 .projects__create-button {
   position: absolute;
   width: fit-content;
@@ -29,5 +30,5 @@
   bottom: 8rem;
   right: 3rem;
   border-radius: 100%;
-  box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.25);
 }
