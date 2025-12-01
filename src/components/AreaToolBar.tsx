@@ -71,6 +71,7 @@ const AreaToolBar = ({
           } toolbar__action`}
           onClick={onToggleRecording}
         >
+          {isRecording ? "Pause" : "Démarrer"}
           {isRecording ? <FaPause size={18} /> : <FaPlayCircle size={18} />}
         </button>
       </div>

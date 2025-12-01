@@ -13,6 +13,8 @@ import area from "@turf/area";
 import { useLocation, useNavigate } from "react-router";
 import { useToast } from "../hooks/useToast";
 import { useGeolocation } from "../hooks/useGeolocation";
+import { useModal } from "../hooks/useModal";
+import ProjectModal from "../domain/project/ProjectModal";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
@@ -23,9 +25,34 @@ const Area = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
+  const modal = useModal();
+  const { positionRef } = useGeolocation();
 
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
   const [isRecording, setIsRecording] = useState(false);
+
+  useEffect(() => {
+    // Dans le cas dune tâche de projet, on ouvre une modale avec les explications de la tâche.
+    const showInstructions = () => {
+      if (location.state.task?.instructions) {
+        console.debug("Opening modal with task instructions.");
+        modal.open({
+          _render: () => (
+            <ProjectModal.TaskInstructions
+              instructions={location.state.task?.instructions}
+              images={location.state.task?.imagesForInstructions}
+            />
+          ),
+          yesLabel: "J'ai compris",
+          onYes: () => {
+            modal.close();
+          },
+        });
+      }
+    };
+
+    showInstructions();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // TODO: trouver un moyen de factoriser dans un hook utilitaire
@@ -41,8 +68,6 @@ const Area = () => {
       location.state.measureActive = false;
     }
   }, [isRecording, location.state, gpsPoints.length, navigate]);
-
-  const { positionRef } = useGeolocation();
 
   const calcArea = useCallback(() => {
     // Calcul de la surface geodésique en mètre

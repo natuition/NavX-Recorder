@@ -60,6 +60,11 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
       {
         id: "2",
         name: "Surface de la parcelle",
+        instructions: [
+          "Lancer la mesure en appuyant sur le bouton \"Démarrer\".",
+          "Faites le tour complet de la parcelle en vous assurant d'aligner le rover (antenne vers le haut) avec votre jambe qui longe la parcelle.",
+          "Une fois revenu au point de départ, la surface sera automatiquement calculée, il vous sera demandé de confirmer.",
+        ],
         slug: "surface-de-la-parcelle",
         measurementType: "area",
         completed: false,
@@ -67,16 +72,24 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
       },
       {
         id: "3",
-        name: "Distance intra-rang",
-        slug: "distance-intra-rangs",
+        name: "Distance intra-plants",
+        slug: "distance-intra-plants",
+        instructions: [
+          "Effectuer des mesures de distance entre les plants au sein d'une même rangée.",
+          "Au minimum 3 mesures sont recommandées pour une meilleure précision.",
+        ],
         measurementType: "distance",
         completed: false,
         condition: "intra-raw-done"
       },
       {
         id: "4",
-        name: "Distance inter-rang",
-        slug: "distance-inter-rangs",
+        name: "Distance inter-plants",
+        slug: "distance-inter-plants",
+        instructions: [
+          "Effectuer des mesures de distance entre les plants de rangées adjacentes.",
+          "Au minimum 3 mesures sont recommandées pour une meilleure précision.",
+        ],
         measurementType: "distance",
         completed: false,
         condition: "inter-raw-done"
