@@ -58,12 +58,11 @@ export const Projects = () => {
 
   const handleCreateProject = () => {
     modal.open({
-      _render: () => (
-        <ProjectModal.CreateProject
-          onCreated={createProject}
-          onCancel={modal.close}
-        />
-      ),
+      _render: () => <ProjectModal.CreateProject onCreated={createProject} />,
+      noLabel: "Annuler",
+      onNo: () => {
+        modal.close();
+      },
     });
   };
 

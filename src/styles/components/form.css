@@ -12,7 +12,7 @@ form .form__field {
   align-items: start;
   justify-content: center;
   width: 100%;
-  gap: 0.25em;
+  gap: 0.5em;
 }
 
 form .form__field--required label::after {

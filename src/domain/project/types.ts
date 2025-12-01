@@ -31,6 +31,7 @@ export type Task = {
 export type Project = {
   id: string;
   type: ProjectType;
+  meta?: Record<string, string | number | boolean | null>;
   name: string;
   description: string;
   createdAt: number;

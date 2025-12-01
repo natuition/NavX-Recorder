@@ -3,18 +3,22 @@ import {
   useContext,
   useState,
   type ChangeEvent,
+  type Dispatch,
   type FormEvent,
-  type ReactNode,
+  type SetStateAction,
 } from "react";
-import type { CreateProjectFormType, ProjectType } from "./types";
+import type { CreateProjectFormType } from "./types";
+import { ProjectTypesSpecifications } from "./ProjectTypesSpecifications";
+import { cast } from "../../utils/string";
+import { useToast } from "../../hooks/useToast";
 
 type CreateProjectFormProps = {
-  children: ReactNode;
   onSubmit: (form: CreateProjectFormType) => void;
 };
 
 const CreateProjectFormContext = createContext<{
   fields: CreateProjectFormType;
+  setFields: Dispatch<SetStateAction<CreateProjectFormType>>;
   isValid: () => boolean;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -25,11 +29,13 @@ const CreateProjectFormContext = createContext<{
     description: "",
     type: "placeholder",
   },
+  setFields: () => {},
   isValid: () => false,
   handleChange: () => {},
 });
 
-const CreateProjectForm = ({ children, onSubmit }: CreateProjectFormProps) => {
+const CreateProjectForm = ({ onSubmit }: CreateProjectFormProps) => {
+  const toast = useToast();
   const [fields, setFields] = useState<CreateProjectFormType>({
     name: "",
     description: "",
@@ -48,14 +54,22 @@ const CreateProjectForm = ({ children, onSubmit }: CreateProjectFormProps) => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (!isValid()) {
+      toast.error("Veuillez remplir tous les champs requis.");
+      return;
+    }
     onSubmit(fields);
   };
 
   return (
     <CreateProjectFormContext.Provider
-      value={{ fields, isValid, handleChange }}
+      value={{ fields, setFields, isValid, handleChange }}
     >
-      <form onSubmit={handleSubmit}>{children}</form>
+      <form onSubmit={handleSubmit}>
+        <Base />
+        <Meta />
+        <Submit />
+      </form>
     </CreateProjectFormContext.Provider>
   );
 };
@@ -68,6 +82,8 @@ const Base = () => {
       <div className="form__field form__field--required">
         <label htmlFor="projectName">Nom</label>
         <input
+          autoComplete="off"
+          required
           type="text"
           name="name"
           id="projectName"
@@ -87,6 +103,7 @@ const Base = () => {
       <div className="form__field form__field--required">
         <label htmlFor="projectType">Type</label>
         <select
+          required
           onChange={handleChange}
           name="type"
           id="projectType"
@@ -95,8 +112,13 @@ const Base = () => {
           <option disabled value="placeholder">
             Choisir un type de projet
           </option>
-          <option value="generic">Générique</option>
-          <option value="culture">Culture</option>
+          {Object.values(ProjectTypesSpecifications).map((specs) => {
+            return (
+              <option key={specs.value} value={specs.value}>
+                {specs.name}
+              </option>
+            );
+          })}
         </select>
       </div>
     </>
@@ -111,10 +133,48 @@ const Submit = () => {
   );
 };
 
-const Meta = ({ type }: { type: ProjectType }) => {
+const Meta = () => {
+  const { fields, setFields } = useContext(CreateProjectFormContext);
+
+  if (fields.type === "placeholder") {
+    return;
+  }
+
+  const handleMetaChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    metaType: string
+  ) => {
+    const { name, value } = e.target;
+    setFields((prev) => ({
+      ...prev,
+      meta: {
+        ...prev.meta,
+        [name]: cast(value, metaType),
+      },
+    }));
+  };
+
   return (
     <>
-      <p>Meta for typ {type}</p>
+      {ProjectTypesSpecifications[fields.type.toUpperCase()].formMetas?.map(
+        (meta) => (
+          <div
+            className={`form__field ${
+              meta.required ? "form__field--required" : ""
+            }`}
+            key={meta.name}
+          >
+            <label htmlFor={meta.name}>{meta.label}</label>
+            <input
+              required={meta.required}
+              type={meta.type}
+              name={meta.name}
+              id={meta.name}
+              onChange={(e) => handleMetaChange(e, meta.type)}
+            />
+          </div>
+        )
+      )}
     </>
   );
 };

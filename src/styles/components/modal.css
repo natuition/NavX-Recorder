@@ -29,7 +29,7 @@
   font-size: 1.4rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 1.5em;
   width: 100%;
   padding: 1em;
@@ -57,7 +57,7 @@
 .cmc-save {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 2em;
 }
