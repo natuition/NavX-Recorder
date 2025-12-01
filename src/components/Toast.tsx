@@ -10,6 +10,12 @@ import { useToast } from "../hooks/useToast";
 
 type ToastStatus = "success" | "error" | "warn" | "info" | "neutral";
 
+export type ToastOptions = {
+  context: ToastContextType;
+};
+
+type ToastContextType = "base" | "measurement" | "project";
+
 export type ToastProps = {
   /**
    * Indique si le toast est visible ou non.
@@ -23,6 +29,10 @@ export type ToastProps = {
    * Statut du toast (définit l'icône et le style).
    */
   status?: ToastStatus;
+  /**
+   * Options supplémentaires du toast.
+   */
+  options: ToastOptions;
 };
 
 const TOAST_ICONS: Record<ToastStatus, JSX.Element> = {
@@ -37,14 +47,14 @@ const TOAST_ICONS: Record<ToastStatus, JSX.Element> = {
  * Composant affichant des notifications temporaires (toasts) à l'utilisateur.
  */
 const Toast = () => {
-  const { isVisible, message, status, hide } = useToast();
+  const { isVisible, message, status, hide, options } = useToast();
 
   useEffect(() => {
     let timeout: number;
     if (isVisible) {
       timeout = setTimeout(() => {
         hide();
-      }, 3000);
+      }, 2000);
     }
     return () => {
       if (timeout) clearTimeout(timeout);
@@ -54,7 +64,11 @@ const Toast = () => {
   if (!isVisible) return;
 
   return (
-    <div className={`toast toast--${status}`}>
+    <div
+      className={`toast toast--${status} toast--${options.context}-ctx ${
+        isVisible ? "toast--visible" : ""
+      }`}
+    >
       <div className="toast__left">{TOAST_ICONS[status!]}</div>
       <div className="toast__right">
         <p>{message || "Hello world!"}</p>

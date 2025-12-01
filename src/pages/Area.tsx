@@ -65,7 +65,7 @@ const Area = () => {
         console.warn(
           "GPS position not available, cannot start recording area."
         );
-        toast.warn("Position GPS non disponible");
+        toast.warn("Position GPS non disponible", { context: "measurement" });
         return;
       }
       setGpsPoints([]);

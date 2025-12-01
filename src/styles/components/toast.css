@@ -1,7 +1,7 @@
 .toast {
   position: fixed;
   z-index: 9999;
-  bottom: calc(10rem);
+  bottom: 10rem;
   left: 1rem;
   background-color: var(--color-secondary);
   border-radius: 4px;
@@ -10,6 +10,40 @@
   border: 1px solid var(--color-status-neutral);
   display: flex;
   align-items: center;
+}
+
+.toast--visible {
+  animation: toast-slide-in 0.2s ease-out forwards;
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateY(25%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.toast--base-ctx {
+  bottom: 7rem;
+  left: 1rem;
+}
+
+.toast--measurement-ctx {
+  bottom: 9rem;
+  left: 1rem;
 }
 
 .toast__right {

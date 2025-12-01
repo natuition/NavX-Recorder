@@ -35,7 +35,12 @@ type AppProviderProps = {
 const defaultAppContext: AppContextType = {
   state: {
     modal: { isOpen: false, message: "" },
-    toast: { isVisible: false, message: "", status: "neutral" },
+    toast: {
+      isVisible: false,
+      message: "",
+      status: "neutral",
+      options: { context: "base" },
+    },
     topBar: { title: "", showBackButton: false },
   },
   actions: {
@@ -103,6 +108,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
           return {
             ...state,
             toast: {
+              options: {
+                context: "base",
+              },
               message: null,
               isVisible: false,
               status: "neutral",

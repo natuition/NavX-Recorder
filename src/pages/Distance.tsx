@@ -117,7 +117,10 @@ const Distance = () => {
             );
           } catch (error) {
             console.error("Error saving measurement to project:", error);
-            toast.error(`Erreur lors de l'enregistrement. Veuillez réessayer.`);
+            toast.error(
+              "Erreur lors de l'enregistrement. Veuillez réessayer.",
+              { context: "measurement" }
+            );
             modal.close();
             return;
           }
@@ -125,7 +128,7 @@ const Distance = () => {
           modal.close();
           setGpsPoints([]);
           setDistances([]);
-          toast.success("Mesure ajoutée.");
+          toast.success("Mesure ajoutée.", { context: "measurement" });
         },
       });
       return;
@@ -142,7 +145,7 @@ const Distance = () => {
         modal.close();
         setGpsPoints([]);
         setDistances([]);
-        toast.success("Mesure enregistrée");
+        toast.success("Mesure enregistrée", { context: "measurement" });
       },
     });
   };
@@ -178,7 +181,7 @@ const Distance = () => {
   const handleAddGPSPoint = () => {
     if (!position) {
       console.warn("Position is not available, could not add GPS point.");
-      toast.warn("Position GPS non disponible");
+      toast.warn("Position GPS non disponible", { context: "measurement" });
       return;
     }
 

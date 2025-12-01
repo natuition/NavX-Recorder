@@ -1,14 +1,12 @@
 import { useNavigate } from "react-router";
 import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
-import type { Project } from "../domain/project/types";
+import type { CreateProjectFormType, Project } from "../domain/project/types";
 import { useProjectManager } from "../hooks/useProjectManager";
 import { createContext, useEffect, useState } from "react";
 import { MdCreateNewFolder } from "react-icons/md";
 import ProjectCard from "../components/ProjectCard";
-import ProjectModal, {
-  type CreateProjectFormType,
-} from "../domain/project/ProjectModal";
+import ProjectModal from "../domain/project/ProjectModal";
 
 type ProjectsStateType = {
   projects: Project[];

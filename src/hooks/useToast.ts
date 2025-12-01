@@ -1,34 +1,48 @@
 import { useContext } from "react";
 import AppContext from "../providers/AppProvider";
+import type { ToastOptions } from "../components/Toast";
 
 export function useToast() {
   const { state, actions } = useContext(AppContext);
 
-  const info = (message: string) => {
+  const info = (message: string, options: ToastOptions = {
+    context: "base",
+  }) => {
     actions.toast.show({
       message: message,
       status: "info",
+      options: options,
     })
   }
 
-  const warn = (message: string) => {
+  const warn = (message: string, options: ToastOptions = {
+    context: "base",
+  }) => {
     actions.toast.show({
       message: message,
       status: "warn",
+      options: options,
+
     })
   }
 
-  const error = (message: string) => {
+  const error = (message: string, options: ToastOptions = {
+    context: "base",
+  }) => {
     actions.toast.show({
       message: message,
       status: "error",
+      options: options,
     })
   }
 
-  const success = (message: string) => {
+  const success = (message: string, options: ToastOptions = {
+    context: "base",
+  }) => {
     actions.toast.show({
       message: message,
       status: "success",
+      options: options,
     })
   }
 
