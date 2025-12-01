@@ -84,7 +84,7 @@ export const Projects = () => {
 
   const deleteProject = async (project: Project) => {
     modal.open({
-      message: `Êtes-vous sûr de vouloir supprimer le projet ${project.name}?`,
+      message: `Êtes-vous sûr de vouloir supprimer le projet "${project.name}" ?`,
       yesLabel: "Oui",
       noLabel: "Annuler",
       onYes: async () => {

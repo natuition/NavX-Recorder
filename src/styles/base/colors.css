@@ -17,6 +17,7 @@
   --color-status-success: rgb(50, 129, 70);
   --color-status-warn: rgb(160, 108, 39);
   --color-status-error: rgb(214, 67, 77);
+  --color-status-danger: rgb(240, 37, 51);
   --color-status-neutral: rgb(149, 149, 149);
 
   --color-status-info-dimmed: rgba(67, 123, 214, 0.25);

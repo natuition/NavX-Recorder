@@ -15,6 +15,11 @@ form .form__field {
   gap: 0.25em;
 }
 
+form .form__field--required label::after {
+  content: "*";
+  color: var(--color-status-danger);
+}
+
 form label {
   font-size: 1.2rem;
 }

@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { CreateProjectForm } from "./types";
+import { useToast } from "../../hooks/useToast";
 
 type CreateProjectProps = {
   onCreated: (form: CreateProjectForm) => void;
@@ -7,11 +8,14 @@ type CreateProjectProps = {
 };
 
 const CreateProject = ({ onCreated, onCancel }: CreateProjectProps) => {
+  const toast = useToast();
   const [fields, setFields] = useState<CreateProjectForm>({
     name: "",
     description: "",
     type: "placeholder",
   });
+
+  const isValid = fields.name.trim() !== "" && fields.type !== "placeholder";
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -27,6 +31,10 @@ const CreateProject = ({ onCreated, onCancel }: CreateProjectProps) => {
       name: fields.name,
       description: fields.description,
     };
+    if (!isValid) {
+      toast.error("Veuillez remplir tous les champs obligatoires.");
+      return;
+    }
     onCreated(form);
   };
 
@@ -34,7 +42,7 @@ const CreateProject = ({ onCreated, onCancel }: CreateProjectProps) => {
     <div className="cmc-save">
       <h2 className="cmc-save__title">Nouveau projet</h2>
       <form onSubmit={handleSubmit}>
-        <div className="form__field">
+        <div className="form__field form__field--required">
           <label htmlFor="projectName">Nom</label>
           <input
             type="text"
@@ -53,7 +61,7 @@ const CreateProject = ({ onCreated, onCancel }: CreateProjectProps) => {
             value={fields.description}
           />
         </div>
-        <div className="form__field">
+        <div className="form__field form__field--required">
           <label htmlFor="projectType">Type</label>
           <select
             onChange={handleChange}

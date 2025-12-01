@@ -1,6 +1,6 @@
 .toast {
   position: fixed;
-  z-index: 50;
+  z-index: 9999;
   bottom: calc(10rem);
   left: 1rem;
   background-color: var(--color-secondary);
