@@ -3,7 +3,7 @@ import type { Project, ProjectType, Task } from "./types";
 type ProjectTypeSpecification = {
   name: string;
   value: ProjectType;
-  formMetas?: { required: boolean; name: string; label: string; type: string }[];
+  metas?: { required: boolean; name: string; label: string; type: string }[];
   checklistTemplate?: Task[];
 };
 
@@ -37,8 +37,11 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
   CULTURE: {
     name: "Culture",
     value: "culture",
-    formMetas: [
+    metas: [
       { required: true, name: 'boardCount', label: 'Nombre de planches', type: 'number' },
+      { required: true, name: 'cultureType', label: 'Type de culture', type: 'text' },
+      { required: true, name: 'adventiceType', label: 'Adventice(s) à éliminer', type: 'text' },
+
     ],
     checklistTemplate: [
       {

@@ -156,7 +156,7 @@ const Meta = () => {
 
   return (
     <>
-      {ProjectTypesSpecifications[fields.type.toUpperCase()].formMetas?.map(
+      {ProjectTypesSpecifications[fields.type.toUpperCase()].metas?.map(
         (meta) => (
           <div
             className={`form__field ${
