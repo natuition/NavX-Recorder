@@ -150,33 +150,33 @@ const Distance = () => {
     });
   };
 
-  const handleAddGPSPointMock = () => {
-    let newPoint: LonLat;
-    if (gpsPoints.length === 0) {
-      newPoint = [-1.1517, 46.1591];
-    } else {
-      const lastPoint = gpsPoints[gpsPoints.length - 1];
-      newPoint = [
-        lastPoint[0] + (Math.random() - 0.5) * 0.001,
-        lastPoint[1] + (Math.random() - 0.5) * 0.001,
-      ];
-    }
+  // const _handleAddGPSPointMock = () => {
+  //   let newPoint: LonLat;
+  //   if (gpsPoints.length === 0) {
+  //     newPoint = [-1.1517, 46.1591];
+  //   } else {
+  //     const lastPoint = gpsPoints[gpsPoints.length - 1];
+  //     newPoint = [
+  //       lastPoint[0] + (Math.random() - 0.5) * 0.001,
+  //       lastPoint[1] + (Math.random() - 0.5) * 0.001,
+  //     ];
+  //   }
 
-    if (gpsPoints.length > 0) {
-      const lastPoint = gpsPoints[gpsPoints.length - 1];
+  //   if (gpsPoints.length > 0) {
+  //     const lastPoint = gpsPoints[gpsPoints.length - 1];
 
-      const newDistance =
-        DistanceTool.haversine(
-          lastPoint[1],
-          lastPoint[0],
-          newPoint[1],
-          newPoint[0]
-        ) * 1000;
+  //     const newDistance =
+  //       DistanceTool.haversine(
+  //         lastPoint[1],
+  //         lastPoint[0],
+  //         newPoint[1],
+  //         newPoint[0]
+  //       ) * 1000;
 
-      setDistances((prev) => [...prev, newDistance]);
-    }
-    setGpsPoints((prev) => [...prev, newPoint]);
-  };
+  //     setDistances((prev) => [...prev, newDistance]);
+  //   }
+  //   setGpsPoints((prev) => [...prev, newPoint]);
+  // };
 
   const handleAddGPSPoint = () => {
     if (!position) {
@@ -244,7 +244,7 @@ const Distance = () => {
       <DistanceToolBar
         nbPoints={gpsPoints.length}
         distance={totalDistance()}
-        onAdd={handleAddGPSPointMock}
+        onAdd={handleAddGPSPoint}
         onRemoveLast={() => setGpsPoints((prev) => prev.slice(0, -1))}
         onSave={handleSave}
       />
