@@ -34,6 +34,7 @@ jobs:
         run: npm run build
         env:
           GH_PAGES_BASE: /NavX-Recorder/
+          VITE_MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
