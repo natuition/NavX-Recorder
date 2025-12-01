@@ -42,6 +42,7 @@ export class ProjectManager {
   }
 
   async createProject(form: CreateProjectFormType): Promise<Project> {
+    console.log("Creating project with form data:", form);
     const newProject: Project = {
       id: crypto.randomUUID(),
       name: form.name,
@@ -51,6 +52,7 @@ export class ProjectManager {
       updatedAt: Date.now(),
       measurements: [],
       checklist: this.createChecklistForProjectType(form.type as ProjectType),
+      meta: form.meta,
     };
     await this.store.save(newProject);
     return newProject;
