@@ -53,7 +53,6 @@ const Distance = () => {
     // Dans le cas dune tâche de projet, on ouvre une modale avec les explications de la tâche.
     const showInstructions = () => {
       if (location.state.task?.instructions) {
-        console.debug("Opening modal with task instructions.");
         modal.open({
           _render: () => (
             <ProjectModal.TaskInstructions
@@ -84,7 +83,8 @@ const Distance = () => {
 
     const newMeasurement: Measurement = {
       id: crypto.randomUUID() as string,
-      name: "Distance inter-planches",
+      name: location.state?.task.name,
+      subject: location.state?.task.slug,
       type: "distance",
       value: totalDistance(),
       unit: "m",
