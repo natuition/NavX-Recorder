@@ -16,6 +16,13 @@ const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
       label: "Supprimer",
       action: () => actions.deleteProject(project),
     },
+    {
+      label: "Exporter",
+      action: () => {
+        // TODO:
+        console.debug(`Exporting project...`, project);
+      },
+    },
   ];
 
   return (
