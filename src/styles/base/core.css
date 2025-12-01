@@ -8,6 +8,10 @@ img {
   max-width: 100%;
 }
 
+strong {
+  font-weight: 600;
+}
+
 textarea {
   resize: none;
   overflow: auto;

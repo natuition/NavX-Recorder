@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import type { Project } from "../domain/project/types";
 import { useProjectManager } from "../hooks/useProjectManager";
 import ProjectChecklist from "../components/ProjectChecklist";
+import { ProjectTypesSpecifications } from "../domain/project/ProjectTypesSpecifications";
 
 const ProjectDetails = () => {
   const [project, setProject] = useState<Project | null>(null);
@@ -37,12 +38,31 @@ const ProjectDetails = () => {
         <h1 className="page__title">{project.name}</h1>
         <section className="page__section">
           <h2 className="page__subtitle">Description</h2>
-          <p>{project.description}</p>
+          <p>
+            {project.description.length > 0
+              ? project.description
+              : "Aucune description"}
+          </p>
         </section>
         <section className="page__section">
           <h2 className="page__subtitle">Checklist</h2>
           <ProjectChecklist project={project} />
         </section>
+        {project.meta && (
+          <section className="page__section">
+            <h2 className="page__subtitle">A propos</h2>
+            <ul>
+              {ProjectTypesSpecifications[
+                project.type.toUpperCase()
+              ].metas?.map((meta) => (
+                <li>
+                  <strong>{meta.label} : </strong>
+                  {project.meta![meta.name] ?? "Non renseigné"}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </>
     )
   );

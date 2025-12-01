@@ -16,7 +16,6 @@ export class ProjectManager {
   }
 
   async createProject(form: CreateProjectFormType): Promise<Project> {
-    console.log("Creating project with form data:", form);
     const newProject: Project = {
       id: crypto.randomUUID(),
       name: form.name,
