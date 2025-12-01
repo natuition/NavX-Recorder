@@ -55,7 +55,7 @@ const ProjectDetails = () => {
               {ProjectTypesSpecifications[
                 project.type.toUpperCase()
               ].metas?.map((meta) => (
-                <li>
+                <li key={meta.name}>
                   <strong>{meta.label} : </strong>
                   {project.meta![meta.name] ?? "Non renseigné"}
                 </li>

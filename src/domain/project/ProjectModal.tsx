@@ -25,9 +25,11 @@ const TaskInstructionsModalContent = ({
 }: TaskInstructionsProps) => {
   return (
     <>
-      <ul>
+      <ul className="cmc-task-instructions">
         {instructions.map((instruction, index) => (
-          <li key={index}>{instruction}</li>
+          <li className="cmc-task-instructions__item" key={index}>
+            {instruction}
+          </li>
         ))}
       </ul>
       {/* // TODO: améliorer le rendu avec un carousel si plusieurs images */}
@@ -35,7 +37,7 @@ const TaskInstructionsModalContent = ({
         <div>
           {images.map((imageSrc, index) => (
             <img
-              className="cmc-task-instruction__image"
+              className="cmc-task-instructions__image"
               key={index}
               src={imageSrc}
               alt={`Instruction ${index + 1}`}

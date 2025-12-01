@@ -48,9 +48,9 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
         id: "1",
         name: "Distances entre les planches",
         instructions: [
-          "Pour chaque rangée de la parcelle, mesurez 3 distances entre chaque planche.",
+          "Pour chaque ornière de la parcelle, mesurez 3 distances entre chaque planche.",
           "Essayez de mesurer perpendiculairement aux planches pour plus de précision.",
-          "Ajouter vos points de mesure puis enregister la mesure en appuyant sur le bouton 'Enregistrer'.",
+          "Pour enregistrer une distance, ajouter des points et appuyer sur le bouton 'Enregistrer'.",
         ],
         slug: "distance-entre-les-planches",
         measurementType: "distance",

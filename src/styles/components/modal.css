@@ -66,7 +66,21 @@
   font-size: 2rem;
 }
 
-.cmc-task-instruction__image {
+.cmc-task-instructions {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  text-align: left;
+}
+
+.cmc-task-instructions__item {
+  margin-bottom: 0.5em;
+}
+
+.cmc-task-instructions__item:last-child {
+  margin-bottom: 0;
+}
+
+.cmc-task-instructions__image {
   object-fit: contain;
   max-height: 20rem;
 }

@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import StatusBar from "../components/StatusBar";
 import { ScaleControl, useMap } from "react-map-gl/mapbox";
-import type { CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import GeolocateControl from "../components/GeolocateControl";
 
 const SCALE_CONTROL_UNIT = "metric";
@@ -18,6 +18,10 @@ export const MapLayout = () => {
   const handleZoomOut = () => {
     map?.zoomOut();
   };
+  // TODO: implémenter un bouton de reset nord
+  // const handleResetNorth = () => {
+  //   map?.resetNorth();
+  // };
 
   return (
     <>
