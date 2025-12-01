@@ -1,5 +1,6 @@
-export type CreateProjectForm = Pick<Project, "name" | "description"> & {
+export type CreateProjectFormType = Pick<Project, "name" | "description"> & {
   type: ProjectType | "placeholder";
+  meta?: Record<string, string | number | boolean | null>;
 };
 
 export type MeasurementType = "distance" | "area";

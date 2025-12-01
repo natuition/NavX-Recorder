@@ -1,5 +1,5 @@
 import type { Store } from "../stores/Store";
-import type { CreateProjectForm, Measurement, Project, ProjectType, Task } from "./types";
+import type { CreateProjectFormType, Measurement, Project, ProjectType, Task } from "./types";
 import genericChecklist from './checklists/generic.json';
 
 
@@ -41,7 +41,7 @@ export class ProjectManager {
     return this.store.findById(id);
   }
 
-  async createProject(form: CreateProjectForm): Promise<Project> {
+  async createProject(form: CreateProjectFormType): Promise<Project> {
     const newProject: Project = {
       id: crypto.randomUUID(),
       name: form.name,
@@ -106,6 +106,7 @@ export class ProjectManager {
   async addMeasurementToProject(projectId: string, measurement: Measurement): Promise<void> {
     const project = await this.getProject(projectId);
     if (!project) throw new Error(`Project with id ${projectId} not found`);
+    project.updatedAt = Date.now();
     project.measurements.push(measurement);
     await this.saveProject(project);
   }
@@ -114,10 +115,43 @@ export class ProjectManager {
     switch (type) {
       case "culture":
         return [
-          { id: "1", name: "Distances entre les planches", slug: "distance-entre-les-planches", measurementType: "distance", completed: false, condition: "boards-distances-done" },
-          { id: "2", name: "Surface de la parcelle", slug: "surface-de-la-parcelle", measurementType: "area", completed: false, condition: "not-implemented" },
-          { id: "3", name: "Distance intra-rang", slug: "distance-intra-rangs", measurementType: "distance", completed: false, condition: "not-implemented" },
-          { id: "4", name: "Distance inter-rang", slug: "distance-inter-rangs", measurementType: "distance", completed: false, condition: "not-implemented" },
+          {
+            id: "1",
+            name: "Distances entre les planches",
+            instructions: [
+              "Pour chaque rangée de la parcelle, mesurez 3 distances entre chaque planche.",
+              "Essayez de mesurer perpendiculairement aux planches pour plus de précision.",
+              "Ajouter vos points de mesure puis enregister la mesure en appuyant sur le bouton 'Enregistrer'.",
+            ],
+            slug: "distance-entre-les-planches",
+            measurementType: "distance",
+            completed: false,
+            condition: "boards-distances-done"
+          },
+          {
+            id: "2",
+            name: "Surface de la parcelle",
+            slug: "surface-de-la-parcelle",
+            measurementType: "area",
+            completed: false,
+            condition: "parcel-area-done"
+          },
+          {
+            id: "3",
+            name: "Distance intra-rang",
+            slug: "distance-intra-rangs",
+            measurementType: "distance",
+            completed: false,
+            condition: "intra-raw-done"
+          },
+          {
+            id: "4",
+            name: "Distance inter-rang",
+            slug: "distance-inter-rangs",
+            measurementType: "distance",
+            completed: false,
+            condition: "inter-raw-done"
+          },
         ];
       case "generic":
         return genericChecklist as Task[];

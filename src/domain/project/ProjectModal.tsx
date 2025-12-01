@@ -1,15 +1,18 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import type { CreateProjectForm } from "./types";
+import type { CreateProjectFormType } from "./types";
 import { useToast } from "../../hooks/useToast";
 
 type CreateProjectProps = {
-  onCreated: (form: CreateProjectForm) => void;
+  onCreated: (form: CreateProjectFormType) => void;
   onCancel: () => void;
 };
 
-const CreateProject = ({ onCreated, onCancel }: CreateProjectProps) => {
+const CreateProjectModalContent = ({
+  onCreated,
+  onCancel,
+}: CreateProjectProps) => {
   const toast = useToast();
-  const [fields, setFields] = useState<CreateProjectForm>({
+  const [fields, setFields] = useState<CreateProjectFormType>({
     name: "",
     description: "",
     type: "placeholder",
@@ -76,6 +79,22 @@ const CreateProject = ({ onCreated, onCancel }: CreateProjectProps) => {
             <option value="culture">Culture</option>
           </select>
         </div>
+        {/* <ProjectForm.Meta type={fields.type} /> */}
+        {/* <div className="form__field form__field--required">
+          <label htmlFor="projectType">Nombre de planches</label>
+          <select
+            onChange={handleChange}
+            name="type"
+            id="projectType"
+            value={fields.type}
+          >
+            <option disabled value="placeholder">
+              Choisir un type de projet
+            </option>
+            <option value="generic">Générique</option>
+            <option value="culture">Culture</option>
+          </select>
+        </div> */}
         <button type="submit" className="button button--primary">
           Créer
         </button>
@@ -96,7 +115,10 @@ type TaskInstructionsProps = {
   images?: string[];
 };
 
-const TaskInstructions = ({ instructions, images }: TaskInstructionsProps) => {
+const TaskInstructionsModalContent = ({
+  instructions,
+  images,
+}: TaskInstructionsProps) => {
   return (
     <>
       <ul>
@@ -122,8 +144,8 @@ const TaskInstructions = ({ instructions, images }: TaskInstructionsProps) => {
 };
 
 const ProjectModal = {
-  TaskInstructions,
-  CreateProject,
+  TaskInstructionsModalContent,
+  CreateProjectModalContent,
 };
 
 export default ProjectModal;

@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router";
-import Modal from "../components/Modal";
 import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
 import type { Project } from "../domain/project/types";
@@ -8,7 +7,7 @@ import { createContext, useEffect, useState } from "react";
 import { MdCreateNewFolder } from "react-icons/md";
 import ProjectCard from "../components/ProjectCard";
 import ProjectModal, {
-  type CreateProjectForm,
+  type CreateProjectFormType,
 } from "../domain/project/ProjectModal";
 
 type ProjectsStateType = {
@@ -68,7 +67,7 @@ export const Projects = () => {
     });
   };
 
-  const createProject = async (projectForm: CreateProjectForm) => {
+  const createProject = async (projectForm: CreateProjectFormType) => {
     try {
       const project: Project = await projectManager.createProject(projectForm);
       modal.close();
