@@ -1,6 +1,7 @@
 import type { Store } from "../stores/Store";
-import type { Measurement, Project, ProjectType, Task } from "./types";
+import type { CreateProjectForm, Measurement, Project, ProjectType, Task } from "./types";
 import genericChecklist from './checklists/generic.json';
+
 
 export class ProjectManager {
   private store: Store<Project>;
@@ -38,6 +39,21 @@ export class ProjectManager {
 
   async getProject(id: string): Promise<Project | null> {
     return this.store.findById(id);
+  }
+
+  async createProject(form: CreateProjectForm): Promise<Project> {
+    const newProject: Project = {
+      id: crypto.randomUUID(),
+      name: form.name,
+      description: form.description,
+      type: form.type as ProjectType,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      measurements: [],
+      checklist: this.createChecklistForProjectType(form.type as ProjectType),
+    };
+    await this.store.save(newProject);
+    return newProject;
   }
 
   async saveProject(project: Project): Promise<void> {
@@ -99,9 +115,9 @@ export class ProjectManager {
       case "culture":
         return [
           { id: "1", name: "Distances entre les planches", slug: "distance-entre-les-planches", measurementType: "distance", completed: false, condition: "boards-distances-done" },
-          { id: "2", name: "Surface de la parcelle", measurementType: "area", completed: false, condition: "not-implemented" },
-          { id: "3", name: "Distance intra-rang", measurementType: "distance", completed: false, condition: "not-implemented" },
-          { id: "4", name: "Distance inter-rang", measurementType: "distance", completed: false, condition: "not-implemented" },
+          { id: "2", name: "Surface de la parcelle", slug: "surface-de-la-parcelle", measurementType: "area", completed: false, condition: "not-implemented" },
+          { id: "3", name: "Distance intra-rang", slug: "distance-intra-rangs", measurementType: "distance", completed: false, condition: "not-implemented" },
+          { id: "4", name: "Distance inter-rang", slug: "distance-inter-rangs", measurementType: "distance", completed: false, condition: "not-implemented" },
         ];
       case "generic":
         return genericChecklist as Task[];

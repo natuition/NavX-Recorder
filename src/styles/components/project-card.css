@@ -10,16 +10,17 @@
   flex-direction: column;
   gap: 0.5rem;
 
-  transition: box-shadow 0.2s ease;
-
   cursor: pointer;
 }
 
-.project-card:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+.project-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
-.project-card__name {
+.project-card__title {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
@@ -36,4 +37,10 @@
   font-size: 0.8rem;
   color: var(--color-text-body-dimmed);
   margin-top: 0.5rem;
+}
+
+.project-card__cta {
+  font-size: 1.6rem;
+  color: var(--color-text-body);
+  cursor: pointer;
 }

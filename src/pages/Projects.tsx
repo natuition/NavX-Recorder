@@ -4,10 +4,38 @@ import { useModal } from "../hooks/useModal";
 import { useToast } from "../hooks/useToast";
 import type { Project } from "../domain/project/types";
 import { useProjectManager } from "../hooks/useProjectManager";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { MdCreateNewFolder } from "react-icons/md";
+import ProjectCard from "../components/ProjectCard";
+import ProjectModal, {
+  type CreateProjectForm,
+} from "../domain/project/ProjectModal";
 
-const Projects = () => {
+type ProjectsStateType = {
+  projects: Project[];
+};
+
+type ProjectsActionsType = {
+  deleteProject: (project: Project) => Promise<void>;
+  // createProject: (project: Project) => Promise<void>;
+};
+
+type ProjectsContextType = {
+  state: ProjectsStateType;
+  actions: ProjectsActionsType;
+};
+
+const ProjectsContext = createContext<ProjectsContextType>({
+  state: {
+    projects: [],
+  },
+  actions: {
+    deleteProject: async () => {},
+    // createProject: async () => {},
+  },
+});
+
+export const Projects = () => {
   const projectManager = useProjectManager();
   const modal = useModal();
   const toast = useToast();
@@ -30,32 +58,53 @@ const Projects = () => {
   };
 
   const handleCreateProject = () => {
-    const handler = async (project: Project) => {
-      try {
-        await projectManager.saveProject(project);
-      } catch (error) {
-        console.error("Error saving project:", error);
-        toast.error(
-          `Erreur lors de la création du projet. Veuillez réessayer.`
-        );
-        modal.close();
-        return;
-      }
-
-      modal.close();
-      setProjects((prevProjects) => [...prevProjects, project]);
-      toast.success(`Projet "${project.name}" créé.`);
-    };
-
     modal.open({
       _render: () => (
-        <Modal.CreateProject onCreated={handler} onCancel={modal.close} />
+        <ProjectModal.CreateProject
+          onCreated={createProject}
+          onCancel={modal.close}
+        />
       ),
     });
   };
 
+  const createProject = async (projectForm: CreateProjectForm) => {
+    try {
+      const project: Project = await projectManager.createProject(projectForm);
+      modal.close();
+      setProjects((prevProjects) => [...prevProjects, project]);
+      toast.success(`Projet "${project.name}" créé.`);
+    } catch (error) {
+      console.error("Error saving project:", error);
+      toast.error(`Erreur lors de la création du projet. Veuillez réessayer.`);
+      modal.close();
+      return;
+    }
+  };
+
+  const deleteProject = async (project: Project) => {
+    modal.open({
+      message: `Êtes-vous sûr de vouloir supprimer le projet ${project.name}?`,
+      yesLabel: "Oui",
+      noLabel: "Annuler",
+      onYes: async () => {
+        await projectManager.deleteProjectById(project.id);
+        setProjects((prevProjects) =>
+          prevProjects.filter((p) => p.id !== project.id)
+        );
+        toast.success(`Projet supprimé.`);
+        modal.close();
+      },
+      onNo: () => {
+        modal.close();
+      },
+    });
+  };
+
   return (
-    <>
+    <ProjectsContext.Provider
+      value={{ state: { projects }, actions: { deleteProject } }}
+    >
       <h1 className="page__title">
         Projets{" "}
         <button
@@ -68,24 +117,18 @@ const Projects = () => {
       <section className="page__section projects">
         {projects.length > 0 ? (
           projects.map((project) => (
-            <div
+            <ProjectCard
+              project={project}
               key={project.id}
-              className="project-card"
-              onClick={() => handleNavigateToProject(project.id)}
-            >
-              <h2 className="project-card__name">{project.name}</h2>
-              <p className="project-card__description">{project.description}</p>
-              <p className="project-card__date">
-                Mis à jour le {new Date(project.updatedAt).toLocaleDateString()}
-              </p>
-            </div>
+              onClick={handleNavigateToProject}
+            />
           ))
         ) : (
           <p>Aucun projet</p>
         )}
       </section>
-    </>
+    </ProjectsContext.Provider>
   );
 };
 
-export default Projects;
+export default ProjectsContext;

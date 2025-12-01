@@ -1,3 +1,7 @@
+export type CreateProjectForm = Pick<Project, "name" | "description"> & {
+  type: ProjectType | "placeholder";
+};
+
 export type MeasurementType = "distance" | "area";
 
 export type Measurement = {
@@ -15,6 +19,7 @@ export type ProjectType = "generic" | "culture"; // Ajouter d'autres types pour 
 export type Task = {
   id: string;
   name: string;
+  slug: string;
   measurementType: MeasurementType;
   completed: boolean;
   condition: string;
