@@ -18,10 +18,7 @@ const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
     },
     {
       label: "Exporter",
-      action: () => {
-        // TODO:
-        console.debug(`Exporting project...`, project);
-      },
+      action: () => actions.exportProject(project),
     },
   ];
 

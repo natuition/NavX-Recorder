@@ -7,6 +7,8 @@ import { createContext, useEffect, useState } from "react";
 import { MdCreateNewFolder } from "react-icons/md";
 import ProjectCard from "../components/ProjectCard";
 import ProjectModal from "../domain/project/ProjectModal";
+import { points } from "@turf/helpers";
+import { downloadJSON } from "../utils/misc";
 
 type ProjectsStateType = {
   projects: Project[];
@@ -14,6 +16,7 @@ type ProjectsStateType = {
 
 type ProjectsActionsType = {
   deleteProject: (project: Project) => Promise<void>;
+  exportProject: (project: Project) => Promise<void>;
   // createProject: (project: Project) => Promise<void>;
 };
 
@@ -28,6 +31,7 @@ const ProjectsContext = createContext<ProjectsContextType>({
   },
   actions: {
     deleteProject: async () => {},
+    exportProject: async () => {},
     // createProject: async () => {},
   },
 });
@@ -97,9 +101,31 @@ export const Projects = () => {
     });
   };
 
+  const exportProject = async (project: Project) => {
+    const segments = project.measurements.map((m) =>
+      points(m.points, {
+        id: m.id,
+        type: m.type,
+        subject: m.subject,
+        value: m.value,
+        unit: m.unit,
+      })
+    );
+
+    const exportedData = {
+      ...project,
+      measurements: segments,
+    };
+
+    downloadJSON(
+      exportedData,
+      `${project.name.replaceAll(" ", "_").toLowerCase()}.json`
+    );
+  };
+
   return (
     <ProjectsContext.Provider
-      value={{ state: { projects }, actions: { deleteProject } }}
+      value={{ state: { projects }, actions: { deleteProject, exportProject } }}
     >
       <h1 className="page__title">
         Projets{" "}
