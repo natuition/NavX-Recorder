@@ -110,7 +110,9 @@ const Distance = () => {
       const task = location.state.task;
 
       modal.open({
-        message: `Ajouter cette mesure au projet ${project.name} ?`,
+        message: `Ajouter cette mesure (${newMeasurement.value.toFixed(1)} ${
+          DEFAULT_CONFIG.unit.shortLabel
+        }) au projet "${project.name}" ?`,
         yesLabel: true,
         noLabel: "Annuler",
         onNo: modal.close,
