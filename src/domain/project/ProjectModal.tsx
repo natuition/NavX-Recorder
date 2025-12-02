@@ -1,5 +1,6 @@
 import type { CreateProjectFormType } from "./types";
 import CreateProjectForm from "./ProjectForm";
+import { urlFor } from "../../utils/url";
 
 type CreateProjectProps = {
   onCreated: (form: CreateProjectFormType) => void;
@@ -39,7 +40,7 @@ const TaskInstructionsModalContent = ({
             <img
               className="cmc-task-instructions__image"
               key={index}
-              src={imageSrc}
+              src={urlFor(imageSrc)}
               alt={`Instruction ${index + 1}`}
             />
           ))}
