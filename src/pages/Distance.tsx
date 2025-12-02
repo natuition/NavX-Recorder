@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Layer,
   Source,
   type LineLayerSpecification,
   type CircleLayerSpecification,
+  useMap,
+  type SymbolLayerSpecification,
 } from "react-map-gl/mapbox";
-import type { FeatureCollection, LineString, Point } from "geojson";
 import DistanceToolBar from "../components/DistanceToolBar";
-import { Distance as DistanceTool } from "../utils/Distance";
 import { useLocation, useNavigate } from "react-router";
 import { useToast } from "../hooks/useToast";
 import { useGeolocation } from "../hooks/useGeolocation";
@@ -15,6 +15,24 @@ import { useModal } from "../hooks/useModal";
 import { useProjectManager } from "../hooks/useProjectManager";
 import type { Measurement } from "../domain/project/types";
 import ProjectModal from "../domain/project/ProjectModal";
+import { lineStrings, points, type Units } from "@turf/helpers";
+import distance from "@turf/distance";
+import length from "@turf/length";
+import { midpoint } from "@turf/midpoint";
+
+export type UnitOption = {
+  label: string;
+  shortLabel?: string;
+  value: Units;
+};
+
+type DistanceConfig = {
+  unit: UnitOption;
+};
+
+const DEFAULT_CONFIG: DistanceConfig = {
+  unit: { label: "mètre", shortLabel: "m", value: "meters" },
+};
 
 type LonLat = [number, number]; // [longitude, latitude]
 
@@ -25,10 +43,9 @@ const Distance = () => {
   const modal = useModal();
   const projectManager = useProjectManager();
   const { position } = useGeolocation();
+  const { map } = useMap();
 
-  // TODO: factoriser dans un état unique
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
-  const [distances, setDistances] = useState<number[]>([]);
 
   useEffect(() => {
     // TODO: trouver un moyen de factoriser dans un hook utilitaire
@@ -71,10 +88,6 @@ const Distance = () => {
     showInstructions();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const totalDistance = () => {
-    return distances.reduce((prev, current) => prev + current, 0);
-  };
-
   const handleSave = () => {
     if (gpsPoints.length < 2) {
       console.warn("Add at least two GPS points to save the measurement.");
@@ -86,8 +99,8 @@ const Distance = () => {
       name: location.state?.task.name,
       subject: location.state?.task.slug,
       type: "distance",
-      value: totalDistance(),
-      unit: "m",
+      value: totalDistance,
+      unit: DEFAULT_CONFIG.unit.value,
       points: gpsPoints,
     };
 
@@ -127,7 +140,6 @@ const Distance = () => {
 
           modal.close();
           setGpsPoints([]);
-          setDistances([]);
           toast.success("Mesure ajoutée.", { context: "measurement" });
         },
       });
@@ -144,39 +156,24 @@ const Distance = () => {
         console.warn("Saving measurement:", newMeasurement);
         modal.close();
         setGpsPoints([]);
-        setDistances([]);
         toast.success("Mesure enregistrée", { context: "measurement" });
       },
     });
   };
 
-  // const _handleAddGPSPointMock = () => {
-  //   let newPoint: LonLat;
-  //   if (gpsPoints.length === 0) {
-  //     newPoint = [-1.1517, 46.1591];
-  //   } else {
-  //     const lastPoint = gpsPoints[gpsPoints.length - 1];
-  //     newPoint = [
-  //       lastPoint[0] + (Math.random() - 0.5) * 0.001,
-  //       lastPoint[1] + (Math.random() - 0.5) * 0.001,
-  //     ];
-  //   }
-
-  //   if (gpsPoints.length > 0) {
-  //     const lastPoint = gpsPoints[gpsPoints.length - 1];
-
-  //     const newDistance =
-  //       DistanceTool.haversine(
-  //         lastPoint[1],
-  //         lastPoint[0],
-  //         newPoint[1],
-  //         newPoint[0]
-  //       ) * 1000;
-
-  //     setDistances((prev) => [...prev, newDistance]);
-  //   }
-  //   setGpsPoints((prev) => [...prev, newPoint]);
-  // };
+  const _handleAddGPSPointMock = () => {
+    let newPoint: LonLat;
+    if (gpsPoints.length === 0) {
+      newPoint = [-1.1517, 46.1591];
+    } else {
+      const lastPoint = gpsPoints[gpsPoints.length - 1];
+      newPoint = [
+        lastPoint[0] + (Math.random() - 0.5) * 0.001,
+        lastPoint[1] + (Math.random() - 0.5) * 0.001,
+      ];
+    }
+    setGpsPoints((prev) => [...prev, newPoint]);
+  };
 
   const handleAddGPSPoint = () => {
     if (!position) {
@@ -184,67 +181,66 @@ const Distance = () => {
       toast.warn("Position GPS non disponible", { context: "measurement" });
       return;
     }
-
     const newPoint: LonLat = [position.longitude, position.latitude];
-
-    if (gpsPoints.length > 0) {
-      const lastPoint = gpsPoints[gpsPoints.length - 1];
-
-      const newDistance =
-        // TODO: Utiliser turf.js pour le calcul de distance
-        DistanceTool.haversine(
-          lastPoint[1],
-          lastPoint[0],
-          newPoint[1],
-          newPoint[0]
-        ) * 1000; // TODO: configurable
-
-      setDistances((prev) => [...prev, newDistance]);
-    }
     setGpsPoints((prev) => [...prev, newPoint]);
   };
 
-  const gpsPointsGeoJSON: FeatureCollection<Point> = {
-    type: "FeatureCollection",
-    features: gpsPoints.map((point, index) => ({
-      type: "Feature",
-      properties: { index },
-      geometry: {
-        type: "Point",
-        coordinates: point,
-      },
-    })),
-  };
+  const gpsPointsGeoJSON = useMemo(() => points(gpsPoints), [gpsPoints]);
 
-  const gpsLineGeoJSON: FeatureCollection<LineString> = {
-    type: "FeatureCollection",
-    features:
-      gpsPoints.length > 1
-        ? [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "LineString",
-                coordinates: gpsPoints,
-              },
-            },
-          ]
-        : [],
-  };
+  const gpsLineGeoJSON = useMemo(
+    () => lineStrings(gpsPoints.length > 1 ? [gpsPoints] : []),
+    [gpsPoints]
+  );
+
+  const totalDistance = useMemo(
+    () => length(gpsLineGeoJSON, { units: DEFAULT_CONFIG.unit.value }),
+    [gpsLineGeoJSON]
+  );
+
+  const midpointsGeoJSON = useMemo(() => {
+    if (gpsPoints.length < 2) return points([]);
+
+    const midCoords: LonLat[] = [];
+    const distances: number[] = [];
+
+    for (let i = 1; i < gpsPoints.length; i++) {
+      const start: LonLat = gpsPoints[i - 1];
+      const end: LonLat = gpsPoints[i];
+
+      midCoords.push(midpoint(start, end).geometry.coordinates as LonLat);
+      distances.push(
+        distance(start, end, { units: DEFAULT_CONFIG.unit.value })
+      );
+    }
+
+    const fc = points(midCoords);
+    fc.features.forEach((f, i) => {
+      f.properties = {
+        distance: distances[i].toFixed(1),
+        unit: DEFAULT_CONFIG.unit.shortLabel,
+      };
+    });
+
+    return fc;
+  }, [gpsPoints]);
 
   return (
     <>
-      <Source id="gps-points" type="geojson" data={gpsPointsGeoJSON}>
-        <Layer {...gpsPointsLayer} />
-      </Source>
       <Source id="gps-line" type="geojson" data={gpsLineGeoJSON}>
         <Layer {...gpsLineLayer} />
       </Source>
+      <Source id="gps-points" type="geojson" data={gpsPointsGeoJSON}>
+        <Layer {...gpsPointsLayer} />
+      </Source>
+      <Source id="midpoints" type="geojson" data={midpointsGeoJSON}>
+        <Layer {...midpointsLayer} />
+      </Source>
+
       <DistanceToolBar
+        unit={DEFAULT_CONFIG.unit}
         nbPoints={gpsPoints.length}
-        distance={totalDistance()}
-        onAdd={handleAddGPSPoint}
+        distance={totalDistance}
+        onAdd={_handleAddGPSPointMock}
         onRemoveLast={() => setGpsPoints((prev) => prev.slice(0, -1))}
         onSave={handleSave}
       />
@@ -252,13 +248,30 @@ const Distance = () => {
   );
 };
 
+const midpointsLayer: SymbolLayerSpecification = {
+  id: "midpoints-text",
+  type: "symbol",
+  minzoom: 16,
+  layout: {
+    "text-field": ["concat", ["get", "distance"], " ", ["get", "unit"]],
+    "text-size": ["interpolate", ["linear"], ["zoom"], 16, 12, 22, 16],
+    "text-anchor": "center",
+  },
+  paint: {
+    "text-color": "#000000",
+    "text-halo-color": "#ffffff",
+    "text-halo-width": 2,
+  },
+  source: "midpoints",
+};
+
 const gpsLineLayer: LineLayerSpecification = {
   id: "gps-line",
   type: "line",
   paint: {
-    "line-color": "#005eff",
-    "line-width": 3,
-    "line-dasharray": [2, 2],
+    "line-color": "#2d6ede",
+    "line-width": 2,
+    "line-dasharray": [1, 1],
   },
   source: "gps-line",
 };
@@ -269,6 +282,8 @@ const gpsPointsLayer: CircleLayerSpecification = {
   paint: {
     "circle-color": "#2dbf80",
     "circle-radius": 5,
+    "circle-stroke-color": "#ffffff",
+    "circle-stroke-width": 2,
   },
   source: "gps-points",
 };

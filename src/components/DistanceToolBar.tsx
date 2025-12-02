@@ -1,6 +1,7 @@
 import { IoIosUndo } from "react-icons/io";
 import { FaRuler, FaSave } from "react-icons/fa";
 import { MdOutlineAddLocationAlt, MdLocationOn } from "react-icons/md";
+import type { UnitOption } from "../pages/Distance";
 
 type DistanceToolBarProps = {
   /**
@@ -23,12 +24,17 @@ type DistanceToolBarProps = {
    * Nombre de points constituant la mesure de distance.
    */
   nbPoints: number;
+  /**
+   * Unité de mesure utilisée.
+   */
+  unit: UnitOption;
 };
 
 /**
  * Barre d'outils pour la mesure de distance.
  */
 const DistanceToolBar = ({
+  unit,
   onAdd,
   onSave,
   onRemoveLast,
@@ -45,7 +51,9 @@ const DistanceToolBar = ({
           </div>
           <div className="toolbar-indicator">
             <FaRuler className="toolbar-indicator__icon" size={18} />
-            <p className="toolbar-indicator__data">{distance.toFixed(2)} m</p>
+            <p className="toolbar-indicator__data">
+              {distance.toFixed(2)} {unit.shortLabel}
+            </p>
           </div>
         </div>
       </div>
