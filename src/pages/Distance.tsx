@@ -82,7 +82,7 @@ const Distance = () => {
     }
 
     const newMeasurement: Measurement = {
-      id: crypto.randomUUID() as string,
+      id: window.crypto.randomUUID() as string,
       name: location.state?.task.name,
       subject: location.state?.task.slug,
       type: "distance",
