@@ -15,7 +15,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BluetoothProvider>
       <GeolocationProvider>
-        <BrowserRouter>
+        <BrowserRouter basename={import.meta.env.VITE_BASE_URL}>
           <App />
         </BrowserRouter>
       </GeolocationProvider>
