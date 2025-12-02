@@ -27,6 +27,11 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
       {
         id: "2",
         slug: "record-area",
+        instructions: [
+          "Lancer la mesure en appuyant sur le bouton \"Démarrer\".",
+          "Faites le tour complet de la zone pour laquelle vous souhaitez mesurer la surface.",
+          "Une fois revenu au point de départ, la surface sera automatiquement calculée, il vous sera demandé de confirmer.",
+        ],
         name: "Enregistrer une surface",
         measurementType: "area",
         completed: false,
