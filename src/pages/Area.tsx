@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Layer,
   Source,
@@ -6,7 +6,13 @@ import {
   type CircleLayerSpecification,
   type FillLayerSpecification,
 } from "react-map-gl/mapbox";
-import type { FeatureCollection, LineString, Point, Polygon } from "geojson";
+import type {
+  FeatureCollection,
+  Geometry,
+  LineString,
+  Point,
+  Polygon,
+} from "geojson";
 import AreaToolBar from "../components/AreaToolBar";
 import { Distance } from "../utils/Distance";
 import area from "@turf/area";
@@ -15,6 +21,7 @@ import { useToast } from "../hooks/useToast";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { useModal } from "../hooks/useModal";
 import ProjectModal from "../domain/project/ProjectModal";
+import { geometry, lineStrings, points, polygon } from "@turf/helpers";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
@@ -69,17 +76,67 @@ const Area = () => {
     }
   }, [isRecording, location.state, gpsPoints.length, navigate]);
 
-  const calcArea = useCallback(() => {
-    // Calcul de la surface geodésique en mètre
-    const polygon: Polygon = {
-      type: "Polygon",
-      coordinates: [[...gpsPoints, gpsPoints[0]]],
-    };
-    return area(polygon);
+  const calcArea = useMemo(() => {
+    if (gpsPoints.length < 3) {
+      return 0;
+    }
+    const _polygon = geometry("Polygon", [gpsPoints]);
+    return area(_polygon);
   }, [gpsPoints]);
 
   const handleSave = () => {
     console.log("Surface enregistrée ✅");
+  };
+
+  const recordArea = () => {
+    if (!positionRef.current) {
+      return;
+    }
+
+    const newPoint: LonLat = [
+      positionRef.current.longitude,
+      positionRef.current.latitude,
+    ];
+
+    setGpsPoints((prev) => {
+      if (prev.length === 0) {
+        return [newPoint];
+      }
+
+      const lastPoint = prev[prev.length - 1];
+      const distance = Distance.equirectangular(
+        lastPoint[1],
+        lastPoint[0],
+        newPoint[1],
+        newPoint[0]
+      );
+
+      if (distance < DISTANCE_THRESHOLD_METERS) {
+        return prev;
+      }
+
+      return [...prev, newPoint];
+    });
+  };
+
+  const _recordAreaMock = () => {
+    const points = [
+      [-1.1517, 46.1591],
+      [-1.152, 46.1595],
+      [-1.1515, 46.1597],
+      [-1.1517, 46.1591],
+    ] as LonLat[];
+
+    setGpsPoints(points);
+  };
+
+  const _handleAreaRecordingMock = () => {
+    if (isRecording) {
+      setIsRecording(false);
+    } else {
+      setGpsPoints([]);
+      setIsRecording(true);
+    }
   };
 
   const handleAreaRecording = () => {
@@ -102,105 +159,71 @@ const Area = () => {
     if (!isRecording) return;
 
     const intervalId = setInterval(() => {
-      if (!positionRef.current) {
-        console.warn("Position GPS non disponible");
-        return;
-      }
+      // >>> MOCK
+      _recordAreaMock();
+      // <<< END MOCK
 
-      const newPoint: LonLat = [
-        positionRef.current.longitude,
-        positionRef.current.latitude,
-      ];
+      // const newPoint: LonLat = [
+      //   positionRef.current.longitude,
+      //   positionRef.current.latitude,
+      // ];
 
-      setGpsPoints((prev) => {
-        if (prev.length === 0) {
-          return [newPoint];
-        }
+      // setGpsPoints((prev) => {
+      //   if (prev.length === 0) {
+      //     return [newPoint];
+      //   }
 
-        const lastPoint = prev[prev.length - 1];
-        const distance = Distance.equirectangular(
-          lastPoint[1],
-          lastPoint[0],
-          newPoint[1],
-          newPoint[0]
-        );
+      //   const lastPoint = prev[prev.length - 1];
+      //   const distance = Distance.equirectangular(
+      //     lastPoint[1],
+      //     lastPoint[0],
+      //     newPoint[1],
+      //     newPoint[0]
+      //   );
 
-        if (distance < DISTANCE_THRESHOLD_METERS) {
-          return prev;
-        }
+      //   if (distance < DISTANCE_THRESHOLD_METERS) {
+      //     return prev;
+      //   }
 
-        return [...prev, newPoint];
-      });
+      //   return [...prev, newPoint];
+      // });
     }, UPDATE_INTERVAL_MILLISECONDS);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [isRecording]);
+  }, [isRecording, gpsPoints]);
 
-  const gpsPointsGeoJSON: FeatureCollection<Point> = {
-    type: "FeatureCollection",
-    features: gpsPoints.map((point, index) => ({
-      type: "Feature",
-      properties: { index },
-      geometry: {
-        type: "Point",
-        coordinates: point,
-      },
-    })),
-  };
+  const gpsPointsGeoJSON = useMemo(() => points(gpsPoints), [gpsPoints]);
 
-  const gpsLineGeoJSON: FeatureCollection<LineString> = {
-    type: "FeatureCollection",
-    features:
-      gpsPoints.length > 1
-        ? [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "LineString",
-                coordinates: [...gpsPoints, gpsPoints[0]],
-              },
-            },
-          ]
-        : [],
-  };
+  const gpsLineGeoJSON = useMemo(
+    () =>
+      lineStrings(gpsPoints.length > 1 ? [[...gpsPoints, gpsPoints[0]]] : []),
+    [gpsPoints]
+  );
 
-  const gpsPolygonGeoJSON: FeatureCollection<Polygon> = {
-    type: "FeatureCollection",
-    features:
-      gpsPoints.length > 2
-        ? [
-            {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "Polygon",
-                coordinates: [[...gpsPoints, gpsPoints[0]]],
-              },
-            },
-          ]
-        : [],
-  };
+  const gpsPolygonGeoJSON = useMemo(
+    () => polygon(gpsPoints.length > 2 ? [[...gpsPoints, gpsPoints[0]]] : []),
+    [gpsPoints]
+  );
 
   return (
     <>
-      <Source id="gps-points" type="geojson" data={gpsPointsGeoJSON}>
-        <Layer {...gpsPointsLayer} />
-      </Source>
       <Source id="gps-line" type="geojson" data={gpsLineGeoJSON}>
         <Layer {...gpsLineLayer} />
       </Source>
       <Source id="gps-polygon" type="geojson" data={gpsPolygonGeoJSON}>
         <Layer {...gpsFillLayer} />
       </Source>
+      <Source id="gps-points" type="geojson" data={gpsPointsGeoJSON}>
+        <Layer {...gpsPointsLayer} />
+      </Source>
       <AreaToolBar
-        area={calcArea()}
-        nbPoints={gpsPoints.length}
+        area={calcArea}
+        nbPoints={Math.max(0, gpsPoints.length - 1)}
         onSave={handleSave}
         unit="m²"
-        onToggleRecording={handleAreaRecording}
+        onToggleRecording={_handleAreaRecordingMock}
         isRecording={isRecording}
       />
     </>
@@ -211,7 +234,7 @@ const gpsFillLayer: FillLayerSpecification = {
   id: "gps-polygon",
   type: "fill",
   paint: {
-    "fill-color": "#005eff",
+    "fill-color": "#7f00ff",
     "fill-opacity": 0.25,
   },
   source: "gps-polygon",
@@ -221,9 +244,9 @@ const gpsLineLayer: LineLayerSpecification = {
   id: "gps-line",
   type: "line",
   paint: {
-    "line-color": "#005eff",
-    "line-width": 1,
-    "line-dasharray": [1, 3],
+    "line-color": "#7f00ff",
+    "line-width": 1.5,
+    "line-opacity": 0.8,
   },
   source: "gps-line",
 };
@@ -232,8 +255,11 @@ const gpsPointsLayer: CircleLayerSpecification = {
   id: "gps-points",
   type: "circle",
   paint: {
-    "circle-color": "#005eff",
-    "circle-radius": 3,
+    "circle-color": "#7f00ff",
+    "circle-blur": 0.25,
+    "circle-radius": 5,
+    "circle-stroke-color": "#ffffff",
+    "circle-stroke-width": 2,
   },
   source: "gps-points",
 };
