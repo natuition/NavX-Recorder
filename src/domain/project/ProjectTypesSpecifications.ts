@@ -22,7 +22,7 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
         imagesForInstructions: ["/images/instruction_distance.example.png"],
         measurementType: "distance",
         completed: false,
-        condition: "has-some-distance"
+        hasCondition: true
       },
       {
         id: "2",
@@ -35,7 +35,7 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
         name: "Enregistrer une surface",
         measurementType: "area",
         completed: false,
-        condition: "has-some-surface"
+        hasCondition: true
       }
     ]
   },
@@ -60,7 +60,7 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
         slug: "distance-entre-les-planches",
         measurementType: "distance",
         completed: false,
-        condition: "boards-distances-done"
+        hasCondition: true
       },
       {
         id: "2",
@@ -73,7 +73,7 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
         slug: "surface-de-la-parcelle",
         measurementType: "area",
         completed: false,
-        condition: "parcel-area-done"
+        hasCondition: true
       },
       {
         id: "3",
@@ -85,7 +85,7 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
         ],
         measurementType: "distance",
         completed: false,
-        condition: "intra-raw-done"
+        hasCondition: true
       },
       {
         id: "4",
@@ -97,37 +97,68 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
         ],
         measurementType: "distance",
         completed: false,
-        condition: "inter-raw-done"
+        hasCondition: true
       },
     ]
   },
 };
 
 export const TaskConditionResolvers: Record<string, (project: Project) => boolean> = {
-  "has-some-distance": (project: Project) => {
+  "record-distance": (project: Project) => {
     return project.measurements.some(
       (m) => m.type === "distance"
     );
   },
 
-  "has-some-surface": (project: Project) => {
+  "record-area": (project: Project) => {
     return project.measurements.some(
       (m) => m.type === "area"
     );
   },
 
-  "boards-distances-done": (project: Project) => {
-    const boardCount = Number(project.meta?.boardCount) || 1;
+  "distance-entre-les-planches": (project: Project) => {
+    const boardCount = Number(project.meta?.boardCount);
+    if (isNaN(boardCount) || boardCount <= 0) {
+      console.warn("Invalid or missing boardCount meta in project.");
+      return false;
+    }
     const requiredDistances = boardCount * 3; // Par exemple, pour une parcelle de 3 planches il y a 9 distances à mesurer
     const distanceMeasurements = project.measurements.filter(
-      (m) => m.type === "distance" && m.subject === "boards-distance"
+      (m) => m.type === "distance" && m.subject === "distance-entre-les-planches"
     );
     return distanceMeasurements.length >= requiredDistances;
   },
 
-  // Placeholder for future conditions
-  "not-implemented": (_: Project) => {
-    return false;
+  "surface-de-la-parcelle": (project: Project) => {
+    return project.measurements.some(
+      (m) => m.type === "area" && m.subject === "surface-de-la-parcelle"
+    );
   },
+
+  "distance-intra-plants": (project: Project) => {
+    const boardCount = Number(project.meta?.boardCount);
+    if (isNaN(boardCount) || boardCount <= 0) {
+      console.warn("Invalid or missing boardCount meta in project.");
+      return false;
+    }
+    const requiredDistances = boardCount * 3;
+    const intraPlantDistances = project.measurements.filter(
+      (m) => m.type === "distance" && m.subject === "distance-intra-plants"
+    );
+    return intraPlantDistances.length >= requiredDistances;
+  },
+
+  "distance-inter-plants": (project: Project) => {
+    const boardCount = Number(project.meta?.boardCount);
+    if (isNaN(boardCount) || boardCount <= 0) {
+      console.warn("Invalid or missing boardCount meta in project.");
+      return false;
+    }
+    const interPlantDistances = project.measurements.filter(
+      (m) => m.type === "distance" && m.subject === "distance-inter-plants"
+    );
+    const requiredDistances = boardCount * 3;
+    return interPlantDistances.length >= requiredDistances;
+  }
 }
 

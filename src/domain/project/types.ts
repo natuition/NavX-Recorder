@@ -23,7 +23,7 @@ export type Task = {
   slug: string;
   measurementType: MeasurementType;
   completed: boolean;
-  condition: string;
+  hasCondition: boolean;
   instructions?: string[];
   imagesForInstructions?: string[];
 };

@@ -1,6 +1,5 @@
 import type { Store } from "../stores/Store";
 import type { CreateProjectFormType, Measurement, Project, ProjectType, Task } from "./types";
-import genericChecklist from './checklists/generic.json';
 import { ProjectTypesSpecifications, TaskConditionResolvers } from "./ProjectTypesSpecifications";
 
 
@@ -55,7 +54,7 @@ export class ProjectManager {
 
     // Mettre à jour la checklist en fonction des mesures enregistrées
     for (const task of project.checklist) {
-      if (TaskConditionResolvers[task.condition]?.(project)) {
+      if (task.hasCondition && TaskConditionResolvers[task.slug]?.(project)) {
         task.completed = true;
         updatedTasks.push(task);
       }
@@ -87,6 +86,6 @@ export class ProjectManager {
   }
 
   private createChecklistForProjectType(type: ProjectType): Task[] {
-    return ProjectTypesSpecifications[type.toUpperCase()]?.checklistTemplate ?? genericChecklist as Task[];
+    return ProjectTypesSpecifications[type.toUpperCase()]?.checklistTemplate || [];
   }
 }
