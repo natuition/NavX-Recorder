@@ -1,11 +1,9 @@
 .toolbar {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
   align-items: center;
   z-index: 1000;
 }
@@ -30,6 +28,8 @@
 
 .toolbar__action {
   font-size: 1.2rem;
+  max-width: fit-content;
+  padding-inline: 1.25em;
 }
 
 .toolbar-indicator {
@@ -49,13 +49,35 @@
 }
 
 .toolbar__actions {
-  padding: 1rem 1.8rem;
+  padding: 1rem 0.25vw;
   width: 100%;
   display: flex;
-  gap: 2em;
+  justify-content: center;
+  align-items: center;
   background-color: var(--color-secondary);
+}
+
+.toolbar__actions .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 1vw;
+  max-width: 40rem;
 }
 
 .toolbar__clear {
   width: fit-content;
+}
+
+@media (max-width: 340px) {
+  .toolbar__actions .wrapper {
+    flex-direction: column;
+  }
+  .toolbar__action {
+    max-width: 100%;
+  }
+  .toolbar__actions {
+    padding: 1rem 5rem;
+  }
 }

@@ -58,26 +58,28 @@ const DistanceToolBar = ({
         </div>
       </div>
       <div className="toolbar__actions">
-        <button
-          className="button button--neutral toolbar__action"
-          onClick={onRemoveLast}
-        >
-          <IoIosUndo size={18} />
-        </button>
-        <button
-          disabled={nbPoints < 2}
-          className="button button--neutral toolbar__action"
-          onClick={onSave}
-        >
-          Enregistrer
-          <FaSave size={18} />
-        </button>
-        <button
-          className="button button--primary toolbar__action"
-          onClick={onAdd}
-        >
-          <MdOutlineAddLocationAlt size={18} />
-        </button>
+        <div className="wrapper">
+          <button
+            className="button button--neutral toolbar__action"
+            onClick={onRemoveLast}
+          >
+            <IoIosUndo size={18} />
+          </button>
+          <button
+            disabled={nbPoints < 2}
+            className="button button--neutral toolbar__action"
+            onClick={onSave}
+          >
+            Enregistrer
+            <FaSave size={18} />
+          </button>
+          <button
+            className="button button--primary toolbar__action"
+            onClick={onAdd}
+          >
+            <MdOutlineAddLocationAlt size={18} />
+          </button>
+        </div>
       </div>
     </div>
   );

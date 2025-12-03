@@ -1,6 +1,7 @@
 import { FaSave, FaPlayCircle } from "react-icons/fa";
 import { FaDrawPolygon, FaPause } from "react-icons/fa6";
-import { MdLocationOn } from "react-icons/md";
+import { IoIosUndo } from "react-icons/io";
+import { MdLocationOn, MdOutlineAddLocationAlt } from "react-icons/md";
 
 type AreaToolBarProps = {
   /**
@@ -57,23 +58,31 @@ const AreaToolBar = ({
         </div>
       </div>
       <div className="toolbar__actions">
-        <button
-          disabled={isRecording || nbPoints < 3}
-          className="button button--neutral toolbar__action"
-          onClick={onSave}
-        >
-          Enregistrer
-          <FaSave size={18} />
-        </button>
-        <button
-          className={`button button--${
-            isRecording ? "neutral" : "primary"
-          } toolbar__action`}
-          onClick={onToggleRecording}
-        >
-          {isRecording ? "Pause" : "Démarrer"}
-          {isRecording ? <FaPause size={18} /> : <FaPlayCircle size={18} />}
-        </button>
+        <div className="wrapper">
+          <button className="button button--neutral toolbar__action">
+            <IoIosUndo size={18} />
+          </button>
+          <button
+            disabled={isRecording || nbPoints < 3}
+            className="button button--neutral toolbar__action"
+            onClick={onSave}
+          >
+            Enregistrer
+            <FaSave size={18} />
+          </button>
+          <button
+            className={`button button--${
+              isRecording ? "neutral" : "primary"
+            } toolbar__action`}
+            onClick={onToggleRecording}
+          >
+            {isRecording ? "Pause" : "Démarrer"}
+            {isRecording ? <FaPause size={18} /> : <FaPlayCircle size={18} />}
+          </button>
+          <button className="button button--primary toolbar__action">
+            <MdOutlineAddLocationAlt size={18} />
+          </button>
+        </div>
       </div>
     </div>
   );

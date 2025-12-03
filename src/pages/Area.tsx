@@ -156,8 +156,7 @@ const Area = () => {
     if (gpsPoints.length < 3) {
       return 0;
     }
-    const _polygon = geometry("Polygon", [gpsPoints]);
-    return area(_polygon);
+    return area(geometry("Polygon", [[...gpsPoints, gpsPoints[0]]]));
   }, [gpsPoints]);
 
   return (
