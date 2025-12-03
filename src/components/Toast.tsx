@@ -7,15 +7,15 @@ import {
   IoMdClose,
 } from "react-icons/io";
 import { useToast } from "../hooks/useToast";
+import { useLocation } from "react-router";
 
 type ToastStatus = "success" | "error" | "warn" | "info" | "neutral";
+type ToastPosition = "top-left" | "bottom-left";
 
 export type ToastOptions = {
-  context: ToastContextType;
+  position?: ToastPosition;
   duration?: number;
 };
-
-type ToastContextType = "base" | "measurement" | "project";
 
 export type ToastProps = {
   /**
@@ -49,26 +49,32 @@ const TOAST_ICONS: Record<ToastStatus, JSX.Element> = {
  */
 const Toast = () => {
   const { isVisible, message, status, hide, options } = useToast();
+  const location = useLocation();
 
   useEffect(() => {
     let timeout: number;
     if (isVisible) {
       timeout = setTimeout(() => {
         hide();
-      }, options.duration || 3000);
+      }, options.duration || 2000);
     }
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [isVisible, hide]);
+  }, [isVisible, hide, options.duration]);
+
+  useEffect(() => {
+    // Lorsque la route change, on cache le toast
+    hide();
+  }, [location.pathname, hide]);
 
   if (!isVisible) return;
 
   return (
     <div
-      className={`toast toast--${status} toast--${options.context}-ctx ${
-        isVisible ? "toast--visible" : ""
-      }`}
+      className={`toast toast--${status} ${
+        options.position && "toast--" + options.position
+      } ${isVisible ? "toast--visible" : ""}`}
     >
       <div className="toast__left">{TOAST_ICONS[status!]}</div>
       <div className="toast__right">

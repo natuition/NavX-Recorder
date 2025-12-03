@@ -77,10 +77,14 @@ export const Projects = () => {
       const project: Project = await projectManager.createProject(projectForm);
       modal.close();
       setProjects((prevProjects) => [...prevProjects, project]);
-      toast.success(`Projet "${project.name}" créé.`);
+      toast.success(`Projet "${project.name}" créé.`, {
+        position: "bottom-left",
+      });
     } catch (error) {
       console.error("Error saving project:", error);
-      toast.error(`Erreur lors de la création du projet. Veuillez réessayer.`);
+      toast.error(`Erreur lors de la création du projet. Veuillez réessayer.`, {
+        position: "bottom-left",
+      });
       modal.close();
       return;
     }
@@ -96,7 +100,7 @@ export const Projects = () => {
         setProjects((prevProjects) =>
           prevProjects.filter((p) => p.id !== project.id)
         );
-        toast.success(`Projet supprimé.`);
+        toast.success(`Projet supprimé.`, { position: "bottom-left" });
         modal.close();
       },
       onNo: () => {
@@ -128,7 +132,9 @@ export const Projects = () => {
 
         default:
           console.error("Unknown measurement type:", m.type);
-          toast.error("Erreur lors de l'exportation.");
+          toast.error("Erreur lors de l'exportation.", {
+            position: "bottom-left",
+          });
       }
     });
 

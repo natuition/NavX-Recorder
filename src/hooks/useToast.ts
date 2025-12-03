@@ -1,50 +1,47 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import AppContext from "../providers/AppProvider";
 import type { ToastOptions } from "../components/Toast";
+
+const DEFAULT_TOAST_OPTIONS: ToastOptions = {
+  position: "top-left",
+  duration: 2000,
+};
 
 export function useToast() {
   const { state, actions } = useContext(AppContext);
 
-  const info = (message: string, options: ToastOptions = {
-    context: "base",
-  }) => {
+  const info = useCallback((message: string, options: ToastOptions = DEFAULT_TOAST_OPTIONS) => {
     actions.toast.show({
       message: message,
       status: "info",
-      options: options,
+      options: Object.assign({}, DEFAULT_TOAST_OPTIONS, options),
     })
-  }
+  }, [actions.toast]);
 
-  const warn = (message: string, options: ToastOptions = {
-    context: "base",
-  }) => {
+  const warn = useCallback((message: string, options: ToastOptions = DEFAULT_TOAST_OPTIONS) => {
     actions.toast.show({
       message: message,
       status: "warn",
-      options: options,
+      options: Object.assign({}, DEFAULT_TOAST_OPTIONS, options),
 
     })
-  }
+  }, [actions.toast]);
 
-  const error = (message: string, options: ToastOptions = {
-    context: "base",
-  }) => {
+  const error = useCallback((message: string, options: ToastOptions = DEFAULT_TOAST_OPTIONS) => {
     actions.toast.show({
       message: message,
       status: "error",
-      options: options,
+      options: Object.assign({}, DEFAULT_TOAST_OPTIONS, options),
     })
-  }
+  }, [actions.toast]);
 
-  const success = (message: string, options: ToastOptions = {
-    context: "base",
-  }) => {
+  const success = useCallback((message: string, options: ToastOptions = DEFAULT_TOAST_OPTIONS) => {
     actions.toast.show({
       message: message,
       status: "success",
-      options: options,
+      options: Object.assign({}, DEFAULT_TOAST_OPTIONS, options),
     })
-  }
+  }, [actions.toast]);
 
   return {
     ...state.toast,

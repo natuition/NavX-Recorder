@@ -1,4 +1,10 @@
-import { createContext, useEffect, useReducer, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useReducer,
+  type ReactNode,
+} from "react";
 import { type ModalProps } from "../components/Modal";
 import type { ToastProps } from "../components/Toast";
 import type { TopBarProps } from "../components/TopBar";
@@ -39,7 +45,7 @@ const defaultAppContext: AppContextType = {
       isVisible: false,
       message: "",
       status: "neutral",
-      options: { context: "base" },
+      options: { position: "top-left" },
     },
     topBar: { title: "", showBackButton: false },
   },
@@ -109,7 +115,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
             ...state,
             toast: {
               options: {
-                context: "base",
+                position: "top-left",
               },
               message: null,
               isVisible: false,
@@ -137,7 +143,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
     toast: {
       show: (props: ToastProps) =>
         dispatch({ type: "TOAST_SHOW", payload: props }),
-      hide: () => dispatch({ type: "TOAST_HIDE" }),
+      hide: useCallback(() => dispatch({ type: "TOAST_HIDE" }), []),
     },
   };
 
