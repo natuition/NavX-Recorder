@@ -12,6 +12,7 @@ type ToastStatus = "success" | "error" | "warn" | "info" | "neutral";
 
 export type ToastOptions = {
   context: ToastContextType;
+  duration?: number;
 };
 
 type ToastContextType = "base" | "measurement" | "project";
@@ -54,7 +55,7 @@ const Toast = () => {
     if (isVisible) {
       timeout = setTimeout(() => {
         hide();
-      }, 2000);
+      }, options.duration || 3000);
     }
     return () => {
       if (timeout) clearTimeout(timeout);
