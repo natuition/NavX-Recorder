@@ -1,6 +1,8 @@
-import { IoMap, IoFolderOpen, IoSearchSharp } from "react-icons/io5";
+import { IoMap, IoFolderOpen } from "react-icons/io5";
 import { IoMdMore } from "react-icons/io";
 import { useState } from "react";
+import { FaRuler } from "react-icons/fa";
+
 import TabButton from "./TabButton";
 import ActionMenu from "./ActionMenu";
 import { NavLink } from "react-router";
@@ -25,9 +27,9 @@ const Navigation = () => {
             <span className="tab__label">Projets</span>
           </NavLink>
           <TabButton onPress={() => setIsMenuVisible(true)} />
-          <NavLink to="/search" className="tab">
-            <IoSearchSharp className="tab__icon" size={24} />
-            <span className="tab__label">Rechercher</span>
+          <NavLink to="/measurements" className="tab">
+            <FaRuler className="tab__icon" size={24} />
+            <span className="tab__label">Mesures</span>
           </NavLink>
           <NavLink to="/settings" className="tab">
             <IoMdMore className="tab__icon" size={24} />

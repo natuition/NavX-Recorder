@@ -4,7 +4,6 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import BaseLayout from "./layouts/BaseLayout.tsx";
 import { Projects } from "./pages/Projects.tsx";
 import Settings from "./pages/Settings.tsx";
-import Search from "./pages/Search.tsx";
 import { Route, Routes } from "react-router";
 import { MapProvider } from "./providers/MapProvider.tsx";
 import Distance from "./pages/Distance.tsx";
@@ -16,6 +15,7 @@ import Toast from "./components/Toast.tsx";
 import { MapLayout } from "./layouts/MapLayout.tsx";
 import ProjectDetails from "./pages/ProjectDetails.tsx";
 import { DomainProvider } from "./providers/DomainProvider.tsx";
+import Measurements from "./pages/Measurements.tsx";
 
 /**
  * Composant principal de l'application NavX Recorder.
@@ -41,7 +41,7 @@ const App = () => {
                 <Route element={<PanelLayout />}>
                   <Route path="projects" element={<Projects />} />
                   <Route path="projects/:id" element={<ProjectDetails />} />
-                  <Route path="search" element={<Search />} />
+                  <Route path="measurements" element={<Measurements />} />
                   <Route path="settings" element={<Settings />} />
                 </Route>
               </Routes>

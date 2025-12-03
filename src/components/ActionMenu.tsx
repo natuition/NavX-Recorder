@@ -1,4 +1,6 @@
-import { FaDrawPolygon, FaRuler } from "react-icons/fa";
+import { FaDrawPolygon } from "react-icons/fa";
+import { SiAlwaysdata } from "react-icons/si";
+
 import { Link } from "react-router";
 
 type ActionMenuProps = {
@@ -34,7 +36,7 @@ const ActionMenu = ({ onHide, active }: ActionMenuProps) => {
             className="button button--neutral"
             to="/distance"
           >
-            <FaRuler className="button__icon-left" size={24} />
+            <SiAlwaysdata className="button__icon-left" size={24} />
             Distance
           </Link>
         </li>

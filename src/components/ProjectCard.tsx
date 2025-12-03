@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import type { Project } from "../domain/project/types";
-import Dropdown from "./Dropdown";
+import Dropdown, { type DropdownOption } from "./Dropdown";
 import ProjectsContext from "../pages/Projects";
 import { useModal } from "../hooks/useModal";
 import ProjectModal from "../domain/project/ProjectModal";
@@ -14,7 +14,7 @@ const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
   const { actions } = useContext(ProjectsContext);
   const modal = useModal();
 
-  const options = [
+  const options: DropdownOption[] = [
     {
       label: "Modifier",
       status: "default",

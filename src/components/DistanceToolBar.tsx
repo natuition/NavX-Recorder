@@ -1,6 +1,8 @@
 import { IoIosUndo } from "react-icons/io";
-import { FaRuler, FaSave } from "react-icons/fa";
+import { FaSave } from "react-icons/fa";
 import { MdOutlineAddLocationAlt, MdLocationOn } from "react-icons/md";
+import { SiAlwaysdata } from "react-icons/si";
+
 import type { UnitOption } from "../pages/Distance";
 
 type DistanceToolBarProps = {
@@ -50,7 +52,7 @@ const DistanceToolBar = ({
             <p className="toolbar-indicator__data">{nbPoints}</p>
           </div>
           <div className="toolbar-indicator">
-            <FaRuler className="toolbar-indicator__icon" size={18} />
+            <SiAlwaysdata className="toolbar-indicator__icon" size={18} />
             <p className="toolbar-indicator__data">
               {distance.toFixed(2)} {unit.shortLabel}
             </p>

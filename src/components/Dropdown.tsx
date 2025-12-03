@@ -1,7 +1,7 @@
 import { useState, type MouseEvent } from "react";
 import { IoMdMore } from "react-icons/io";
 
-type DropdownOption = {
+export type DropdownOption = {
   label: string;
   status: "default" | "danger";
   action: () => void;
