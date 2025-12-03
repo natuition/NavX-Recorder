@@ -42,6 +42,14 @@
   cursor: pointer;
 }
 
+.dropdown-item--default {
+  color: var(--color-text-body);
+}
+
+.dropdown-item--danger {
+  color: var(--color-status-danger);
+}
+
 .dropdown-item:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }

@@ -21,7 +21,10 @@ type ProjectsStateType = {
 type ProjectsActionsType = {
   deleteProject: (project: Project) => Promise<void>;
   exportProject: (project: Project) => Promise<void>;
-  // createProject: (project: Project) => Promise<void>;
+  editProject: (
+    projectId: string,
+    projectForm: CreateProjectFormType
+  ) => Promise<void>;
 };
 
 type ProjectsContextType = {
@@ -36,7 +39,7 @@ const ProjectsContext = createContext<ProjectsContextType>({
   actions: {
     deleteProject: async () => {},
     exportProject: async () => {},
-    // createProject: async () => {},
+    editProject: async () => {},
   },
 });
 
@@ -109,6 +112,37 @@ export const Projects = () => {
     });
   };
 
+  const editProject = async (
+    projectId: string,
+    projectForm: CreateProjectFormType
+  ) => {
+    try {
+      const updatedProject: Project = await projectManager.editProject(
+        projectId,
+        projectForm
+      );
+      setProjects((prevProjects) =>
+        prevProjects.map((proj) =>
+          proj.id === projectId ? updatedProject : proj
+        )
+      );
+      toast.success(`Projet "${updatedProject.name}" modifié.`, {
+        position: "bottom-left",
+      });
+      modal.close();
+    } catch (error) {
+      console.error("Error editing project:", error);
+      toast.error(
+        `Erreur lors de la modification du projet. Veuillez réessayer.`,
+        {
+          position: "bottom-left",
+        }
+      );
+      modal.close();
+      return;
+    }
+  };
+
   const exportProject = async (project: Project) => {
     const measurements = project.measurements.map((m) => {
       switch (m.type) {
@@ -156,7 +190,10 @@ export const Projects = () => {
 
   return (
     <ProjectsContext.Provider
-      value={{ state: { projects }, actions: { deleteProject, exportProject } }}
+      value={{
+        state: { projects },
+        actions: { deleteProject, exportProject, editProject },
+      }}
     >
       <h1 className="page__title">
         Projets{" "}

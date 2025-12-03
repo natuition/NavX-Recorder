@@ -1,4 +1,4 @@
-import type { CreateProjectFormType } from "./types";
+import type { CreateProjectFormType, Project } from "./types";
 import CreateProjectForm from "./ProjectForm";
 import { urlFor } from "../../utils/url";
 
@@ -10,7 +10,34 @@ const CreateProjectModalContent = ({ onCreated }: CreateProjectProps) => {
   return (
     <div className="cmc-save">
       <h2 className="cmc-save__title">Nouveau projet</h2>
-      <CreateProjectForm onSubmit={onCreated} />
+      <CreateProjectForm onSubmit={onCreated}>
+        <CreateProjectForm.Base />
+        <CreateProjectForm.Meta />
+        <CreateProjectForm.Submit label="Créer" />
+      </CreateProjectForm>
+    </div>
+  );
+};
+
+type EditProjectProps = {
+  onEdited: (form: CreateProjectFormType) => void;
+  project: Project;
+};
+
+const EditProjectModalContent = ({ onEdited, project }: EditProjectProps) => {
+  const formData: CreateProjectFormType = {
+    name: project.name,
+    description: project.description,
+    type: project.type,
+    meta: project.meta,
+  };
+  return (
+    <div className="cmc-save">
+      <h2 className="cmc-save__title">Modifier le projet</h2>
+      <CreateProjectForm onSubmit={onEdited} formData={formData}>
+        <CreateProjectForm.Base disabledFields={["type"]} />
+        <CreateProjectForm.Submit label="Enregistrer" />
+      </CreateProjectForm>
     </div>
   );
 };
@@ -53,6 +80,7 @@ const TaskInstructionsModalContent = ({
 const ProjectModal = {
   TaskInstructions: TaskInstructionsModalContent,
   CreateProject: CreateProjectModalContent,
+  EditProject: EditProjectModalContent,
 };
 
 export default ProjectModal;

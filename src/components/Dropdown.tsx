@@ -3,6 +3,7 @@ import { IoMdMore } from "react-icons/io";
 
 type DropdownOption = {
   label: string;
+  status: "default" | "danger";
   action: () => void;
 };
 
@@ -34,7 +35,7 @@ const Dropdown = ({ options }: DropdownProps) => {
           {options?.map((option, index) => (
             <li
               key={index}
-              className="dropdown-item"
+              className={`dropdown-item dropdown-item--${option.status}`}
               onClick={(e) => {
                 e.stopPropagation();
                 option.action();

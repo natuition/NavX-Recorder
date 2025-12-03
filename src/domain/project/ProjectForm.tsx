@@ -14,6 +14,8 @@ import { useToast } from "../../hooks/useToast";
 
 type CreateProjectFormProps = {
   onSubmit: (form: CreateProjectFormType) => void;
+  formData?: CreateProjectFormType;
+  children?: React.ReactNode;
 };
 
 const CreateProjectFormContext = createContext<{
@@ -34,13 +36,17 @@ const CreateProjectFormContext = createContext<{
   handleChange: () => {},
 });
 
-const CreateProjectForm = ({ onSubmit }: CreateProjectFormProps) => {
-  const toast = useToast();
-  const [fields, setFields] = useState<CreateProjectFormType>({
+const CreateProjectForm = ({
+  onSubmit,
+  formData = {
     name: "",
     description: "",
     type: "placeholder",
-  });
+  },
+  children,
+}: CreateProjectFormProps) => {
+  const toast = useToast();
+  const [fields, setFields] = useState<CreateProjectFormType>(formData);
 
   const isValid = () =>
     fields.name.trim() !== "" && fields.type !== "placeholder";
@@ -66,15 +72,17 @@ const CreateProjectForm = ({ onSubmit }: CreateProjectFormProps) => {
       value={{ fields, setFields, isValid, handleChange }}
     >
       <form onSubmit={handleSubmit}>
-        <Base />
-        <Meta />
-        <Submit />
+        {children}
       </form>
     </CreateProjectFormContext.Provider>
   );
 };
 
-const Base = () => {
+type BaseProps = {
+  disabledFields?: string[];
+};
+
+const Base = ({ disabledFields }: BaseProps) => {
   const { fields, handleChange } = useContext(CreateProjectFormContext);
 
   return (
@@ -82,6 +90,7 @@ const Base = () => {
       <div className="form__field form__field--required">
         <label htmlFor="projectName">Nom</label>
         <input
+          disabled={disabledFields?.includes("name")}
           autoComplete="off"
           required
           type="text"
@@ -94,6 +103,7 @@ const Base = () => {
       <div className="form__field">
         <label htmlFor="projectDescription">Description</label>
         <textarea
+          disabled={disabledFields?.includes("description")}
           name="description"
           id="projectDescription"
           onChange={handleChange}
@@ -103,6 +113,7 @@ const Base = () => {
       <div className="form__field form__field--required">
         <label htmlFor="projectType">Type</label>
         <select
+          disabled={disabledFields?.includes("type")}
           required
           onChange={handleChange}
           name="type"
@@ -125,10 +136,14 @@ const Base = () => {
   );
 };
 
-const Submit = () => {
+type SubmitProps = {
+  label?: string;
+};
+
+const Submit = ({ label }: SubmitProps) => {
   return (
     <button type="submit" className="button button--primary">
-      Créer
+      {label || "Enregistrer"}
     </button>
   );
 };
@@ -171,6 +186,7 @@ const Meta = () => {
               name={meta.name}
               id={meta.name}
               onChange={(e) => handleMetaChange(e, meta.type)}
+              value={fields.meta ? String(fields.meta[meta.name] ?? "") : ""}
             />
           </div>
         )

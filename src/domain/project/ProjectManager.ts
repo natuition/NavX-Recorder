@@ -30,6 +30,20 @@ export class ProjectManager {
     return newProject;
   }
 
+  async editProject(id: string, form: CreateProjectFormType): Promise<Project> {
+    const existingProject = await this.getProject(id);
+    if (!existingProject) throw new Error(`Project with id ${id} not found`);
+
+    existingProject.name = form.name;
+    existingProject.description = form.description;
+    existingProject.type = form.type as ProjectType;
+    existingProject.updatedAt = Date.now();
+    existingProject.meta = form.meta;
+
+    await this.store.save(existingProject);
+    return existingProject;
+  }
+
   async saveProject(project: Project): Promise<void> {
     const now = Date.now();
     const existingProject = await this.store.findById(project.id);

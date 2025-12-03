@@ -2,6 +2,8 @@ import { useContext } from "react";
 import type { Project } from "../domain/project/types";
 import Dropdown from "./Dropdown";
 import ProjectsContext from "../pages/Projects";
+import { useModal } from "../hooks/useModal";
+import ProjectModal from "../domain/project/ProjectModal";
 
 type ProjectCardProps = {
   project: Project;
@@ -10,15 +12,39 @@ type ProjectCardProps = {
 
 const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
   const { actions } = useContext(ProjectsContext);
+  const modal = useModal();
 
   const options = [
     {
+      label: "Modifier",
+      status: "default",
+      action: () =>
+        modal.open({
+          _render: () => (
+            <ProjectModal.EditProject
+              onEdited={(formData) => actions.editProject(project.id, formData)}
+              project={project}
+            />
+          ),
+          noLabel: "Annuler",
+          onNo: modal.close,
+        }),
+    },
+    {
       label: "Supprimer",
+      status: "danger",
       action: () => actions.deleteProject(project),
     },
     {
       label: "Exporter",
+      status: "default",
       action: () => actions.exportProject(project),
+    },
+
+    {
+      label: "Log",
+      status: "default",
+      action: () => console.log(project),
     },
   ];
 
