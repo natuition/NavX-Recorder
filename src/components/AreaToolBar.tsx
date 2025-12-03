@@ -21,6 +21,14 @@ type AreaToolBarProps = {
    */
   onSave: () => void;
   /**
+   * Callback appelé lorsque l'utilisateur clique sur le bouton de suppression du dernier point.
+   */
+  onRemoveLast?: () => void;
+  /**
+   * Callback appelé lorsque l'utilisateur clique sur le bouton d'ajout de point.
+   */
+  onAdd: () => void;
+  /**
    * Callback appelé lorsque l'utilisateur clique sur le bouton d'enregistrement/pause.
    */
   onToggleRecording: () => void;
@@ -40,6 +48,8 @@ const AreaToolBar = ({
   isRecording,
   onToggleRecording,
   onSave,
+  onRemoveLast,
+  onAdd,
 }: AreaToolBarProps) => {
   return (
     <div className="toolbar">
@@ -59,7 +69,10 @@ const AreaToolBar = ({
       </div>
       <div className="toolbar__actions">
         <div className="wrapper">
-          <button className="button button--neutral toolbar__action">
+          <button
+            onClick={onRemoveLast}
+            className="button button--neutral toolbar__action"
+          >
             <IoIosUndo size={18} />
           </button>
           <button
@@ -79,7 +92,10 @@ const AreaToolBar = ({
             {isRecording ? "Pause" : "Démarrer"}
             {isRecording ? <FaPause size={18} /> : <FaPlayCircle size={18} />}
           </button>
-          <button className="button button--primary toolbar__action">
+          <button
+            onClick={onAdd}
+            className="button button--primary toolbar__action"
+          >
             <MdOutlineAddLocationAlt size={18} />
           </button>
         </div>

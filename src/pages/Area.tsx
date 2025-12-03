@@ -16,10 +16,14 @@ import { useModal } from "../hooks/useModal";
 import ProjectModal from "../domain/project/ProjectModal";
 import { geometry, lineStrings, points, polygon } from "@turf/helpers";
 import type { Measurement } from "../domain/project/types";
+import distance from "@turf/distance";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
 const DISTANCE_THRESHOLD_METERS = 1; // Seuil de distance minimale entre deux points GPS
+const CLOSING_TOLERENCE_FACTOR = 2; // Facteur de tolérance pour la fermeture de la surface
+const EXPECTED_CLOSING_DISTANCE_METERS =
+  DISTANCE_THRESHOLD_METERS * CLOSING_TOLERENCE_FACTOR;
 const UPDATE_INTERVAL_MILLISECONDS = 500; // Intervalle d'ajout de points GPS
 
 const Area = () => {
@@ -78,10 +82,9 @@ const Area = () => {
         console.warn(
           "GPS position not available, cannot start recording area."
         );
-        toast.warn("Position GPS non disponible.", { context: "measurement" });
+        toast.warn("Position GPS non disponible.");
         return;
       }
-      setGpsPoints([]);
       setIsRecording(true);
     }
   };
@@ -123,8 +126,59 @@ const Area = () => {
     };
   }, [isRecording]);
 
+  const handleAddGPSPoint = () => {
+    if (!positionRef.current) {
+      console.warn("Position is not available, could not add GPS point.");
+      toast.warn("Position GPS non disponible.");
+      return;
+    }
+    console.log(positionRef.current);
+    const newPoint: LonLat = [
+      positionRef.current.longitude,
+      positionRef.current.latitude,
+    ];
+    setGpsPoints((prev) => [...prev, newPoint]);
+  };
+
+  const _handleAddGPSPointMock = () => {
+    let newPoint: LonLat;
+    if (gpsPoints.length === 0) {
+      newPoint = [-1.1517, 46.1591];
+    } else {
+      const lastPoint = gpsPoints[gpsPoints.length - 1];
+      newPoint = [
+        lastPoint[0] + (Math.random() - 0.5) * 0.001,
+        lastPoint[1] + (Math.random() - 0.5) * 0.001,
+      ];
+    }
+    setGpsPoints((prev) => [...prev, newPoint]);
+  };
+
+  const handleRemoveLastPoint = () => {
+    setGpsPoints((prev) => prev.slice(0, -1));
+  };
+
   const handleSave = () => {
     console.log("Enregistrement de la mesure de surface");
+    const firstPoint = gpsPoints[0];
+    const lastPoint = gpsPoints[gpsPoints.length - 1];
+    if (
+      distance(firstPoint, lastPoint, { units: "meters" }) >
+      EXPECTED_CLOSING_DISTANCE_METERS
+    ) {
+      console.error("Area is not closed.");
+      toast.error(
+        `La surface doit être fermée (le dernier point doit être à moins de ${EXPECTED_CLOSING_DISTANCE_METERS} mètres du premier).`,
+        { duration: 5000 }
+      );
+      return;
+    }
+
+    if (gpsPoints.length < 3) {
+      console.error("Not enough points to form an area.");
+      toast.error("Une surface doit comporter au moins 3 points distincts.");
+      return;
+    }
 
     const newMeasurement: Measurement = {
       id: window.crypto.randomUUID() as string,
@@ -171,8 +225,10 @@ const Area = () => {
         <Layer {...gpsPointsLayer} />
       </Source>
       <AreaToolBar
+        onAdd={_handleAddGPSPointMock}
+        onRemoveLast={handleRemoveLastPoint}
         area={totalArea}
-        nbPoints={Math.max(0, gpsPoints.length - 1)}
+        nbPoints={Math.max(0, gpsPoints.length)}
         onSave={handleSave}
         unit="m²"
         onToggleRecording={handleToggleRecording}
