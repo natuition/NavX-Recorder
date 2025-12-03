@@ -22,6 +22,7 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import { useModal } from "../hooks/useModal";
 import ProjectModal from "../domain/project/ProjectModal";
 import { geometry, lineStrings, points, polygon } from "@turf/helpers";
+import type { Measurement } from "../domain/project/types";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
@@ -80,6 +81,13 @@ const Area = () => {
     if (isRecording) {
       setIsRecording(false);
     } else {
+      if (!positionRef.current) {
+        console.warn(
+          "GPS position not available, cannot start recording area."
+        );
+        toast.warn("Position GPS non disponible.", { context: "measurement" });
+        return;
+      }
       setGpsPoints([]);
       setIsRecording(true);
     }
@@ -89,13 +97,7 @@ const Area = () => {
     if (!isRecording) return;
 
     const intervalId = setInterval(() => {
-      if (!positionRef.current) {
-        console.warn(
-          "GPS position not available, cannot start recording area."
-        );
-        toast.warn("Position GPS non disponible", { context: "measurement" });
-        return;
-      }
+      if (!positionRef.current) return;
 
       const newPoint: LonLat = [
         positionRef.current.longitude,
@@ -126,10 +128,22 @@ const Area = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [isRecording, gpsPoints]);
+  }, [isRecording]);
 
   const handleSave = () => {
-    console.log("Surface enregistrée ✅");
+    console.log("Enregistrement de la mesure de surface");
+
+    const newMeasurement: Measurement = {
+      id: window.crypto.randomUUID() as string,
+      name: "STUB:name",
+      subject: "STUB:subject",
+      type: "area",
+      value: totalArea,
+      unit: "square-meters",
+      points: [...gpsPoints, gpsPoints[0]],
+    };
+
+    console.log("Nouvelle mesure créée :", newMeasurement);
   };
 
   const gpsPointsGeoJSON = useMemo(() => points(gpsPoints), [gpsPoints]);
@@ -145,7 +159,7 @@ const Area = () => {
     [gpsPoints]
   );
 
-  const calcArea = useMemo(() => {
+  const totalArea = useMemo(() => {
     if (gpsPoints.length < 3) {
       return 0;
     }
@@ -165,7 +179,7 @@ const Area = () => {
         <Layer {...gpsPointsLayer} />
       </Source>
       <AreaToolBar
-        area={calcArea}
+        area={totalArea}
         nbPoints={Math.max(0, gpsPoints.length - 1)}
         onSave={handleSave}
         unit="m²"
