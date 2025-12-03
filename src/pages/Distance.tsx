@@ -4,7 +4,6 @@ import {
   Source,
   type LineLayerSpecification,
   type CircleLayerSpecification,
-  useMap,
   type SymbolLayerSpecification,
 } from "react-map-gl/mapbox";
 import DistanceToolBar from "../components/DistanceToolBar";
@@ -43,7 +42,6 @@ const Distance = () => {
   const modal = useModal();
   const projectManager = useProjectManager();
   const { position } = useGeolocation();
-  const { map } = useMap();
 
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
 
@@ -163,19 +161,19 @@ const Distance = () => {
     });
   };
 
-  const _handleAddGPSPointMock = () => {
-    let newPoint: LonLat;
-    if (gpsPoints.length === 0) {
-      newPoint = [-1.1517, 46.1591];
-    } else {
-      const lastPoint = gpsPoints[gpsPoints.length - 1];
-      newPoint = [
-        lastPoint[0] + (Math.random() - 0.5) * 0.001,
-        lastPoint[1] + (Math.random() - 0.5) * 0.001,
-      ];
-    }
-    setGpsPoints((prev) => [...prev, newPoint]);
-  };
+  // const _handleAddGPSPointMock = () => {
+  //   let newPoint: LonLat;
+  //   if (gpsPoints.length === 0) {
+  //     newPoint = [-1.1517, 46.1591];
+  //   } else {
+  //     const lastPoint = gpsPoints[gpsPoints.length - 1];
+  //     newPoint = [
+  //       lastPoint[0] + (Math.random() - 0.5) * 0.001,
+  //       lastPoint[1] + (Math.random() - 0.5) * 0.001,
+  //     ];
+  //   }
+  //   setGpsPoints((prev) => [...prev, newPoint]);
+  // };
 
   const handleAddGPSPoint = () => {
     if (!position) {
@@ -242,7 +240,7 @@ const Distance = () => {
         unit={DEFAULT_CONFIG.unit}
         nbPoints={gpsPoints.length}
         distance={totalDistance}
-        onAdd={_handleAddGPSPointMock}
+        onAdd={handleAddGPSPoint}
         onRemoveLast={() => setGpsPoints((prev) => prev.slice(0, -1))}
         onSave={handleSave}
       />

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Layer,
   Source,
@@ -6,13 +6,6 @@ import {
   type CircleLayerSpecification,
   type FillLayerSpecification,
 } from "react-map-gl/mapbox";
-import type {
-  FeatureCollection,
-  Geometry,
-  LineString,
-  Point,
-  Polygon,
-} from "geojson";
 import AreaToolBar from "../components/AreaToolBar";
 import { Distance } from "../utils/Distance";
 import area from "@turf/area";
