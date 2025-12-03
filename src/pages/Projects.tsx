@@ -7,8 +7,12 @@ import { createContext, useEffect, useState } from "react";
 import { MdCreateNewFolder } from "react-icons/md";
 import ProjectCard from "../components/ProjectCard";
 import ProjectModal from "../domain/project/ProjectModal";
-import { points } from "@turf/helpers";
+import { featureCollection, lineString, polygon } from "@turf/helpers";
 import { downloadJSON } from "../utils/misc";
+
+type JSONExport<T> = Partial<T> & {
+  data: GeoJSON.FeatureCollection;
+};
 
 type ProjectsStateType = {
   projects: Project[];
@@ -102,19 +106,40 @@ export const Projects = () => {
   };
 
   const exportProject = async (project: Project) => {
-    const segments = project.measurements.map((m) =>
-      points(m.points, {
-        id: m.id,
-        type: m.type,
-        subject: m.subject,
-        value: m.value,
-        unit: m.unit,
-      })
-    );
+    const measurements = project.measurements.map((m) => {
+      switch (m.type) {
+        case "distance":
+          return lineString(m.points, {
+            id: m.id,
+            type: m.type,
+            subject: m.subject,
+            value: m.value,
+            unit: m.unit,
+          });
 
-    const exportedData = {
-      ...project,
-      measurements: segments,
+        case "area":
+          return polygon([m.points], {
+            id: m.id,
+            type: m.type,
+            subject: m.subject,
+            value: m.value,
+            unit: m.unit,
+          });
+
+        default:
+          console.error("Unknown measurement type:", m.type);
+          toast.error("Erreur lors de l'exportation.");
+      }
+    });
+
+    const exportedData: JSONExport<Project> = {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      meta: project.meta,
+      data: featureCollection(measurements as GeoJSON.Feature[]),
     };
 
     downloadJSON(
