@@ -39,7 +39,7 @@ const Area = () => {
   const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
-    // Dans le cas dune tâche de projet, on ouvre une modale avec les explications de la tâche.
+    // Dans le cas d'une tâche de projet, on ouvre une modale avec les explications de la tâche.
     const showInstructions = () => {
       if (location.state.task?.instructions) {
         console.debug("Opening modal with task instructions.");
@@ -76,80 +76,10 @@ const Area = () => {
     }
   }, [isRecording, location.state, gpsPoints.length, navigate]);
 
-  const calcArea = useMemo(() => {
-    if (gpsPoints.length < 3) {
-      return 0;
-    }
-    const _polygon = geometry("Polygon", [gpsPoints]);
-    return area(_polygon);
-  }, [gpsPoints]);
-
-  const handleSave = () => {
-    console.log("Surface enregistrée ✅");
-  };
-
-  const recordArea = () => {
-    if (!positionRef.current) {
-      return;
-    }
-
-    const newPoint: LonLat = [
-      positionRef.current.longitude,
-      positionRef.current.latitude,
-    ];
-
-    setGpsPoints((prev) => {
-      if (prev.length === 0) {
-        return [newPoint];
-      }
-
-      const lastPoint = prev[prev.length - 1];
-      const distance = Distance.equirectangular(
-        lastPoint[1],
-        lastPoint[0],
-        newPoint[1],
-        newPoint[0]
-      );
-
-      if (distance < DISTANCE_THRESHOLD_METERS) {
-        return prev;
-      }
-
-      return [...prev, newPoint];
-    });
-  };
-
-  const _recordAreaMock = () => {
-    const points = [
-      [-1.1517, 46.1591],
-      [-1.152, 46.1595],
-      [-1.1515, 46.1597],
-      [-1.1517, 46.1591],
-    ] as LonLat[];
-
-    setGpsPoints(points);
-  };
-
-  const _handleAreaRecordingMock = () => {
+  const handleToggleRecording = () => {
     if (isRecording) {
       setIsRecording(false);
     } else {
-      setGpsPoints([]);
-      setIsRecording(true);
-    }
-  };
-
-  const handleAreaRecording = () => {
-    if (isRecording) {
-      setIsRecording(false);
-    } else {
-      if (!positionRef.current) {
-        console.warn(
-          "GPS position not available, cannot start recording area."
-        );
-        toast.warn("Position GPS non disponible", { context: "measurement" });
-        return;
-      }
       setGpsPoints([]);
       setIsRecording(true);
     }
@@ -159,40 +89,48 @@ const Area = () => {
     if (!isRecording) return;
 
     const intervalId = setInterval(() => {
-      // >>> MOCK
-      _recordAreaMock();
-      // <<< END MOCK
+      if (!positionRef.current) {
+        console.warn(
+          "GPS position not available, cannot start recording area."
+        );
+        toast.warn("Position GPS non disponible", { context: "measurement" });
+        return;
+      }
 
-      // const newPoint: LonLat = [
-      //   positionRef.current.longitude,
-      //   positionRef.current.latitude,
-      // ];
+      const newPoint: LonLat = [
+        positionRef.current.longitude,
+        positionRef.current.latitude,
+      ];
 
-      // setGpsPoints((prev) => {
-      //   if (prev.length === 0) {
-      //     return [newPoint];
-      //   }
+      setGpsPoints((prev) => {
+        if (prev.length === 0) {
+          return [newPoint];
+        }
 
-      //   const lastPoint = prev[prev.length - 1];
-      //   const distance = Distance.equirectangular(
-      //     lastPoint[1],
-      //     lastPoint[0],
-      //     newPoint[1],
-      //     newPoint[0]
-      //   );
+        const lastPoint = prev[prev.length - 1];
+        const distance = Distance.equirectangular(
+          lastPoint[1],
+          lastPoint[0],
+          newPoint[1],
+          newPoint[0]
+        );
 
-      //   if (distance < DISTANCE_THRESHOLD_METERS) {
-      //     return prev;
-      //   }
+        if (distance < DISTANCE_THRESHOLD_METERS) {
+          return prev;
+        }
 
-      //   return [...prev, newPoint];
-      // });
+        return [...prev, newPoint];
+      });
     }, UPDATE_INTERVAL_MILLISECONDS);
 
     return () => {
       clearInterval(intervalId);
     };
   }, [isRecording, gpsPoints]);
+
+  const handleSave = () => {
+    console.log("Surface enregistrée ✅");
+  };
 
   const gpsPointsGeoJSON = useMemo(() => points(gpsPoints), [gpsPoints]);
 
@@ -206,6 +144,14 @@ const Area = () => {
     () => polygon(gpsPoints.length > 2 ? [[...gpsPoints, gpsPoints[0]]] : []),
     [gpsPoints]
   );
+
+  const calcArea = useMemo(() => {
+    if (gpsPoints.length < 3) {
+      return 0;
+    }
+    const _polygon = geometry("Polygon", [gpsPoints]);
+    return area(_polygon);
+  }, [gpsPoints]);
 
   return (
     <>
@@ -223,7 +169,7 @@ const Area = () => {
         nbPoints={Math.max(0, gpsPoints.length - 1)}
         onSave={handleSave}
         unit="m²"
-        onToggleRecording={_handleAreaRecordingMock}
+        onToggleRecording={handleToggleRecording}
         isRecording={isRecording}
       />
     </>
