@@ -34,10 +34,14 @@ const MapLayer = () => {
       if (!layerId || !projectId) return;
 
       const project = await projectManager.getProject(projectId);
-      if (!project) return;
+      if (!project) {
+        return;
+      }
 
       const measurement = project.measurements.find((m) => m.id === layerId);
-      if (!measurement) return;
+      if (!measurement) {
+        return;
+      }
 
       const gpsPoints = measurement.points;
       const gpsLine = gpsPoints.length > 1 ? [gpsPoints] : [];
@@ -56,6 +60,10 @@ const MapLayer = () => {
 
     loadLayer().then(() => setIsReady(true));
   }, [map, search, projectManager]);
+
+  if (search.get("layer") === null || search.get("project") === null) {
+    return null;
+  }
 
   return isReady ? (
     <>
