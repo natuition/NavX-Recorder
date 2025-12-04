@@ -17,6 +17,7 @@ import ProjectModal from "../domain/project/ProjectModal";
 import { geometry, lineStrings, points, polygon } from "@turf/helpers";
 import type { Measurement } from "../domain/project/types";
 import distance from "@turf/distance";
+import { useProjectManager } from "../hooks/useProjectManager";
 
 type LonLat = [number, number]; // [longitude, latitude]
 
@@ -31,6 +32,7 @@ const Area = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const modal = useModal();
+  const projectManager = useProjectManager();
   const { positionRef } = useGeolocation();
 
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
@@ -132,7 +134,6 @@ const Area = () => {
       toast.warn("Position GPS non disponible.");
       return;
     }
-    console.log(positionRef.current);
     const newPoint: LonLat = [
       positionRef.current.longitude,
       positionRef.current.latitude,
@@ -159,7 +160,6 @@ const Area = () => {
   };
 
   const handleSave = () => {
-    console.log("Enregistrement de la mesure de surface");
     const firstPoint = gpsPoints[0];
     const lastPoint = gpsPoints[gpsPoints.length - 1];
     if (
@@ -182,15 +182,69 @@ const Area = () => {
 
     const newMeasurement: Measurement = {
       id: window.crypto.randomUUID() as string,
-      name: "STUB:name",
-      subject: "STUB:subject",
+      name: location.state?.task?.name || "Mesure de surface",
+      subject: location.state?.task.slug || null,
       type: "area",
       value: totalArea,
       unit: "square-meters",
       points: [...gpsPoints, gpsPoints[0]],
     };
 
-    console.log("Nouvelle mesure créée :", newMeasurement);
+    // Cas où l'outil de surface est utilisé dans le contexte d'un projet
+    if (location.state?.project && location.state?.task) {
+      const project = location.state.project;
+      const task = location.state.task;
+
+      modal.open({
+        message: `Ajouter cette mesure (${newMeasurement.value.toFixed(
+          1
+        )} m²) au projet "${project.name}" ?`,
+        yesLabel: true,
+        noLabel: "Annuler",
+        onNo: modal.close,
+        onYes: async () => {
+          try {
+            await projectManager.addMeasurementToProject(
+              project.id,
+              newMeasurement
+            );
+            await projectManager.updateChecklist(
+              project.id,
+              (taskCompleted) => {
+                if (taskCompleted.id === task.id) {
+                  navigate(-1);
+                }
+              }
+            );
+          } catch (error) {
+            console.error("Error saving measurement to project:", error);
+            toast.error("Erreur lors de l'enregistrement. Veuillez réessayer.");
+            modal.close();
+            return;
+          }
+
+          modal.close();
+          setGpsPoints([]);
+          toast.success("Mesure ajoutée.");
+        },
+      });
+      return;
+    }
+
+    // Cas générique, lorsque l'utilisateur utilise l'outil de distance hors contexte de projet
+    modal.open({
+      message: "Enregistrer cette mesure ?",
+      yesLabel: true,
+      noLabel: "Annuler",
+      onNo: modal.close,
+      onYes: () => {
+        // TODO: sauvegarder la mesure quelque part
+        console.warn("Saving measurement:", newMeasurement);
+        modal.close();
+        setGpsPoints([]);
+        toast.success("Mesure enregistrée.");
+      },
+    });
   };
 
   const gpsPointsGeoJSON = useMemo(() => points(gpsPoints), [gpsPoints]);
@@ -225,7 +279,7 @@ const Area = () => {
         <Layer {...gpsPointsLayer} />
       </Source>
       <AreaToolBar
-        onAdd={_handleAddGPSPointMock}
+        onAdd={handleAddGPSPoint}
         onRemoveLast={handleRemoveLastPoint}
         area={totalArea}
         nbPoints={Math.max(0, gpsPoints.length)}
