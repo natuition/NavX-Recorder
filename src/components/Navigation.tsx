@@ -1,7 +1,7 @@
 import { IoMap, IoFolderOpen } from "react-icons/io5";
 import { IoMdMore } from "react-icons/io";
 import { useState } from "react";
-import { FaRuler } from "react-icons/fa";
+import { RiArchiveStackFill } from "react-icons/ri";
 
 import TabButton from "./TabButton";
 import ActionMenu from "./ActionMenu";
@@ -28,7 +28,7 @@ const Navigation = () => {
           </NavLink>
           <TabButton onPress={() => setIsMenuVisible(true)} />
           <NavLink to="/measurements" className="tab">
-            <FaRuler className="tab__icon" size={24} />
+            <RiArchiveStackFill className="tab__icon" size={24} />
             <span className="tab__label">Mesures</span>
           </NavLink>
           <NavLink to="/settings" className="tab">
