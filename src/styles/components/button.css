@@ -32,6 +32,11 @@
   background-color: var(--color-status-error);
 }
 
+.button--draw {
+  color: var(--color-text-on-primary);
+  background-color: var(--color-draw);
+}
+
 .button--icon {
   background-color: transparent;
   width: fit-content;

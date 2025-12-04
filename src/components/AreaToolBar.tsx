@@ -1,7 +1,8 @@
 import { FaSave, FaPlayCircle } from "react-icons/fa";
-import { FaDrawPolygon, FaPause } from "react-icons/fa6";
+import { FaDrawPolygon } from "react-icons/fa6";
 import { IoIosUndo } from "react-icons/io";
 import { MdLocationOn, MdOutlineAddLocationAlt } from "react-icons/md";
+import { MdFiberSmartRecord } from "react-icons/md";
 
 type AreaToolBarProps = {
   /**
@@ -16,6 +17,10 @@ type AreaToolBarProps = {
    * Indique si l'enregistrement est en cours ou non.
    */
   isRecording?: boolean;
+  /**
+   * Indique si la mesure peut être sauvegardée.
+   */
+  canSave: boolean;
   /**
    * Callback appelé lorsque l'utilisateur clique sur le bouton "Enregistrer".
    */
@@ -46,6 +51,7 @@ const AreaToolBar = ({
   unit = "m²",
   nbPoints = 0,
   isRecording,
+  canSave,
   onToggleRecording,
   onSave,
   onRemoveLast,
@@ -76,21 +82,27 @@ const AreaToolBar = ({
             <IoIosUndo size={18} />
           </button>
           <button
-            disabled={isRecording || nbPoints < 3}
+            disabled={!canSave}
             className="button button--neutral toolbar__action"
             onClick={onSave}
           >
-            Enregistrer
             <FaSave size={18} />
           </button>
           <button
             className={`button button--${
-              isRecording ? "neutral" : "primary"
+              isRecording ? "draw" : "primary"
             } toolbar__action`}
             onClick={onToggleRecording}
           >
-            {isRecording ? "Pause" : "Démarrer"}
-            {isRecording ? <FaPause size={18} /> : <FaPlayCircle size={18} />}
+            {isRecording ? "Mesure en cours" : "Démarrer mesure"}
+            {isRecording ? (
+              <MdFiberSmartRecord
+                style={{ transform: "scaleX(-1)" }}
+                size={18}
+              />
+            ) : (
+              <FaPlayCircle size={18} />
+            )}
           </button>
           <button
             onClick={onAdd}

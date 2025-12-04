@@ -76,9 +76,9 @@ const Area = () => {
     }
   }, [isRecording, location.state, gpsPoints.length, navigate]);
 
-  const handleToggleRecording = () => {
+  const startRecording = () => {
     if (isRecording) {
-      setIsRecording(false);
+      return;
     } else {
       if (!positionRef.current) {
         console.warn(
@@ -224,6 +224,7 @@ const Area = () => {
           }
 
           modal.close();
+          setIsRecording(false);
           setGpsPoints([]);
           toast.success("Mesure ajoutée.");
         },
@@ -267,6 +268,21 @@ const Area = () => {
     return area(geometry("Polygon", [[...gpsPoints, gpsPoints[0]]]));
   }, [gpsPoints]);
 
+  const canSave = useMemo(() => {
+    if (gpsPoints.length < 3) {
+      return false;
+    }
+    const firstPoint = gpsPoints[0];
+    const lastPoint = gpsPoints[gpsPoints.length - 1];
+    if (
+      distance(firstPoint, lastPoint, { units: "meters" }) >
+      EXPECTED_CLOSING_DISTANCE_METERS
+    ) {
+      return false;
+    }
+    return true;
+  }, [gpsPoints]);
+
   return (
     <>
       <Source id="gps-line" type="geojson" data={gpsLineGeoJSON}>
@@ -285,8 +301,9 @@ const Area = () => {
         nbPoints={Math.max(0, gpsPoints.length)}
         onSave={handleSave}
         unit="m²"
-        onToggleRecording={handleToggleRecording}
+        onToggleRecording={startRecording}
         isRecording={isRecording}
+        canSave={canSave}
       />
     </>
   );
