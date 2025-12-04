@@ -1,8 +1,26 @@
 :root {
   --green-natuition: #47a857;
   --blue-natuition: #183c64;
+  --black: #222222;
+  --white: #ffffff;
+  --transparent: rgba(0, 0, 0, 0);
 
   --color-primary: var(--green-natuition);
+  --color-primary-dimmed-dark: color-mix(
+    in srgb,
+    var(--color-primary) 70%,
+    var(--black)
+  );
+  --color-primary-dimmed-light: color-mix(
+    in srgb,
+    var(--color-primary) 70%,
+    var(--white)
+  );
+  --color-primary-dimmed-opacity: color-mix(
+    in srgb,
+    var(--color-primary) 70%,
+    var(--transparent)
+  );
   --color-secondary: rgb(255, 255, 255);
   --color-neutral: rgb(250, 250, 250);
 

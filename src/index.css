@@ -3,6 +3,7 @@
 @import url("./styles/base/core.css");
 @import url("./styles/base/typography.css");
 @import url("./styles/base/colors.css");
+@import url("./styles/base/shadows.css");
 
 @import url("./styles/utils/helpers.css");
 
@@ -25,5 +26,6 @@
 @import url("./styles/components/project-card.css");
 @import url("./styles/components/checklist.css");
 @import url("./styles/components/dropdown.css");
+@import url("./styles/components/measure-card.css");
 
 @import url("./styles/pages/projects.css");
