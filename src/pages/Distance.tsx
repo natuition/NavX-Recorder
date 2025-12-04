@@ -5,6 +5,7 @@ import {
   type LineLayerSpecification,
   type CircleLayerSpecification,
   type SymbolLayerSpecification,
+  useMap,
 } from "react-map-gl/mapbox";
 import DistanceToolBar from "../components/DistanceToolBar";
 import { useLocation, useNavigate } from "react-router";
@@ -42,6 +43,7 @@ const Distance = () => {
   const modal = useModal();
   const projectManager = useProjectManager();
   const { position } = useGeolocation();
+  const { map } = useMap();
 
   const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
 
@@ -65,7 +67,7 @@ const Distance = () => {
   }, [gpsPoints, location, navigate]);
 
   useEffect(() => {
-    // Dans le cas dune tâche de projet, on ouvre une modale avec les explications de la tâche.
+    // Dans le cas d'une tâche de projet, on ouvre une modale avec les explications de la tâche.
     const showInstructions = () => {
       if (location.state.task?.instructions) {
         modal.open({
@@ -83,7 +85,20 @@ const Distance = () => {
       }
     };
 
+    const updateZoomLevel = () => {
+      if (!position || !map) {
+        return;
+      }
+
+      map.flyTo({
+        center: [position.longitude, position.latitude],
+        zoom: 12,
+        speed: 1.2,
+      });
+    };
+
     showInstructions();
+    updateZoomLevel();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = () => {
@@ -130,10 +145,7 @@ const Distance = () => {
             );
           } catch (error) {
             console.error("Error saving measurement to project:", error);
-            toast.error(
-              "Erreur lors de l'enregistrement. Veuillez réessayer."
-
-            );
+            toast.error("Erreur lors de l'enregistrement. Veuillez réessayer.");
             modal.close();
             return;
           }
