@@ -1,4 +1,24 @@
 .loader {
-  position: relative;
-  z-index: -1;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+  color: var(--color-primary-dimmed-opacity);
+  font-size: 3rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
