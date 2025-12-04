@@ -5,6 +5,7 @@
   left: 0;
   right: 0;
   background-color: var(--color-neutral);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .navigation__tabs {

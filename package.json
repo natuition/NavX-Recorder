@@ -13,6 +13,7 @@
     "@capacitor-community/bluetooth-le": "^7.2.0",
     "@capacitor/android": "^7.4.4",
     "@capacitor/core": "^7.4.4",
+    "@capacitor/ios": "^7.4.4",
     "@turf/area": "^7.2.0",
     "@turf/center": "^7.3.1",
     "@turf/distance": "^7.3.1",

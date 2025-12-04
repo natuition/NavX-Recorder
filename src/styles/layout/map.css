@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.25em;
-  top: 100px;
+  top: calc(env(safe-area-inset-top)+100px);
   right: 10px;
   z-index: 1;
 }
