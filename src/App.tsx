@@ -16,6 +16,7 @@ import { MapLayout } from "./layouts/MapLayout.tsx";
 import ProjectDetails from "./pages/ProjectDetails.tsx";
 import { DomainProvider } from "./providers/DomainProvider.tsx";
 import Measurements from "./pages/Measurements.tsx";
+import MapLayer from "./pages/MapLayer.tsx";
 
 /**
  * Composant principal de l'application NavX Recorder.
@@ -34,7 +35,7 @@ const App = () => {
             <BaseLayout>
               <Routes>
                 <Route path="/" element={<MapLayout />}>
-                  <Route index element={<p className="loader">Loading...</p>} />
+                  <Route index element={<MapLayer />} />
                   <Route path="distance" element={<Distance />} />
                   <Route path="area" element={<Area />} />
                 </Route>

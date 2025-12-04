@@ -32,6 +32,13 @@ const ProjectDetails = () => {
     fetchProject();
   }, [projectManager, params]);
 
+  const handleShowLayer = (measurementId: string) => {
+    navigate({
+      pathname: "/",
+      search: `?project=${project!.id}&layer=${measurementId}`,
+    });
+  };
+
   return (
     project && (
       <>
@@ -48,6 +55,25 @@ const ProjectDetails = () => {
           <h2 className="page__subtitle">Checklist</h2>
           <ProjectChecklist project={project} />
         </section>
+        {project && project.measurements.length > 0 && (
+          <section className="page__section">
+            <h2 className="page__subtitle">Mesures</h2>
+            <ul>
+              {project.measurements.map((measurement) => (
+                <li
+                  onClick={() => handleShowLayer(measurement.id)}
+                  key={measurement.id}
+                  className="measure-card"
+                >
+                  <strong>{measurement.type}</strong>
+                  <p>
+                    {measurement.value.toFixed(1)} {measurement.unit}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
         {project.meta && (
           <section className="page__section">
             <h2 className="page__subtitle">A propos</h2>
