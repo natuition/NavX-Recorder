@@ -141,19 +141,19 @@ const Area = () => {
     setGpsPoints((prev) => [...prev, newPoint]);
   };
 
-  const _handleAddGPSPointMock = () => {
-    let newPoint: LonLat;
-    if (gpsPoints.length === 0) {
-      newPoint = [-1.1517, 46.1591];
-    } else {
-      const lastPoint = gpsPoints[gpsPoints.length - 1];
-      newPoint = [
-        lastPoint[0] + (Math.random() - 0.5) * 0.001,
-        lastPoint[1] + (Math.random() - 0.5) * 0.001,
-      ];
-    }
-    setGpsPoints((prev) => [...prev, newPoint]);
-  };
+  // const _handleAddGPSPointMock = () => {
+  //   let newPoint: LonLat;
+  //   if (gpsPoints.length === 0) {
+  //     newPoint = [-1.1517, 46.1591];
+  //   } else {
+  //     const lastPoint = gpsPoints[gpsPoints.length - 1];
+  //     newPoint = [
+  //       lastPoint[0] + (Math.random() - 0.5) * 0.001,
+  //       lastPoint[1] + (Math.random() - 0.5) * 0.001,
+  //     ];
+  //   }
+  //   setGpsPoints((prev) => [...prev, newPoint]);
+  // };
 
   const handleRemoveLastPoint = () => {
     setGpsPoints((prev) => prev.slice(0, -1));
