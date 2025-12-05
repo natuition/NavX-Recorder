@@ -69,14 +69,16 @@ const DistanceToolBar = ({
           </button>
           <button
             disabled={nbPoints < 2}
-            className="button button--neutral toolbar__action"
+            className={`button button--${
+              nbPoints < 2 ? "neutral" : "primary"
+            } toolbar__action`}
             onClick={onSave}
           >
             Enregistrer
             <FaSave size={18} />
           </button>
           <button
-            className="button button--primary toolbar__action"
+            className="button button--draw toolbar__action"
             onClick={onAdd}
           >
             <MdOutlineAddLocationAlt size={18} />

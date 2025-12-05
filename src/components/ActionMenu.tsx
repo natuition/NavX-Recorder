@@ -1,4 +1,4 @@
-import { FaDrawPolygon } from "react-icons/fa";
+import { PiPolygonFill } from "react-icons/pi";
 import { SiAlwaysdata } from "react-icons/si";
 
 import { Link } from "react-router";
@@ -50,7 +50,7 @@ const ActionMenu = ({ onHide, active }: ActionMenuProps) => {
             to="/area"
             className="button button--neutral"
           >
-            <FaDrawPolygon className="button__icon-left" size={24} />
+            <PiPolygonFill className="button__icon-left" size={24} />
             Surface
           </Link>
         </li>
