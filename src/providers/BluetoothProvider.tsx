@@ -77,9 +77,6 @@ export const BluetoothProvider = ({ children }: { children: ReactNode }) => {
         const packetToSend = latestRtcmPacketRef.current;
         latestRtcmPacketRef.current = null; // Consommer le paquet
 
-        console.debug(
-          `Sending latest RTCM packet (${packetToSend.byteLength} bytes)`
-        );
         _writeDataChunked(packetToSend);
       } else if (!latestRtcmPacketRef.current) {
         writeStatsRef.current.skipped++;
