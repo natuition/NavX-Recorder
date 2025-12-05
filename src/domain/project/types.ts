@@ -12,7 +12,7 @@ export type Measurement = {
   type: MeasurementType;
   value: number;
   unit: string;
-  points: [number, number][];
+  points: GeoJSON.Position[];
 };
 
 export type ProjectType = "generic" | "culture"; // Ajouter d'autres types pour des applications futures

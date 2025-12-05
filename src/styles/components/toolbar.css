@@ -37,7 +37,7 @@
   align-items: center;
   justify-content: start;
   gap: 0.5em;
-  min-width: 10ch;
+  min-width: 16ch;
 }
 
 .toolbar-indicator__icon {
@@ -55,6 +55,11 @@
   justify-content: center;
   align-items: center;
   background-color: var(--color-secondary);
+}
+
+.toolbar__action--draw--active {
+  outline: var(--color-status-danger) solid 2px;
+  outline-offset: 2px;
 }
 
 .toolbar__actions .wrapper {

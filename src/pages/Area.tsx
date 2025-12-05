@@ -14,12 +14,16 @@ import { useToast } from "../hooks/useToast";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { useModal } from "../hooks/useModal";
 import ProjectModal from "../domain/project/ProjectModal";
-import { geometry, lineStrings, points, polygon } from "@turf/helpers";
+import { lineStrings, points, polygon } from "@turf/helpers";
 import type { Measurement } from "../domain/project/types";
 import distance from "@turf/distance";
 import { useProjectManager } from "../hooks/useProjectManager";
+import length from "@turf/length";
 
-type LonLat = [number, number]; // [longitude, latitude]
+type AreaPoint = {
+  position: GeoJSON.Position;
+  isCorner: boolean;
+};
 
 const DISTANCE_THRESHOLD_METERS = 1; // Seuil de distance minimale entre deux points GPS
 const CLOSING_TOLERENCE_FACTOR = 2; // Facteur de tolérance pour la fermeture de la surface
@@ -35,7 +39,9 @@ const Area = () => {
   const projectManager = useProjectManager();
   const { positionRef } = useGeolocation();
 
-  const [gpsPoints, setGpsPoints] = useState<LonLat[]>([]);
+  const [areaPoints, setAreaPoints] = useState<AreaPoint[]>([]);
+  // const [corners, setCorners] = useState<GeoJSON.Position[]>([]);
+
   const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
@@ -69,27 +75,12 @@ const Area = () => {
       return;
     }
 
-    if (isRecording || gpsPoints.length > 0) {
+    if (isRecording || areaPoints.length > 0) {
       location.state.measureActive = true;
     } else {
       location.state.measureActive = false;
     }
-  }, [isRecording, location.state, gpsPoints.length, navigate]);
-
-  const startRecording = () => {
-    if (isRecording) {
-      return;
-    } else {
-      if (!positionRef.current) {
-        console.warn(
-          "GPS position not available, cannot start recording area."
-        );
-        toast.warn("Position GPS non disponible.");
-        return;
-      }
-      setIsRecording(true);
-    }
-  };
+  }, [isRecording, location.state, areaPoints.length, navigate]);
 
   useEffect(() => {
     if (!isRecording) return;
@@ -97,22 +88,22 @@ const Area = () => {
     const intervalId = setInterval(() => {
       if (!positionRef.current) return;
 
-      const newPoint: LonLat = [
-        positionRef.current.longitude,
-        positionRef.current.latitude,
-      ];
+      const newPoint: AreaPoint = {
+        position: [positionRef.current.longitude, positionRef.current.latitude],
+        isCorner: false,
+      };
 
-      setGpsPoints((prev) => {
+      setAreaPoints((prev) => {
         if (prev.length === 0) {
           return [newPoint];
         }
 
         const lastPoint = prev[prev.length - 1];
         const distance = Distance.equirectangular(
-          lastPoint[1],
-          lastPoint[0],
-          newPoint[1],
-          newPoint[0]
+          lastPoint.position[1],
+          lastPoint.position[0],
+          newPoint.position[1],
+          newPoint.position[0]
         );
 
         if (distance < DISTANCE_THRESHOLD_METERS) {
@@ -128,42 +119,77 @@ const Area = () => {
     };
   }, [isRecording]);
 
-  const handleAddGPSPoint = () => {
+  const handleAddCorner = () => {
     if (!positionRef.current) {
       console.warn("Position is not available, could not add GPS point.");
       toast.warn("Position GPS non disponible.");
       return;
     }
-    const newPoint: LonLat = [
-      positionRef.current.longitude,
-      positionRef.current.latitude,
-    ];
-    setGpsPoints((prev) => [...prev, newPoint]);
+
+    if (!isRecording) {
+      setIsRecording(true);
+      toast.info("Enregistrement de la surface en cours.");
+    }
+
+    const newPoint: AreaPoint = {
+      position: [positionRef.current.longitude, positionRef.current.latitude],
+      isCorner: true,
+    };
+
+    setAreaPoints((prev) => [...prev, newPoint]);
   };
 
-  // const _handleAddGPSPointMock = () => {
-  //   let newPoint: LonLat;
-  //   if (gpsPoints.length === 0) {
-  //     newPoint = [-1.1517, 46.1591];
+  // const _handleAddCornerMock = () => {
+  //   let newPoint: AreaPoint;
+  //   if (areaPoints.length === 0) {
+  //     newPoint = {
+  //       position: [2.3522, 48.8566],
+  //       isCorner: true,
+  //     };
   //   } else {
-  //     const lastPoint = gpsPoints[gpsPoints.length - 1];
-  //     newPoint = [
-  //       lastPoint[0] + (Math.random() - 0.5) * 0.001,
-  //       lastPoint[1] + (Math.random() - 0.5) * 0.001,
-  //     ];
+  //     const lastPoint = areaPoints[areaPoints.length - 1];
+  //     newPoint = {
+  //       position: [
+  //         lastPoint.position[0] + (Math.random() - 0.5) * 0.01,
+  //         lastPoint.position[1] + (Math.random() - 0.5) * 0.01,
+  //       ],
+  //       isCorner: true,
+  //     };
   //   }
-  //   setGpsPoints((prev) => [...prev, newPoint]);
+  //   if (!isRecording) {
+  //     setIsRecording(true);
+  //   }
+  //   setAreaPoints((prev) => [...prev, newPoint]);
   // };
 
   const handleRemoveLastPoint = () => {
-    setGpsPoints((prev) => prev.slice(0, -1));
+    // On enlève le dernier point et celui d'avant devient le dernier angle
+    setAreaPoints((prev) => {
+      if (prev.length < 2) return prev.slice(0, -1);
+
+      const pts = prev.slice(0, -1); // retire le dernier
+      const lastIndex = pts.length - 1;
+
+      return pts.map((pt, index) =>
+        index === lastIndex ? { ...pt, isCorner: true } : pt
+      );
+    });
+
+    // On veut arrêter l'enregistrement quand on retire un point
+    if (isRecording) {
+      setIsRecording(false);
+      toast.info(
+        "Enregistrement de la surface en pause. Ajouter un point pour reprendre.",
+        { duration: 4000 }
+      );
+    }
   };
 
   const handleSave = () => {
-    const firstPoint = gpsPoints[0];
-    const lastPoint = gpsPoints[gpsPoints.length - 1];
+    const firstPoint = areaPoints[0];
+    const lastPoint = areaPoints[areaPoints.length - 1];
     if (
-      distance(firstPoint, lastPoint, { units: "meters" }) >
+      distance(firstPoint.position, lastPoint.position, { units: "meters" }) >
       EXPECTED_CLOSING_DISTANCE_METERS
     ) {
       console.error("Area is not closed.");
@@ -174,11 +200,13 @@ const Area = () => {
       return;
     }
 
-    if (gpsPoints.length < 3) {
+    if (areaPoints.length < 3) {
       console.error("Not enough points to form an area.");
       toast.error("Une surface doit comporter au moins 3 points distincts.");
       return;
     }
+
+    const positions = areaPoints.map((pt) => pt.position);
 
     const newMeasurement: Measurement = {
       id: window.crypto.randomUUID() as string,
@@ -187,7 +215,7 @@ const Area = () => {
       type: "area",
       value: totalArea,
       unit: "square-meters",
-      points: [...gpsPoints, gpsPoints[0]],
+      points: [...positions, positions[0]],
     };
 
     // Cas où l'outil de surface est utilisé dans le contexte d'un projet
@@ -225,7 +253,7 @@ const Area = () => {
 
           modal.close();
           setIsRecording(false);
-          setGpsPoints([]);
+          setAreaPoints([]);
           toast.success("Mesure ajoutée.");
         },
       });
@@ -242,46 +270,64 @@ const Area = () => {
         // TODO: sauvegarder la mesure quelque part
         console.warn("Saving measurement:", newMeasurement);
         modal.close();
-        setGpsPoints([]);
+        setAreaPoints([]);
         toast.success("Mesure enregistrée.");
       },
     });
   };
 
-  const gpsPointsGeoJSON = useMemo(() => points(gpsPoints), [gpsPoints]);
+  const gpsCornersGeoJSON = useMemo(() => {
+    const positions = areaPoints
+      .filter((pt) => pt.isCorner)
+      .map((pt) => pt.position);
 
-  const gpsLineGeoJSON = useMemo(
-    () =>
-      lineStrings(gpsPoints.length > 1 ? [[...gpsPoints, gpsPoints[0]]] : []),
-    [gpsPoints]
-  );
+    return points(positions);
+  }, [areaPoints]);
 
-  const gpsPolygonGeoJSON = useMemo(
-    () => polygon(gpsPoints.length > 2 ? [[...gpsPoints, gpsPoints[0]]] : []),
-    [gpsPoints]
-  );
+  const gpsLineGeoJSON = useMemo(() => {
+    const positions = areaPoints.map((pt) => pt.position);
+    return lineStrings(
+      areaPoints.length > 1 ? [[...positions, positions[0]]] : []
+    );
+  }, [areaPoints]);
+
+  const gpsPolygonGeoJSON = useMemo(() => {
+    const positions = areaPoints.map((pt) => pt.position);
+    return polygon(areaPoints.length > 2 ? [[...positions, positions[0]]] : []);
+  }, [areaPoints]);
+
+  const cornerCount = useMemo(() => {
+    return areaPoints.filter((pt) => pt.isCorner).length;
+  }, [areaPoints]);
 
   const totalArea = useMemo(() => {
-    if (gpsPoints.length < 3) {
+    if (areaPoints.length < 3) {
       return 0;
     }
-    return area(geometry("Polygon", [[...gpsPoints, gpsPoints[0]]]));
-  }, [gpsPoints]);
+    return area(gpsPolygonGeoJSON);
+  }, [areaPoints, gpsPolygonGeoJSON]);
+
+  const perimeter = useMemo(() => {
+    if (areaPoints.length < 2) {
+      return 0;
+    }
+    return length(gpsLineGeoJSON, { units: "meters" });
+  }, [areaPoints, gpsLineGeoJSON]);
 
   const canSave = useMemo(() => {
-    if (gpsPoints.length < 3) {
+    if (areaPoints.length < 3) {
       return false;
     }
-    const firstPoint = gpsPoints[0];
-    const lastPoint = gpsPoints[gpsPoints.length - 1];
+    const firstPoint = areaPoints[0];
+    const lastPoint = areaPoints[areaPoints.length - 1];
     if (
-      distance(firstPoint, lastPoint, { units: "meters" }) >
+      distance(firstPoint.position, lastPoint.position, { units: "meters" }) >
       EXPECTED_CLOSING_DISTANCE_METERS
     ) {
       return false;
     }
     return true;
-  }, [gpsPoints]);
+  }, [areaPoints]);
 
   return (
     <>
@@ -291,19 +337,19 @@ const Area = () => {
       <Source id="gps-polygon" type="geojson" data={gpsPolygonGeoJSON}>
         <Layer {...gpsFillLayer} />
       </Source>
-      <Source id="gps-points" type="geojson" data={gpsPointsGeoJSON}>
+      <Source id="gps-corners" type="geojson" data={gpsCornersGeoJSON}>
         <Layer {...gpsPointsLayer} />
       </Source>
       <AreaToolBar
-        onAdd={handleAddGPSPoint}
+        onAdd={handleAddCorner}
         onRemoveLast={handleRemoveLastPoint}
         area={totalArea}
-        nbPoints={Math.max(0, gpsPoints.length)}
+        corners={Math.max(0, cornerCount)}
         onSave={handleSave}
         unit="m²"
-        onToggleRecording={startRecording}
         isRecording={isRecording}
         canSave={canSave}
+        perimeter={perimeter}
       />
     </>
   );
@@ -331,7 +377,7 @@ const gpsLineLayer: LineLayerSpecification = {
 };
 
 const gpsPointsLayer: CircleLayerSpecification = {
-  id: "gps-points",
+  id: "gps-corners",
   type: "circle",
   paint: {
     "circle-color": "#7f00ff",
@@ -340,7 +386,7 @@ const gpsPointsLayer: CircleLayerSpecification = {
     "circle-stroke-color": "#ffffff",
     "circle-stroke-width": 2,
   },
-  source: "gps-points",
+  source: "gps-corners",
 };
 
 export default Area;
