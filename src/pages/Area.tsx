@@ -37,7 +37,7 @@ const Area = () => {
   const toast = useToast();
   const modal = useModal();
   const projectManager = useProjectManager();
-  const { positionRef } = useGeolocation();
+  const { position } = useGeolocation();
 
   const [areaPoints, setAreaPoints] = useState<AreaPoint[]>([]);
 
@@ -85,10 +85,10 @@ const Area = () => {
     if (!isRecording) return;
 
     const intervalId = setInterval(() => {
-      if (!positionRef.current) return;
+      if (!position) return;
 
       const newPoint: AreaPoint = {
-        position: [positionRef.current.longitude, positionRef.current.latitude],
+        position: [position.longitude, position.latitude],
         isCorner: false,
       };
 
@@ -119,7 +119,7 @@ const Area = () => {
   }, [isRecording]);
 
   const handleAddCorner = () => {
-    if (!positionRef.current) {
+    if (!position) {
       console.warn("Position is not available, could not add GPS point.");
       toast.warn("Position GPS non disponible.");
       return;
@@ -131,7 +131,7 @@ const Area = () => {
     }
 
     const newPoint: AreaPoint = {
-      position: [positionRef.current.longitude, positionRef.current.latitude],
+      position: [position.longitude, position.latitude],
       isCorner: true,
     };
 
