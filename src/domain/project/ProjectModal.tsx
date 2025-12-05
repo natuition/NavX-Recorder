@@ -62,14 +62,16 @@ const TaskInstructionsModalContent = ({
       </ul>
       {/* // TODO: améliorer le rendu avec un carousel si plusieurs images */}
       {images && images.length > 0 && (
-        <div>
+        <div className="carousel-instructions">
           {images.map((imageSrc, index) => (
-            <img
-              className="cmc-task-instructions__image"
-              key={index}
-              src={urlFor(imageSrc)}
-              alt={`Instruction ${index + 1}`}
-            />
+            <div className="carousel-instructions__item">
+              <img
+                className="cmc-task-instructions__image"
+                key={index}
+                src={urlFor(imageSrc)}
+                alt={`Instruction ${index + 1}`}
+              />
+            </div>
           ))}
         </div>
       )}

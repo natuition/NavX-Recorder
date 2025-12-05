@@ -19,7 +19,7 @@ export const ProjectTypesSpecifications: Record<string, ProjectTypeSpecification
         instructions: [
           "Assurez-vous de capturer au moins deux points GPS pour une mesure précise."
         ],
-        imagesForInstructions: ["/images/instruction_distance.example.png"],
+        imagesForInstructions: ["/images/instruction_distance.example.png", "/images/instruction_distance.example.png", "/images/instruction_distance.example.png"],
         measurementType: "distance",
         completed: false,
         hasCondition: true
