@@ -17,8 +17,8 @@ export default defineConfig({
       },
 
       manifest: {
-        name: "navx-recorder",
-        short_name: "navx-recorder",
+        name: "NavX Compagnon",
+        short_name: "NavX Compagnon",
         description:
           "A precision mapping and data collection application designed to survey agricultural zones using RTK-enabled rovers.",
         theme_color: "#ffffff",
