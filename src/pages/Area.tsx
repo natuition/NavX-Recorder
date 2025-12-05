@@ -40,7 +40,6 @@ const Area = () => {
   const { positionRef } = useGeolocation();
 
   const [areaPoints, setAreaPoints] = useState<AreaPoint[]>([]);
-  // const [corners, setCorners] = useState<GeoJSON.Position[]>([]);
 
   const [isRecording, setIsRecording] = useState(false);
 

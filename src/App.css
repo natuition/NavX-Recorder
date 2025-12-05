@@ -1,21 +1,7 @@
 .map-container {
-  height: 100svh;
-  width: 100svw;
+  height: 100vh;
+  width: 100vw;
   position: relative;
-}
-
-#position {
-  position: absolute;
-  top: 85px;
-  left: 10px;
-  font-size: 1rem;
-  color: white;
-  padding: 0.5em 1em;
-  min-width: 25ch;
-  border-radius: 6px;
-  background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
-  z-index: 1;
 }
 
 #map {

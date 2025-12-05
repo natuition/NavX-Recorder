@@ -26,7 +26,6 @@ import MapLayer from "./pages/MapLayer.tsx";
 const App = () => {
   return (
     <>
-      {/* TODO: <ConfigProvider /> */}
       <AppProvider>
         <Modal />
         <Toast />
